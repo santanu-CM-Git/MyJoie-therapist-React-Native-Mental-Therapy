@@ -32,48 +32,6 @@ const ChatScreen = ({ navigation }) => {
     //receivedMsg()
   }, [])
 
-  const receivedMsg = async () => {
-    let UID = "1";
-    let limit = 30;
-    let messagesRequest = new CometChat.MessagesRequestBuilder()
-      .setUID(UID)
-      .setLimit(limit)
-      .build();
-
-    messagesRequest.fetchPrevious().then(
-      messages => {
-        console.log("Message list fetched:", messages);
-        for (let i = 0; i < messages.length; i++) {
-          //console.log(messages[i].data.text)
-          const json_data = messages[i].text;
-          //console.log(json_data,'jjjjjjj')
-          if (json_data) {
-            console.log(json_data)
-            const data = JSON.parse(json_data);
-            const textValue = data[0].text;
-            // const abc = [
-            //   {
-            //     _id: 2,
-            //     text: textValue,
-            //     createdAt: new Date(),
-            //     user: {
-            //       _id: 2,
-            //       name: 'React Native',
-            //       avatar: require('../assets/images/user-profile.jpg'),
-            //     },
-            //   },
-            // ]
-            //setMessages(previousMessages => GiftedChat.append(previousMessages, abc))
-          }
-          //setMessages(previousMessages => GiftedChat.append(previousMessages, json_data))
-        }
-
-      }, error => {
-        console.log("Message fetching failed with error:", error);
-      }
-    );
-
-  }
 
   const _pickDocument = async () => {
     try {
@@ -192,15 +150,7 @@ const ChatScreen = ({ navigation }) => {
           }}
           onPress={() => setFileVisible(true)}
         >
-          <InChatFileTransfer
-            style={{ marginTop: -10 }}
-            filePath={currentMessage.file.url}
-          />
-          <InChatViewFile
-            props={props}
-            visible={fileVisible}
-            onClose={() => setFileVisible(false)}
-          />
+         
           <View style={{ flexDirection: 'column' }}>
             <Text style={{
               ...styles.fileText,
@@ -259,6 +209,7 @@ const ChatScreen = ({ navigation }) => {
           _id: 1,
           avatar: require('../../assets/images/user-profile.jpg'),
         },
+        codeSnippet: true,
         image: imagePath,
         file: {
           url: ''

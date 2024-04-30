@@ -18,7 +18,8 @@ import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-di
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
 import { API_URL } from '@env'
-import { useFocusEffect,useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
 
 export default function CustomHeader({
     onPress,
@@ -29,30 +30,30 @@ export default function CustomHeader({
     // const { userInfo } = useContext(AuthContext)
     // console.log(userInfo?.photo)
     const navigation = useNavigation();
-    const [userInfo,setuserInfo] = useState([])
+    const [userInfo, setuserInfo] = useState([])
     const fetchProfileDetails = () => {
         AsyncStorage.getItem('userToken', (err, usertoken) => {
-          axios.get(`${API_URL}/api/driver/me`, {
-            headers: {
-              "Authorization": 'Bearer ' + usertoken,
-              "Content-Type": 'application/json'
-            },
-          })
-            .then(res => {
-              //console.log(res.data, 'user details')
-              let userInfo = res.data.response.records.data;
-              setuserInfo(userInfo)
+            axios.get(`${API_URL}/api/driver/me`, {
+                headers: {
+                    "Authorization": 'Bearer ' + usertoken,
+                    "Content-Type": 'application/json'
+                },
             })
-            .catch(e => {
-              console.log(`User Details Fetch error ${e}`)
-            });
+                .then(res => {
+                    //console.log(res.data, 'user details')
+                    let userInfo = res.data.response.records.data;
+                    setuserInfo(userInfo)
+                })
+                .catch(e => {
+                    console.log(`User Details Fetch error ${e}`)
+                });
         });
-      }
-    
-      useEffect(() => {
+    }
+
+    useEffect(() => {
         fetchProfileDetails()
-      }, [])
-      useFocusEffect(
+    }, [])
+    useFocusEffect(
         React.useCallback(() => {
             fetchProfileDetails()
         }, [])
@@ -61,41 +62,48 @@ export default function CustomHeader({
         <>
             {commingFrom == 'Home' ?
                 <>
-                    <View style={styles.headerView}>
+                    <LinearGradient
+                        colors={['#377172', '#377172']} // Example colors, replace with your desired gradient
+                        style={styles.headerView}
+                    >
                         <View style={styles.firstSection}>
-                            <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
+                            <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
                                 {/* {userInfo?.photo ?
                                     <Image
                                         source={{ uri: userInfo?.photo }}
                                         style={styles.headerImage}
                                     /> : */}
-                                    <Image
-                                        source={hambargar}
-                                        style={styles.headerImage}
-                                    />
+                                <Image
+                                    source={hambargar}
+                                    style={styles.headerImage}
+                                />
                                 {/* } */}
                             </TouchableOpacity>
-                            <View>
-                                {userInfo?
-                                <Text style={styles.firstText}>
-                                    Hi, {userInfo?.name}
-                                </Text>:
-                                <ActivityIndicator size="small" color="#339999" />
+                            {/* <View>
+                                {userInfo ?
+                                    <Text style={styles.firstText}>
+                                        Hi, {userInfo?.name}
+                                    </Text> :
+                                    <ActivityIndicator size="small" color="#339999" />
                                 }
                                 <Text style={styles.secondText}>
-                                    {/* {userInfo?.roll} */}
                                     Delivery Partner
                                 </Text>
-                            </View>
+                            </View> */}
                         </View>
-                        <TouchableOpacity onPress={onPress}>
-                            <Ionicons name="notifications-outline" size={28} color="#F4F4F4" />
-                            <View style={styles.notificationdotView}>
-                                <Text style={styles.notificationdot}>{'\u2B24'}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.headerBottomMargin} />
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity onPress={onPress}>
+                                <Ionicons name="search-outline" size={28} color="#F4F4F4" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={onPress}>
+                                <Ionicons name="notifications-outline" size={28} color="#F4F4F4" />
+                                <View style={styles.notificationdotView}>
+                                    <Text style={styles.notificationdot}>{'\u2B24'}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </LinearGradient>
+                    {/* <View style={styles.headerBottomMargin} /> */}
                 </>
                 : commingFrom == 'chat' ?
                     <>
@@ -132,8 +140,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 20,
-        backgroundColor:'#339999',
-        marginTop:-responsiveHeight(1)
+        backgroundColor: '#377172',
+        marginTop: -responsiveHeight(1)
     },
     innerPageheaderView: {
         flexDirection: 'row',

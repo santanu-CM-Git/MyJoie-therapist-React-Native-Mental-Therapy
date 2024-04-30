@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { Text, Image } from 'react-native';
+import { Text, Image, View } from 'react-native';
 
 import HomeScreen from '../screens/NoAuthScreen/HomeScreen';
 import ProfileScreen from '../screens/NoAuthScreen/ProfileScreen';
@@ -97,44 +97,50 @@ const TabNavigator = () => {
           tabBarStyle: {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
-            width: responsiveWidth(80),
+            width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            marginTop: -responsiveHeight(10),
-            borderRadius: 30,
-            marginBottom: 20,
-            borderWidth: 1,
-            borderColor: '#CACCCE'
+            //marginTop: -responsiveHeight(10),
+            //borderRadius: 30,
+            //marginBottom: 20,
+            //borderWidth: 1,
+            //borderColor: '#CACCCE'
           },
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+              {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
+              <Ionicons name="home-outline" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+            </View>
           ),
           tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: 5 }}>HOME</Text>
+            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: responsiveHeight(1) }}>HOME</Text>
           ),
         })}
       />
       <Tab.Screen
-        name="Orders"
+        name="Chat"
         component={OrderStack}
         options={({ route }) => ({
           tabBarStyle: {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
-            width: responsiveWidth(80),
+            width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            marginTop: -responsiveHeight(10),
-            borderRadius: 30,
-            marginBottom: 20,
-            borderWidth: 1,
-            borderColor: '#CACCCE'
+            //marginTop: -responsiveHeight(10),
+            //borderRadius: 30,
+            //marginBottom: 20,
+            //borderWidth: 1,
+            //borderColor: '#CACCCE'
           },
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="box-open" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
+            <FontAwesome name="box-open" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+            </View>
           ),
           tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: 5 }}>ORDERS</Text>
+            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: responsiveHeight(1) }}>Home</Text>
           ),
         })}
       />
@@ -145,14 +151,14 @@ const TabNavigator = () => {
           tabBarStyle: {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
-            width: responsiveWidth(80),
-            height: responsiveHeight(8),
+            width: responsiveWidth(100),
+            height: responsiveHeight(9),
             alignSelf: 'center',
-            marginTop: -responsiveHeight(10),
-            borderRadius: 30,
-            marginBottom: 20,
-            borderWidth: 1,
-            borderColor: '#CACCCE'
+            //marginTop: -responsiveHeight(10),
+            //borderRadius: 30,
+            //marginBottom: 20,
+            //borderWidth: 1,
+            //borderColor: '#CACCCE'
           },
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="user" color={color} size={size} />
@@ -166,17 +172,23 @@ const TabNavigator = () => {
   );
 };
 
+// const getTabBarVisibility = route => {
+//    console.log(route);
+//   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Feed';
+//   console.log(routeName);
+
+
+//   if (routeName == 'Chat') {
+//     return 'none';
+//   } else {
+//     return 'flex';
+//   }
+
+// };
 const getTabBarVisibility = route => {
-  // console.log(route);
-  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Feed';
-  console.log(routeName);
-
-  if (routeName == 'ChatScreen') {
-    return 'none';
-  } else {
-    return 'flex';
-  }
-
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
+  console.log(routeName)
+  return routeName === 'ChatScreen' ? 'none' : 'flex';
 };
 
 export default TabNavigator;

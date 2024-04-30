@@ -48,10 +48,10 @@ function App() {
 
   useEffect(() => {
     // Your existing useEffect code
-    if (Platform.OS == 'android') {
-      requestLocationPermission();
-      // Your existing code continues...
-    }
+    // if (Platform.OS == 'android') {
+    //   requestLocationPermission();
+    //   // Your existing code continues...
+    // }
   }, []);
 
 
@@ -96,7 +96,7 @@ function App() {
 
   return (
     <Provider store={store}>
-      <StatusBar backgroundColor="#339999" />
+      <StatusBar backgroundColor="#000" />
       <OfflineNotice />
       <AuthProvider>
         <AppNav />

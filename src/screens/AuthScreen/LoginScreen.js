@@ -145,15 +145,15 @@ const LoginScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor="transparent" />
       <KeyboardAwareScrollView>
         <View style={styles.bannaerContainer}>
-          <Image
+          {/* <Image
             source={require('../../assets/images/Rectangle6.png')}
             style={styles.bannerBg}
-          />
+          /> */}
           <LinearGradient colors={["rgba(0, 67, 206, 0) 0%", "#339999"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.textWrap}>
-            <View style={styles.textWrap}>
+            {/* <View style={styles.textWrap}>
               <Text style={styles.bannerText}>Be a Kaya Driver</Text>
               <Text style={styles.bannerSubText} numberOfLines={4}>Freedom to earn at your time</Text>
-            </View>
+            </View> */}
           </LinearGradient>
         </View>
 

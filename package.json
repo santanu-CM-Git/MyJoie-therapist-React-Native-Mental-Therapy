@@ -51,6 +51,7 @@
     "react-native-get-location": "^4.0.1",
     "react-native-gifted-chat": "^2.4.0",
     "react-native-google-maps-directions": "^2.1.1",
+    "react-native-highlight-words": "^1.0.1",
     "react-native-image-crop-picker": "^0.40.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.8.3",
