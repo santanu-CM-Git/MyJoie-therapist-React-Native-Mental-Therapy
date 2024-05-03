@@ -1,60 +1,62 @@
 import React from 'react'
-import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity,Image } from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Logo from '../..//assets/images/misc/logo.svg';
+import LinearGradient from 'react-native-linear-gradient';
+import CustomButton from '../../components/CustomButton';
+import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 
-const OnboardingScreen = ({navigation}) => {
+const OnboardingScreen = ({ navigation }) => {
   return (
-    <SafeAreaView
+
+    <LinearGradient
+      colors={['#ECFCFA', '#FFF', '#FFF']} // Change these colors as needed
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
       style={{
-        flex: 1,
-        justifyContent: 'center',
+        flex: 1, justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
-      }}>
-      <View style={{marginTop: 20}}>
-        <Text
-          style={{
-            fontFamily: 'Outfit-Medium',
-            fontWeight: 'bold',
-            fontSize: 30,
-            color: '#20315f',
-          }}>
-          AdLife
-        </Text>
-      </View>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Logo
-          width={300}
-          height={300}
-          //style={{transform: [{rotate: '-15deg'}]}}
-        />
-      </View>
-      <TouchableOpacity
+      }}
+    >
+      <SafeAreaView
         style={{
-          backgroundColor: '#0FC257',
-          padding: 20,
-          width: '90%',
-          borderRadius: 10,
-          marginBottom: 50,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
-        onPress={() => navigation.navigate('Login')}>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 18,
-            textAlign: 'center',
-            fontWeight: 'bold',
-            fontFamily: 'Outfit-MediumItalic',
-          }}>
-          Let's Begin
-        </Text>
-        <MaterialIcons name="arrow-forward-ios" size={22} color="#fff" />
-      </TouchableOpacity>
-    </SafeAreaView>
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <View style={{ marginTop: 1 }}>
+        <Image
+            source={require('../../assets/images/icon.png')}
+            style={{height: responsiveHeight(5),width: responsiveWidth(80),resizeMode:'contain'}}
+          />
+        </View>
+        <View style={{ flex: 0.7, justifyContent: 'center', alignItems: 'center' }}>
+          <Logo
+            width={300}
+            height={200}
+          //style={{transform: [{rotate: '-15deg'}]}}
+          />
+        </View>
+        <View style={{paddingHorizontal:20, marginBottom: responsiveHeight(2)}}>
+          <Text style={{ color: '#444343', alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2.5),textAlign:'center',marginBottom:10 }}>Journey to Mental Well-being Begins</Text>
+          <Text style={{ color: '#746868', alignSelf: 'center', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5),textAlign:'center' }}>Enter the details below so we can get to know and serve you better</Text>
+        </View>
+        <View style={{ width: responsiveWidth(90) }}>
+          <CustomButton label={"Sign In"}
+            onPress={() => navigation.navigate('Login')}
+          //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
+          />
+        </View>
+        <View style={{ width: responsiveWidth(90) }}>
+          <CustomButton label={"Register (New Therapist)"}
+            buttonColor={'red'}
+            onPress={() => navigation.navigate('Thankyou')}
+          //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
+          />
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 

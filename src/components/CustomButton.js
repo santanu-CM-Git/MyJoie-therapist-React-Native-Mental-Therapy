@@ -19,7 +19,9 @@ export default function CustomButton({ label, onPress, buttonIcon, buttonColor }
 
 const styles = StyleSheet.create({
   buttonView: {
-    backgroundColor: '#339999',
+    backgroundColor: '#ECFCFA',
+    borderColor: '#87ADA8',
+    borderWidth: 1,
     padding: 20,
     borderRadius: 8,
     marginBottom: 20,
@@ -28,7 +30,7 @@ const styles = StyleSheet.create({
   },
   buttonViewRed: {
     backgroundColor: '#FFF',
-    borderColor: '#EB0000',
+    borderColor: '#E3E3E3',
     borderWidth: 1,
     padding: 20,
     borderRadius: 8,
@@ -45,18 +47,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   buttonText: {
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-Bold',
     textAlign: 'center',
     fontWeight: '400',
     fontSize: 16,
-    color: '#FFFFFF',
+    color: '#2D2D2D',
   },
   buttonTextRed: {
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-Bold',
     textAlign: 'center',
     fontWeight: '400',
     fontSize: 16,
-    color: '#EB0000',
+    color: '#2D2D2D',
   },
   iconImage: {
     width: 23,

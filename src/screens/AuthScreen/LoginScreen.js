@@ -145,33 +145,24 @@ const LoginScreen = ({ navigation }) => {
       <StatusBar translucent backgroundColor="transparent" />
       <KeyboardAwareScrollView>
         <View style={styles.bannaerContainer}>
-          {/* <Image
+          <Image
             source={require('../../assets/images/Rectangle6.png')}
             style={styles.bannerBg}
-          /> */}
-          <LinearGradient colors={["rgba(0, 67, 206, 0) 0%", "#339999"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.textWrap}>
-            {/* <View style={styles.textWrap}>
-              <Text style={styles.bannerText}>Be a Kaya Driver</Text>
-              <Text style={styles.bannerSubText} numberOfLines={4}>Freedom to earn at your time</Text>
-            </View> */}
-          </LinearGradient>
+          />
+
         </View>
 
         <View style={styles.wrapper}>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text
               style={styles.header}>
               Enter your mobile number
             </Text>
-            <Text style={{ color: 'red', marginBottom: responsiveHeight(2), fontFamily: 'Outfit-Medium', }}> *(Required)</Text>
-          </View>
-          <View style={styles.textinputview}>
-            {/* <InputField
-            value={'  +91'}
-            inputType={'code'}
-            keyboardType="numeric"
-          /> */}
+            <Text style={{ color: 'red', marginBottom: responsiveHeight(2), fontFamily: 'DMSans-SemiBold', }}> *(Required)</Text>
+          </View> */}
+          {/* <View style={styles.textinputview}>
+           
             <View style={styles.countryModal}>
               <TouchableOpacity
                 onPress={() => setShow(true)}
@@ -205,30 +196,52 @@ const LoginScreen = ({ navigation }) => {
               onChangeText={(text) => onChangeText(text)}
               helperText={mobileError}
             />
+          </View> */}
+          <View style={{ marginBottom: responsiveHeight(1) }}>
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Welcome Back</Text>
+            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Enter your Email ID & Password to continue with your account.<Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5) }}> Create Account</Text></Text>
           </View>
           <Text
             style={styles.header}>
-            Enter your email id
+            Email Id
           </Text>
           <View style={styles.textinputview}>
             <InputField
-              label={'e.g. abc@gmail.com'}
+              label={'Email Id'}
               keyboardType="default"
               inputType="name"
               value={email}
               onChangeText={(text) => onChangeEmail(text)}
-              //helperText={mobileError}
+            //helperText={mobileError}
             />
           </View>
-
+          <Text
+            style={styles.header}>
+            Password
+          </Text>
+          <View style={styles.textinputview}>
+            <InputField
+              label={'Password'}
+              keyboardType="default"
+              inputType="name"
+              value={email}
+              onChangeText={(text) => onChangeEmail(text)}
+            //helperText={mobileError}
+            />
+          </View>
+          <View style={{ marginBottom: responsiveHeight(0) }}>
+        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5) }}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
+      </View>
         </View>
       </KeyboardAwareScrollView>
+     
       <View style={styles.buttonwrapper}>
         <CustomButton label={"Send OTP"}
           onPress={() => handleSubmit()}
         //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
         />
       </View>
+      <Text style={{color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5),alignSelf:'center',marginBottom: responsiveHeight(2)}}>Forgot Password</Text>
     </SafeAreaView>
   );
 };
@@ -240,11 +253,18 @@ const styles = StyleSheet.create({
     flex: 1
   },
   wrapper: {
-    paddingHorizontal: 25,
-    marginTop: responsiveHeight(5)
+    paddingHorizontal: 20,
+    marginTop: -responsiveHeight(5),
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    //height: responsiveHeight(50),
+    paddingTop: responsiveHeight(5),
+    //position:'absolute',
+    bottom: 0
   },
   header: {
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-SemiBold',
     fontSize: responsiveFontSize(2),
     color: '#2F2F2F',
     marginBottom: responsiveHeight(2),
@@ -275,13 +295,13 @@ const styles = StyleSheet.create({
   },
   bannaerContainer: {
     width: responsiveWidth(100),
-    height: responsiveHeight(50),
+    height: responsiveHeight(40),
     backgroundColor: '#fff',
   },
   bannerBg: {
     flex: 1,
-    position: 'absolute',
-    right: 0,
+    //position: 'absolute',
+    //right: 0,
     // bottom: 20,
     height: '100%',
     width: '100%',
