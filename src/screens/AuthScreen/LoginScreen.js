@@ -236,7 +236,7 @@ const LoginScreen = ({ navigation }) => {
       </KeyboardAwareScrollView>
      
       <View style={styles.buttonwrapper}>
-        <CustomButton label={"Send OTP"}
+        <CustomButton label={"Sign In"}
           onPress={() => handleSubmit()}
         //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
         />

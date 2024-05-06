@@ -10,11 +10,12 @@ import {
     FlatList,
     StyleSheet,
     Image,
+    Switch,
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { hambargar, userPhoto } from '../utils/Images';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions';
+import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
 import { API_URL } from '@env'
@@ -31,6 +32,8 @@ export default function CustomHeader({
     // console.log(userInfo?.photo)
     const navigation = useNavigation();
     const [userInfo, setuserInfo] = useState([])
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const fetchProfileDetails = () => {
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.get(`${API_URL}/api/driver/me`, {
@@ -63,11 +66,11 @@ export default function CustomHeader({
             {commingFrom == 'Home' ?
                 <>
                     <LinearGradient
-                        colors={['#377172', '#377172']} // Example colors, replace with your desired gradient
+                        colors={['#fff', '#fff']} // Example colors, replace with your desired gradient
                         style={styles.headerView}
                     >
                         <View style={styles.firstSection}>
-                            <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                            <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{ width: 44, height: 44, borderRadius: 44 / 2, borderColor: '#8C8C8C', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 {/* {userInfo?.photo ?
                                     <Image
                                         source={{ uri: userInfo?.photo }}
@@ -79,19 +82,12 @@ export default function CustomHeader({
                                 />
                                 {/* } */}
                             </TouchableOpacity>
-                            {/* <View>
-                                {userInfo ?
-                                    <Text style={styles.firstText}>
-                                        Hi, {userInfo?.name}
-                                    </Text> :
-                                    <ActivityIndicator size="small" color="#339999" />
-                                }
-                                <Text style={styles.secondText}>
-                                    Delivery Partner
-                                </Text>
-                            </View> */}
+                            <Image
+                                source={require('../assets/images/icon.png')}
+                                style={{ height: responsiveHeight(5), width: responsiveWidth(35), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
+                            />
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
+                        {/* <View style={{ flexDirection: 'row' }}>
                             <TouchableOpacity onPress={onPress}>
                                 <Ionicons name="search-outline" size={28} color="#F4F4F4" />
                             </TouchableOpacity>
@@ -101,9 +97,20 @@ export default function CustomHeader({
                                     <Text style={styles.notificationdot}>{'\u2B24'}</Text>
                                 </View>
                             </TouchableOpacity>
+                        </View> */}
+                        <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
+                            <Text style={{ fontSize: 15, fontFamily: 'DMSans-SemiBold',marginRight: responsiveWidth(2) }}>Current Availability</Text>
+                            <Switch
+                                trackColor={{ false: '#767577', true: '#000' }}
+                                thumbColor={isEnabled ? '#fff' : '#000'}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={toggleSwitch}
+                                value={isEnabled}
+                                style={styles.switchStyle}
+                            />
                         </View>
                     </LinearGradient>
-                    {/* <View style={styles.headerBottomMargin} /> */}
+                    <View style={styles.headerBottomMargin} />
                 </>
                 : commingFrom == 'chat' ?
                     <>
@@ -141,7 +148,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#377172',
-        marginTop: -responsiveHeight(1)
+        marginTop: -responsiveHeight(1),
+        paddingRight: responsiveWidth(10)
     },
     innerPageheaderView: {
         flexDirection: 'row',
@@ -171,9 +179,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     headerImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25
+        width: 35,
+        height: 35,
     },
     firstText: {
         fontSize: responsiveFontSize(2),
@@ -197,8 +204,9 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     headerBottomMargin: {
-        borderBottomColor: '#808080',
+        borderBottomColor: '#FFFFFF',
         borderBottomWidth: StyleSheet.hairlineWidth,
+        elevation:2
     },
     imageStyle: {
         height: 40,
@@ -206,4 +214,7 @@ const styles = StyleSheet.create({
         borderRadius: 40 / 2,
         marginLeft: 5
     },
+    switchStyle: {
+        transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }]  // Adjust scale values as needed
+      }
 })

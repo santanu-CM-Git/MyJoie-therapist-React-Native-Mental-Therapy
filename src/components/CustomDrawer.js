@@ -54,8 +54,8 @@ const CustomDrawer = props => {
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView
         {...props}
-        contentContainerStyle={{ backgroundColor: '#EEFFFF' }}>
-        <View style={{ backgroundColor: '#EEFFFF', padding: 20, height: responsiveHeight(20), alignSelf: 'center', justifyContent: 'center' }}>
+        contentContainerStyle={{ backgroundColor: '#FFF' }}>
+        <View style={{ backgroundColor: '#FFF', padding: 20, height: responsiveHeight(20), alignSelf: 'center', justifyContent: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {userInfo?.profilePic ?
               <Image
@@ -76,7 +76,7 @@ const CustomDrawer = props => {
                   fontFamily: 'Outfit-Medium',
                   marginBottom: 5,
                 }}>
-                {userInfo.name}
+                {userInfo.name}Jennifer Kourtney
               </Text>
               <Text
                 style={{
@@ -84,7 +84,7 @@ const CustomDrawer = props => {
                   fontFamily: 'Roboto-Regular',
                   marginRight: 5,
                 }}>
-                Delivery Partner
+                Update Profile
               </Text>
             </View>
           </View>
@@ -123,9 +123,9 @@ const CustomDrawer = props => {
             <Text
               style={{
                 fontSize: 15,
-                fontFamily: 'Outfit-Medium',
+                fontFamily: 'DMSans-Medium',
                 marginLeft: 5,
-                color: '#2F2F2F'
+                color: '#2D2D2D'
               }}>
               Sign Out
             </Text>

@@ -51,7 +51,7 @@ const OnboardingScreen = ({ navigation }) => {
         <View style={{ width: responsiveWidth(90) }}>
           <CustomButton label={"Register (New Therapist)"}
             buttonColor={'red'}
-            onPress={() => navigation.navigate('Thankyou')}
+            onPress={() => navigation.navigate('PersonalInformation')}
           //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
           />
         </View>

@@ -12,12 +12,15 @@ import OrderScreen from '../screens/NoAuthScreen/OrderScreen';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 
 import TermsScreen from '../screens/NoAuthScreen/TermsScreen';
 import OrderSummary from '../screens/NoAuthScreen/OrderSummary';
 import ChatScreen from '../screens/NoAuthScreen/ChatScreen';
+import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
+import ScheduleScreen from '../screens/NoAuthScreen/ScheduleScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -45,12 +48,25 @@ const HomeStack = () => {
   );
 };
 
-const OrderStack = () => {
+const EarningStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="ChatScreen"
-        component={ChatScreen}
+        name="EarningScreen"
+        component={EarningScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  )
+
+};
+
+const ScheduleStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ScheduleScreen"
+        component={ScheduleScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -85,7 +101,7 @@ const TabNavigator = () => {
         headerShown: false,
         tabBarShowLabel: true,
         tabBarInactiveTintColor: '#CACCCE',
-        tabBarActiveTintColor: '#339999',
+        tabBarActiveTintColor: '#444343',
         tabBarStyle: {
           height: 100,
         },
@@ -118,8 +134,8 @@ const TabNavigator = () => {
         })}
       />
       <Tab.Screen
-        name="Chat"
-        component={OrderStack}
+        name="Earning"
+        component={EarningStack}
         options={({ route }) => ({
           tabBarStyle: {
             display: getTabBarVisibility(route),
@@ -136,11 +152,38 @@ const TabNavigator = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', }}>
             {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
-            <FontAwesome name="box-open" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+            <FontAwesome name="rupee-sign" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: responsiveHeight(1) }}>Home</Text>
+            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: responsiveHeight(1) }}>Earning</Text>
+          ),
+        })}
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={ScheduleStack}
+        options={({ route }) => ({
+          tabBarStyle: {
+            display: getTabBarVisibility(route),
+            backgroundColor: '#FFFFFF',
+            width: responsiveWidth(100),
+            height: responsiveHeight(8),
+            alignSelf: 'center',
+            //marginTop: -responsiveHeight(10),
+            //borderRadius: 30,
+            //marginBottom: 20,
+            //borderWidth: 1,
+            //borderColor: '#CACCCE'
+          },
+          tabBarIcon: ({ color, size, focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
+            <AntDesign name="calendar" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+            </View>
+          ),
+          tabBarLabel: ({ color, focused }) => (
+            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: responsiveHeight(1) }}>Schedule</Text>
           ),
         })}
       />
@@ -164,7 +207,7 @@ const TabNavigator = () => {
             <FontAwesome name="user" color={color} size={size} />
           ),
           tabBarLabel: ({ color, focused }) => (
-            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: 5 }}>PROFILE</Text>
+            <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: 5 }}>Profile</Text>
           ),
         })}
       />

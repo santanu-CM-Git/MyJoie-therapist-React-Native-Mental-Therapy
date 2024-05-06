@@ -22,12 +22,12 @@ const AuthStack = () => {
       drawerContent={props => <CustomDrawer {...props} />}
       screenOptions={{
         headerShown: false,
-        drawerActiveBackgroundColor: '#EEFFFF',
-        drawerActiveTintColor: '#333',
+        drawerActiveBackgroundColor: '#ECFCFA',
+        drawerActiveTintColor: '#2D2D2D',
         drawerInactiveTintColor: '#949494',
         drawerLabelStyle: {
           marginLeft: -25,
-          fontFamily: 'Outfit-Medium',
+          fontFamily: 'DMSans-Medium',
           fontSize: 15,
         },
         //swipeEdgeWidth: 0, //for off the drawer swipe
