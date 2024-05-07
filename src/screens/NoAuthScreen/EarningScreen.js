@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     wrapper: {
-        padding: 20,
+        padding: 15,
         //marginBottom: responsiveHeight(1)
     },
     dropdown: {

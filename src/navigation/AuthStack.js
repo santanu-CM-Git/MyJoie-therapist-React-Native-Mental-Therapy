@@ -5,6 +5,9 @@ import OnboardingScreen from '../screens/AuthScreen/OnboardingScreen';
 import LoginScreen from '../screens/AuthScreen/LoginScreen';
 import ThankYouScreen from '../screens/AuthScreen/ThankYouScreen';
 import PersonalInformation from '../screens/AuthScreen/PersonalInformation';
+import ForgotPassword from '../screens/AuthScreen/ForgotPassword';
+import OtpScreen from '../screens/AuthScreen/OtpScreen';
+import PasswordChange from '../screens/AuthScreen/PasswordChange';
 
 
 const Stack = createNativeStackNavigator();
@@ -14,6 +17,9 @@ const AuthStack = () => {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="Otp" component={OtpScreen} />
+      <Stack.Screen name="PasswordChange" component={PasswordChange} />
       <Stack.Screen name="PersonalInformation" component={PersonalInformation} />
       <Stack.Screen name="Thankyou" component={ThankYouScreen} />
     </Stack.Navigator>

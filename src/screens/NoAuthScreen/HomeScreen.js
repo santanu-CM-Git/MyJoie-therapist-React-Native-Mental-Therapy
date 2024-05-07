@@ -186,12 +186,12 @@ export default function HomeScreen({ navigation }) {
       <CustomHeader commingFrom={'Home'} onPress={() => navigation.navigate('Notification')} onPressProfile={() => navigation.navigate('Profile')} />
       <ScrollView>
         <View style={{ marginBottom: 10 }}>
-          <View style={{ height: responsiveHeight(15), width: '90%', backgroundColor: '#F4F5F5', marginHorizontal: 20, padding: 20, borderRadius: 20, marginTop: responsiveHeight(2) }}>
+          <View style={{ height: responsiveHeight(15), width: '92%', backgroundColor: '#F4F5F5', marginHorizontal: 15, padding: 20, borderRadius: 20, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#746868', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Medium', marginBottom: responsiveHeight(2) }}>Earned this month</Text>
             <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(3), fontFamily: 'DMSans-Bold', }}>₹ 5,00,000</Text>
           </View>
           <Text style={{ marginHorizontal: 20, marginTop: responsiveHeight(2), color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Upcoming Appointment</Text>
-          <View style={{ height: responsiveHeight(20), width: '90%', backgroundColor: '#FFF', marginHorizontal: 20, padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
+          <View style={{ height: responsiveHeight(20), width: '92%', backgroundColor: '#FFF', marginHorizontal: 15, padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
               <Image
@@ -239,7 +239,7 @@ export default function HomeScreen({ navigation }) {
               </View>
             </View>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 20, marginTop: responsiveHeight(2) }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
             <Image
               source={dateIcon}
@@ -247,27 +247,26 @@ export default function HomeScreen({ navigation }) {
             />
           </View>
 
-          <View style={{ width: '90%', backgroundColor: '#FFF', marginHorizontal: 20, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
+          <View style={{ width: '92%', backgroundColor: '#FFF', marginHorizontal: 15, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
             <View style={{ flexDirection: 'row', height: responsiveHeight(7), backgroundColor: '#DEDEDE', borderTopRightRadius: 10, borderTopLeftRadius: 10, alignItems: 'center', }}>
               <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), fontWeight: 'bold', textAlign: 'center', marginLeft: responsiveWidth(2) }}>Today (02-05-2024)</Text>
             </View>
             <>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,marginTop: 5 }}>
                 <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
                 <Image
                   source={ArrowGratter}
-                  style={{ height: 25, width: 25, resizeMode: 'contain' }}
+                  style={{ height: 20, width: 20, resizeMode: 'contain' }}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Patient</Text>
-                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,}}>
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
+                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15,marginLeft: responsiveWidth(2) }}>
                   <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
                 </View>
+                </View>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
               </View>
               <View
                 style={{
@@ -280,22 +279,21 @@ export default function HomeScreen({ navigation }) {
               />
             </>
             <>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Paid</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Sudipta Ghosh</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,marginTop: 5 }}>
+                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
                 <Image
                   source={ArrowGratter}
-                  style={{ height: 25, width: 25, resizeMode: 'contain' }}
+                  style={{ height: 20, width: 20, resizeMode: 'contain' }}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Patient</Text>
-                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15 }}>
-                  <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>Repeat</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,}}>
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
+                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15,marginLeft: responsiveWidth(2) }}>
+                  <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
                 </View>
+                </View>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
               </View>
               <View
                 style={{
@@ -308,27 +306,26 @@ export default function HomeScreen({ navigation }) {
               />
             </>
           </View>
-          <View style={{ width: '90%', backgroundColor: '#FFF', marginHorizontal: 20, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
+          <View style={{ width: '92%', backgroundColor: '#FFF', marginHorizontal: 15, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
             <View style={{ flexDirection: 'row', height: responsiveHeight(7), backgroundColor: '#DEDEDE', borderTopRightRadius: 10, borderTopLeftRadius: 10, alignItems: 'center', }}>
               <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), fontWeight: 'bold', textAlign: 'center', marginLeft: responsiveWidth(2) }}>03-05-2024</Text>
             </View>
             <>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,marginTop: 5 }}>
                 <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
                 <Image
                   source={ArrowGratter}
-                  style={{ height: 25, width: 25, resizeMode: 'contain' }}
+                  style={{ height: 20, width: 20, resizeMode: 'contain' }}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Patient</Text>
-                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,}}>
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
+                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15,marginLeft: responsiveWidth(2) }}>
                   <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
                 </View>
+                </View>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
               </View>
               <View
                 style={{
@@ -341,22 +338,21 @@ export default function HomeScreen({ navigation }) {
               />
             </>
             <>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Paid</Text>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Sudipta Ghosh</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,marginTop: 5 }}>
+                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
                 <Image
                   source={ArrowGratter}
-                  style={{ height: 25, width: 25, resizeMode: 'contain' }}
+                  style={{ height: 20, width: 20, resizeMode: 'contain' }}
                 />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5 }}>
-                <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Patient</Text>
-                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15 }}>
-                  <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>Repeat</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5,}}>
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
+                <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15,marginLeft: responsiveWidth(2) }}>
+                  <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
                 </View>
+                </View>
+                <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
               </View>
               <View
                 style={{

@@ -25,23 +25,17 @@ const OnboardingScreen = ({ navigation }) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <View style={{ marginTop: 1 }}>
+        <View style={{ marginTop: 1,marginBottom: responsiveHeight(5) }}>
         <Image
             source={require('../../assets/images/icon.png')}
             style={{height: responsiveHeight(5),width: responsiveWidth(80),resizeMode:'contain'}}
           />
         </View>
-        <View style={{ flex: 0.7, justifyContent: 'center', alignItems: 'center' }}>
-          <Logo
-            width={300}
-            height={200}
-          //style={{transform: [{rotate: '-15deg'}]}}
-          />
-        </View>
-        <View style={{paddingHorizontal:20, marginBottom: responsiveHeight(2)}}>
+       
+        {/* <View style={{paddingHorizontal:20, marginBottom: responsiveHeight(2)}}>
           <Text style={{ color: '#444343', alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2.5),textAlign:'center',marginBottom:10 }}>Journey to Mental Well-being Begins</Text>
           <Text style={{ color: '#746868', alignSelf: 'center', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5),textAlign:'center' }}>Enter the details below so we can get to know and serve you better</Text>
-        </View>
+        </View> */}
         <View style={{ width: responsiveWidth(90) }}>
           <CustomButton label={"Sign In"}
             onPress={() => navigation.navigate('Login')}

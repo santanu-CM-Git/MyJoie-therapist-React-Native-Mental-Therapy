@@ -66,7 +66,7 @@ export default function InputField({
         />
       ): inputType == 'others' ? (
         <TextInput
-          style={styles.noneditinput}
+          style={styles.editinput}
           onChangeText={onChangeText}
           value={value}
           placeholder={label}
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 6,
     color: '#808080',
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-Medium',
     fontSize: responsiveFontSize(2),
     height: responsiveHeight(8),
     width: responsiveWidth(15),
@@ -131,19 +131,19 @@ const styles = StyleSheet.create({
   },
   input: {
     color: '#808080',
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-Medium',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: responsiveHeight(1)
   },
   label: {
     color: "#808080",
-    fontFamily: 'Outfit-Medium',
+    fontFamily: 'DMSans-Medium',
     fontSize: responsiveFontSize(2),
   },
   inputAddress: {
     color: '#808080',
-    fontFamily: 'Outfit-Regular',
+    fontFamily: 'DMSans-Regular',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: responsiveHeight(1),
@@ -157,7 +157,21 @@ const styles = StyleSheet.create({
   },
   noneditinput:{
     color: '#808080',
-    fontFamily: 'Outfit-Regular',
+    fontFamily: 'DMSans-Regular',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: responsiveHeight(1),
+    paddingLeft: responsiveHeight(1),
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
+    borderRadius: 8,
+    width: responsiveWidth(88),
+    height: responsiveHeight(7),
+    backgroundColor:'#F4F5F5'
+  },
+  editinput:{
+    color: '#808080',
+    fontFamily: 'DMSans-Regular',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: responsiveHeight(1),

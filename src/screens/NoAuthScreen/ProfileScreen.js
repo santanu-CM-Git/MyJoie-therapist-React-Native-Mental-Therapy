@@ -1,64 +1,219 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, TouchableOpacity } from 'react-native'
-import CheckBox from '@react-native-community/checkbox'
-import CustomHeader from '../../components/CustomHeader'
-import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
-import { TextInput, LongPressGestureHandler, State } from 'react-native-gesture-handler'
-import { dollerImg, starImg, userPhoto, contactImg, bankDetailsImg, documentImg, reviewImg, deleteImg } from '../../utils/Images'
-import CustomButton from '../../components/CustomButton'
+import React, { useContext, useState, useRef } from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  KeyboardAvoidingView
+} from 'react-native';
+import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import DocumentPicker from 'react-native-document-picker';
+import InputField from '../../components/InputField';
+import CustomButton from '../../components/CustomButton';
+import { plus, uploadImg, uploadPicImg, userPhoto } from '../../utils/Images';
 import { AuthContext } from '../../context/AuthContext';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Modal from "react-native-modal";
-import Icon from 'react-native-vector-icons/Entypo';
+import Loader from '../../utils/Loader';
 import axios from 'axios';
 import { API_URL } from '@env'
-import Loader from '../../utils/Loader'
-import { useFocusEffect } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import CustomHeader from '../../components/CustomHeader';
+import MultiSelect from 'react-native-multiple-select';
+import { Dropdown } from 'react-native-element-dropdown';
+import Modal from "react-native-modal";
+import Icon from 'react-native-vector-icons/Entypo';
+const items = [
+  { id: '92iijs7yta', name: 'Ondo' },
+  { id: 'a0s0a8ssbsd', name: 'Ogun' },
+  { id: '16hbajsabsd', name: 'Calabar' },
+  { id: 'nahs75a5sg', name: 'Lagos' },
+  { id: '667atsas', name: 'Maiduguri' },
+  { id: 'hsyasajs', name: 'Anambra' },
+  { id: 'djsjudksjd', name: 'Benue' },
+  { id: 'sdhyaysdj', name: 'Kaduna' },
+  { id: 'suudydjsjd', name: 'Abuja' }
+];
+const data = [
+  { label: 'Absa Bank Ghana Limited', value: 'Absa Bank Ghana Limited' },
+  { label: 'Access Bank (Ghana) Plc', value: 'Access Bank (Ghana) Plc' },
+  { label: 'Agricultural Development Bank Plc', value: 'Agricultural Development Bank Plc' },
+];
+const dataYear = [
+  { label: '01', value: '01' },
+  { label: '02', value: '02' },
+  { label: '03', value: '03' },
+];
+const dataMonth = [
+  { label: '01', value: '01' },
+  { label: '02', value: '02' },
+  { label: '03', value: '03' },
+];
 
-const ProfileScreen = ({ navigation }) => {
-  const { logout } = useContext(AuthContext);
-  const [userInfo, setuserInfo] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+const ProfileScreen = ({ navigation, route }) => {
+  const concatNo = route?.params?.countrycode + '-' + route?.params?.phoneno;
+  const [phoneno, setPhoneno] = useState('');
+  const [firstname, setFirstname] = useState('Jennifer Kourtney');
+  const [firstNameError, setFirstNameError] = useState('')
+  const [lastname, setLastname] = useState('');
+  const [lastNameError, setLastNameError] = useState('')
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('')
+  const [Password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('')
+  const [city, setCity] = useState('');
+  const [cityError, setCityError] = useState('')
+  const [postaddress, setPostaddress] = useState('');
+  const [postaddressError, setPostaddressError] = useState('')
+  const [pickedDrivingLicenseFront, setPickedDrivingLicenseFront] = useState(null);
+  const [DrivingLicenseFrontError, setDrivingLicenseFrontError] = useState('')
+  const [pickedDrivingLicenseBack, setPickedDrivingLicenseback] = useState(null);
+  const [DrivingLicenseBackError, setDrivingLicenseBackError] = useState('')
+
   const [isModalVisible, setModalVisible] = useState(false);
-  const [totalRating, setTotalRating] = useState(0)
-  const [totalEarning, setTotalEarning] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const { login, userToken } = useContext(AuthContext);
 
+  const [selectedItems, setSelectedItems] = useState([]);
+  const multiSelectRef = useRef(null);
+  const [statevalue, setStateValue] = useState(null);
+  const [isStateFocus, setStateIsFocus] = useState(false);
+
+  const [yearvalue, setYearValue] = useState(null);
+  const [isYearFocus, setYearIsFocus] = useState(false);
+
+  const [monthvalue, setMonthValue] = useState(null);
+  const [isMonthFocus, setMonthIsFocus] = useState(false);
+
+  const onSelectedItemsChange = selectedItems => {
+    setSelectedItems(selectedItems);
+  };
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const fetchProfileDetails = () => {
-    AsyncStorage.getItem('userToken', (err, usertoken) => {
-      axios.get(`${API_URL}/api/driver/driver-profile`, {
-        headers: {
-          "Authorization": 'Bearer ' + usertoken,
-          "Content-Type": 'application/json'
-        },
-      })
-        .then(res => {
-          let userInfo = res.data.response.records.data;
-          console.log(JSON.stringify(userInfo), 'user details from profile page')
-          setuserInfo(userInfo)
-          setTotalRating(res.data.response.records.total_rating)
-          console.log(res.data.response.records.total_rating);
-          setTotalEarning(res.data.response.records.totalEarn)
-          setIsLoading(false);
-        })
-        .catch(e => {
-          console.log(`Profile error ${e}`)
-        });
-    });
+
+
+  const changeFirstname = (text) => {
+    setFirstname(text)
+    if (text) {
+      setFirstNameError('')
+    } else {
+      setFirstNameError('Please enter First name')
+    }
   }
 
-  useEffect(() => {
-    fetchProfileDetails()
-  }, [])
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchProfileDetails()
-    }, [])
-  )
+  const changeLastname = (text) => {
+    setLastname(text)
+    if (text) {
+      setLastNameError('')
+    } else {
+      setLastNameError('Please enter Last name')
+    }
+  }
+
+  const changePassword = (text) => {
+    setPassword(text)
+    if (text) {
+      setPasswordError('')
+    } else {
+      setPasswordError('Please enter Address')
+    }
+  }
+  const changeCity = (text) => {
+    setCity(text)
+    if (text) {
+      setCityError('')
+    } else {
+      setCityError('Please enter City')
+    }
+  }
+  const changePostAddress = (text) => {
+    setPostaddress(text)
+    // if (text) {
+    //   setPostaddressError('')
+    // } else {
+    //   setPostaddressError('Please enter Ghana Post Address')
+    // }
+  }
+
+  // const submitForm = () => {
+  //   //navigation.navigate('DocumentsUpload')
+  //   if (!firstname) {
+  //     setFirstNameError('Please enter First name')
+  //   }else if(!lastname){
+  //     setLastNameError('Please enter Last name')
+  //   }else if(!address){
+  //     setAddressError('Please enter Address')
+  //   }else if(!city){
+  //     setCityError('Please enter City')
+  //   } else {
+  //     setIsLoading(true)
+  //     var option = {}
+  //     if(email){
+  //       var option = {
+  //         "firstName": firstname,
+  //         "lastName": lastname,
+  //         "email": email,
+  //         "address": address,
+  //         "zipcode": postaddress,
+  //         "city" : city
+  //       }
+  //     }else{
+  //       var option = {
+  //         "firstName": firstname,
+  //         "lastName": lastname,
+  //         "address": address,
+  //         "zipcode": postaddress,
+  //         "city" : city
+  //       }
+  //     }
+
+  //     axios.post(`${API_URL}/api/driver/updateInformation`, option, {
+  //       headers: {
+  //         Accept: 'application/json',
+  //         "Authorization": 'Bearer ' + route?.params?.usertoken,
+  //       },
+  //     })
+  //       .then(res => {
+  //         console.log(res.data)
+  //         if (res.data.response.status.code === 200) {
+  //           setIsLoading(false)
+  //           navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
+  //       } else {
+  //           Alert.alert('Oops..', "Something went wrong", [
+  //               {
+  //                   text: 'Cancel',
+  //                   onPress: () => console.log('Cancel Pressed'),
+  //                   style: 'cancel',
+  //               },
+  //               { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //           ]);
+  //       }
+  //       })
+  //       .catch(e => {
+  //         setIsLoading(false)
+  //         console.log(`user update error ${e}`)
+  //         console.log(e.response.data?.response.records)
+  //         Alert.alert('Oops..', "Something went wrong", [
+  //           {
+  //               text: 'Cancel',
+  //               onPress: () => console.log('Cancel Pressed'),
+  //               style: 'cancel',
+  //           },
+  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ]);
+  //       });
+  //   }
+
+
+  // }
 
   if (isLoading) {
     return (
@@ -67,248 +222,556 @@ const ProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.Container}>
-      <CustomHeader commingFrom={'Profile'} onPress={() => navigation.goBack()} title={'Profile'} />
-      <ScrollView style={styles.wrapper}>
-        <View style={styles.mainView}>
-          {userInfo?.profilePic ?
-            <Image
-              source={{ uri: userInfo?.profilePic  + '?' + new Date() }}
-              style={styles.headerImage}
-            /> :
-            <Image
-              source={userPhoto}
-              style={styles.headerImage}
+    <SafeAreaView style={styles.container}>
+      <CustomHeader commingFrom={'My Profile'} onPress={() => navigation.goBack()} title={'My Profile'} />
+      <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: responsiveHeight(4) }}>
+        <View style={styles.wrapper}>
+          <View style={styles.textinputview}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Name</Text>
+            </View>
+            {firstNameError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{firstNameError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Name'}
+                keyboardType=" "
+                value={firstname}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changeFirstname(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Email Id</Text>
+            </View>
+            <View style={styles.inputView}>
+              <InputField
+                label={'e.g. abc@gmail.com'}
+                keyboardType=" "
+                value={email}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => setEmail(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Mobile Number</Text>
+            </View>
+            <View style={styles.inputView}>
+              <InputField
+                label={'Mobile number'}
+                keyboardType=" "
+                value={phoneno}
+                helperText={firstNameError}
+                inputType={'nonedit'}
+              //onChangeText={(text) => changeFirstname(text)}
+              />
+            </View>
+
+            {/* <Text
+              style={styles.header}>
+              Last Name
+            </Text>
+            {lastNameError?<Text style={{color:'red',fontFamily:'Outfit-Regular'}}>{lastNameError}</Text>:<></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Last Name'}
+                keyboardType=" "
+                value={lastname}
+                //helperText={'Please enter lastname'}
+                inputType={'others'}
+                onChangeText={(text) => changeLastname(text)}
+              />
+            </View> */}
+
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Date of Birth</Text>
+            </View>
+            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Date of Birth'}
+                keyboardType=" "
+                value={Password}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Gender</Text>
+            </View>
+            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Gender'}
+                keyboardType=" "
+                value={Password}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Pan Number</Text>
+            </View>
+            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Pan Number'}
+                keyboardType=" "
+                value={Password}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Aadhar No</Text>
+            </View>
+            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'Aadhar No'}
+                keyboardType=" "
+                value={Password}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Qualification</Text>
+            </View>
+            <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
+              <View style={{
+                fontFamily: 'Outfit-Regular',
+                paddingHorizontal: 5,
+                borderColor: '#E0E0E0',
+                borderWidth: 1,
+                borderRadius: 8,
+                width: responsiveWidth(88)
+              }}>
+                <MultiSelect
+                  hideTags
+                  items={items}
+                  uniqueKey="id"
+                  ref={multiSelectRef}
+                  onSelectedItemsChange={onSelectedItemsChange}
+                  selectedItems={selectedItems}
+                  selectText="Pick Qualification"
+                  searchInputPlaceholderText="Search Qualification..."
+                  onChangeInput={(text) => console.log(text)}
+                  altFontFamily="DMSans-Regular"
+                  tagRemoveIconColor="#000000"
+                  tagBorderColor="#87ADA8"
+                  tagTextColor="#2D2D2D"
+                  selectedItemTextColor="#000"
+                  selectedItemIconColor="#000"
+                  itemTextColor="#746868"
+                  displayKey="name"
+                  searchInputStyle={styles.searchInput}
+                  styleDropdownMenu={styles.dropdownMenu}
+                  styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
+                  styleMainWrapper={styles.mainWrapper}
+                  submitButtonColor="#87ADA8"
+                  submitButtonText="Submit"
+                  styleIndicator={{ marginTop: -6 }}
+                //hideSubmitButton
+                />
+              </View>
+              <View style={{ marginVertical: responsiveHeight(2) }}>
+                {multiSelectRef.current && multiSelectRef.current.getSelectedItemsExt(selectedItems)}
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>City</Text>
+            </View>
+            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            <View style={styles.inputView}>
+              <InputField
+                label={'City'}
+                keyboardType=" "
+                value={Password}
+                //helperText={'Please enter lastname'}
+                inputType={'others'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>State</Text>
+            </View>
+            <Dropdown
+              style={[styles.dropdown, isStateFocus && { borderColor: '#DDD' }]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              itemTextStyle={styles.selectedTextStyle}
+              data={data}
+              //search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isStateFocus ? 'Select item' : '...'}
+              searchPlaceholder="Search..."
+              value={statevalue}
+              onFocus={() => setStateIsFocus(true)}
+              onBlur={() => setStateIsFocus(false)}
+              onChange={item => {
+                setStateValue(item.value);
+                setStateIsFocus(false);
+              }}
             />
-          }
-          <Text style={styles.maintext}>{userInfo?.name} </Text>
-          <Text style={styles.subtext}>{userInfo?.phone}</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15, marginBottom: 10 }}>
-          <View style={styles.firstCardView}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                source={starImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Rating</Text>
+              <Text style={styles.header}>Experience</Text>
             </View>
-            <Text style={{ color: '#2F2F2F', fontFamily: 'Outfit-Bold', fontSize: responsiveFontSize(3), marginTop: 10 }}>{totalRating} Star</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Dropdown
+                style={[styles.dropdownHalf, isYearFocus && { borderColor: '#DDD' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                itemTextStyle={styles.selectedTextStyle}
+                data={dataYear}
+                //search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isYearFocus ? 'Select year' : '...'}
+                searchPlaceholder="Search..."
+                value={yearvalue}
+                onFocus={() => setYearIsFocus(true)}
+                onBlur={() => setYearIsFocus(false)}
+                onChange={item => {
+                  setYearValue(item.value);
+                  setYearIsFocus(false);
+                }}
+              />
+              <Dropdown
+                style={[styles.dropdownHalf, isMonthFocus && { borderColor: '#DDD' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                itemTextStyle={styles.selectedTextStyle}
+                data={dataMonth}
+                //search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isStateFocus ? 'Select month' : '...'}
+                searchPlaceholder="Search..."
+                value={monthvalue}
+                onFocus={() => setMonthIsFocus(true)}
+                onBlur={() => setMonthIsFocus(false)}
+                onChange={item => {
+                  setMonthValue(item.value);
+                  setMonthIsFocus(false);
+                }}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={styles.header}>Bank Account</Text>
+              <TouchableOpacity onPress={() => toggleModal()}>
+                <Text style={{ fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), color: '#444343', marginBottom: responsiveHeight(1), }}>Change</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.inputView}>
+              <InputField
+                label={'Aadhar No'}
+                keyboardType=" "
+                value={'56897 85698 78965 96636'}
+                //helperText={'Please enter lastname'}
+                inputType={'nonedit'}
+                onChangeText={(text) => changePassword(text)}
+              />
+            </View>
+            <Text
+              style={styles.header}>
+              Upload Supporting Documents
+            </Text>
+            {DrivingLicenseFrontError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{DrivingLicenseFrontError}</Text> : <></>}
+            {DrivingLicenseBackError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{DrivingLicenseBackError}</Text> : <></>}
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2) }}>
+              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
+                    <Image
+                      source={uploadImg}
+                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                    />
+                  </TouchableOpacity>
+
+                  {!pickedDrivingLicenseFront ?
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
+                    :
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
+                  }
+                </View>
+              </View>
+              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}>
+                    <Image
+                      source={uploadImg}
+                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                    />
+                  </TouchableOpacity>
+
+                  {!pickedDrivingLicenseBack ?
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
+                    :
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseBack.name}</Text>
+                  }
+                </View>
+              </View>
+
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>
+              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
+                    <Image
+                      source={uploadImg}
+                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                    />
+                  </TouchableOpacity>
+
+                  {!pickedDrivingLicenseFront ?
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
+                    :
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
+                  }
+                </View>
+              </View>
+              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}>
+                    <Image
+                      source={uploadImg}
+                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                    />
+                  </TouchableOpacity>
+
+                  {!pickedDrivingLicenseBack ?
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
+                    :
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseBack.name}</Text>
+                  }
+                </View>
+              </View>
+            </View>
+            <Text
+              style={styles.header}>
+              Upload Picture
+            </Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: responsiveHeight(2), marginTop: responsiveHeight(1) }}>
+              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
+                    <Image
+                      source={uploadPicImg}
+                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                    />
+                  </TouchableOpacity>
+
+                  {!pickedDrivingLicenseFront ?
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Photo</Text>
+                    :
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
+                  }
+                </View>
+              </View>
+            </View>
           </View>
-          <View style={styles.firstCardView}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image
-                source={dollerImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Total Earning</Text>
-            </View>
-            <Text style={{ color: '#2F2F2F', fontFamily: 'Outfit-Bold', fontSize: responsiveFontSize(3), marginTop: 10 }}>${totalEarning}</Text>
-          </View>
+
         </View>
-        <View style={{ marginTop: 20 }}>
-          <TouchableOpacity onPress={() => navigation.navigate('ContactInformation')}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={contactImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Contact Information</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('BankInformation')}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={bankDetailsImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Bank Details</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('EditDocuments')}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={documentImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Documents</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('ReviewScreen')}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={reviewImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Reviews</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('TermsScreen')}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={documentImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Term of service</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => toggleModal()}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: '#F4F4F4', borderBottomWidth: 1, paddingVertical: 10 }}>
-              <Image
-                source={deleteImg}
-                style={styles.iconImage}
-              />
-              <Text style={{ color: '#EB0000', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Log Out</Text>
-            </View>
-          </TouchableOpacity>
+        <View style={styles.buttonwrapper}>
+          <CustomButton label={"Submit For Review"}
+            // onPress={() => { login() }}
+            onPress={() => { submitForm() }}
+          />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
       <Modal
         isVisible={isModalVisible}
         style={{
           margin: 0, // Add this line to remove the default margin
           justifyContent: 'flex-end',
         }}>
-        <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '40%', left: '45%', right: '45%' }}>
-          <Icon name="cross" size={30} color="#900" onPress={toggleModal} />
+        <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '45%', left: '45%', right: '45%' }}>
+          <Icon name="cross" size={30} color="#000" onPress={toggleModal} />
         </View>
-        <View style={{ height: '35%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
-          <View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 20 }}>
-            <Text style={{ color: '#2F2F2F', fontFamily: 'Outfit-Bold', fontSize: responsiveFontSize(2.7), marginBottom: 10 }}>Are you sure want to log out?</Text>
-            <View style={styles.buttonwrapper}>
-              <CustomButton label={"Yes, log me out"}
-                onPress={() => logout()}
+        <View style={{ height: '39%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+          <View style={{ padding: 25 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+              <Text style={styles.header}>Bank Account</Text>
+              <TouchableOpacity onPress={() => toggleModal()}>
+                <Text style={{ fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), color: '#444343', marginBottom: responsiveHeight(1), }}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.inputView}>
+              <InputField
+                label={'Aadhar No'}
+                keyboardType=" "
+                value={'56897 85698 78965 96636'}
+                //helperText={'Please enter lastname'}
+                inputType={'others'}
+                onChangeText={(text) => changePassword(text)}
               />
             </View>
-            <View style={styles.buttonwrapper}>
-              <CustomButton label={"Cancel"}
-                buttonColor='red'
-                onPress={() => toggleModal()}
-              />
+            <View style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+              <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}>
+                  <Image
+                    source={uploadImg}
+                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                  />
+                </TouchableOpacity>
+
+                {!pickedDrivingLicenseBack ?
+                  <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Cancel Cheque</Text>
+                  :
+                  <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseBack.name}</Text>
+                }
+              </View>
             </View>
           </View>
+
         </View>
       </Modal>
-    </SafeAreaView>
-  )
-}
+    </SafeAreaView >
+  );
+};
 
-export default ProfileScreen
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    backgroundColor: '#fff'
+
+  container: {
+    //justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    flex: 1
   },
   wrapper: {
-    padding: 20,
-    marginBottom: responsiveHeight(1)
+    paddingHorizontal: 23,
+    //height: responsiveHeight(78)
   },
-  headerImage: {
-    width: 80,
+  header1: {
+    fontFamily: 'DMSans-SemiBold',
+    fontSize: responsiveFontSize(3),
+    color: '#2F2F2F',
+    marginBottom: responsiveHeight(1),
+  },
+  header: {
+    fontFamily: 'DMSans-SemiBold',
+    fontSize: responsiveFontSize(2),
+    color: '#2F2F2F',
+    marginBottom: responsiveHeight(1),
+  },
+  requiredheader: {
+    fontFamily: 'DMSans-SemiBold',
+    fontSize: responsiveFontSize(1.5),
+    color: '#E1293B',
+    marginBottom: responsiveHeight(1),
+    marginLeft: responsiveWidth(1)
+  },
+  subheader: {
+    fontFamily: 'DMSans-Regular',
+    fontSize: responsiveFontSize(1.8),
+    fontWeight: '400',
+    color: '#808080',
+    marginBottom: responsiveHeight(1),
+  },
+  photoheader: {
+    fontFamily: 'Outfit-Bold',
+    fontSize: responsiveFontSize(2),
+    color: '#2F2F2F'
+  },
+  imageView: {
+    marginTop: responsiveHeight(2)
+  },
+  imageStyle: {
     height: 80,
+    width: 80,
     borderRadius: 40,
     marginBottom: 10
   },
-  iconImage: {
-    width: 23,
-    height: 23,
-  },
-  buttonwrapper1: {
-    padding: 20,
+  plusIcon: {
     position: 'absolute',
-    bottom: 70,
-    width: responsiveWidth(100)
+    bottom: 10,
+    left: 50
   },
-  buttonwrapper2: {
-    padding: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: responsiveWidth(100)
+  textinputview: {
+    marginBottom: responsiveHeight(10),
+    marginTop: responsiveHeight(5)
   },
-  mainView: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    borderBottomColor: '#E3E3E3',
-    //borderBottomWidth: 1,
-    paddingBottom: 20
-  },
-  maintext: {
-    color: '#2F2F2F',
-    fontFamily: 'Outfit-Bold',
-    fontSize: responsiveFontSize(3),
-    marginBottom: 5
-  },
-  subtext: {
-    color: '#9C9C9C',
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(2),
-    marginBottom: 5
-  },
-  imageView: {
-    flexDirection: 'row',
-    marginBottom: 10
-  },
-  iconText: {
-    color: '#9C9C9C',
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(2)
-  },
-  deviceText: {
-    color: '#9C9C9C',
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(2),
-    marginBottom: 10
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10
-  },
-  editButtonView: {
-    backgroundColor: '#4B47FF',
-    height: responsiveHeight(5),
-    width: responsiveWidth(25),
-    borderRadius: 8,
-    marginLeft: 5,
-    marginRight: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly'
-  },
-  editButtonText: {
-    color: '#FFFFFF',
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(2)
-  },
-  deleteButtonView: {
-    backgroundColor: '#EEEEEE',
-    height: responsiveHeight(5),
-    width: responsiveWidth(25),
-    borderRadius: 8,
-    marginLeft: 5,
-    marginRight: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly'
-  },
-  deleteButtonText: {
-    color: '#EB0000',
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(2)
-  },
-  firstCardView: {
-    height: responsiveHeight(13),
-    width: responsiveWidth(42),
-    backgroundColor: '#F6F6F6',
-    borderRadius: 8,
-    padding: 10,
-    borderColor: '#E0E0E0',
-    borderWidth: 1
+  inputView: {
+    paddingVertical: 1
   },
   buttonwrapper: {
     paddingHorizontal: 20,
-    paddingTop: 10,
-    width: '100%'
+    position: 'absolute',
+    bottom: 0,
+    width: responsiveWidth(100),
+  },
+  searchInput: {
+    color: '#333',
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    //borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 5
+  },
+  dropdownMenu: {
+    backgroundColor: '#FFF'
+  },
+  dropdownMenuSubsection: {
+    borderBottomWidth: 0,
+
+  },
+  mainWrapper: {
+    flex: 1,
+    marginTop: responsiveHeight(1)
+
+  },
+  dropdown: {
+    height: responsiveHeight(7.2),
+    borderColor: '#DDD',
+    borderWidth: 0.7,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    marginTop: 5,
+    marginBottom: responsiveHeight(4)
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: '#2F2F2F'
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#2F2F2F'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    color: '#2F2F2F'
+  },
+  dropdownHalf: {
+    height: responsiveHeight(7.2),
+    width: responsiveWidth(40),
+    borderColor: '#DDD',
+    borderWidth: 0.7,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    marginTop: 5,
+    marginBottom: responsiveHeight(4)
   },
 });

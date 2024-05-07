@@ -203,11 +203,11 @@ const LoginScreen = ({ navigation }) => {
           </View>
           <Text
             style={styles.header}>
-            Email Id
+            Email Id or Mobile Number
           </Text>
           <View style={styles.textinputview}>
             <InputField
-              label={'Email Id'}
+              label={'Email Id or Mobile Number'}
               keyboardType="default"
               inputType="name"
               value={email}
@@ -230,18 +230,20 @@ const LoginScreen = ({ navigation }) => {
             />
           </View>
           <View style={{ marginBottom: responsiveHeight(0) }}>
-        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5) }}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
-      </View>
+            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5) }}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
+          </View>
         </View>
       </KeyboardAwareScrollView>
-     
+
       <View style={styles.buttonwrapper}>
         <CustomButton label={"Sign In"}
           onPress={() => handleSubmit()}
         //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
         />
       </View>
-      <Text style={{color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5),alignSelf:'center',marginBottom: responsiveHeight(2)}}>Forgot Password</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), alignSelf: 'center', marginBottom: responsiveHeight(2) }}>Forgot Password</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
