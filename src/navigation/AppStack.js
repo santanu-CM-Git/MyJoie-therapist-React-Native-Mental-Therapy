@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import { homeImg, contactImg, helpImg, bankDetailsImg, documentImg , capacityImg, reviewImg, earningImg, acceptedOrderImg, completedOrderImg, availabilityImg} from '../utils/Images';
+import { homeImg, contactImg, helpImg, bankDetailsImg, documentImg , capacityImg, reviewImg, earningImg, acceptedOrderImg, completedOrderImg, availabilityImg, SessionIcon, PolicyIcon} from '../utils/Images';
 import CustomDrawer from '../components/CustomDrawer';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -11,8 +11,9 @@ import FaqScreen from '../screens/NoAuthScreen/FaqScreen';
 import TabNavigator from './TabNavigator';
 import TermsScreen from '../screens//NoAuthScreen/TermsScreen';
 
-import OrderSummary from '../screens/NoAuthScreen/OrderSummary';
+import SessionHistory from '../screens/NoAuthScreen/SessionHistory';
 import NoNotification from '../screens/NoAuthScreen/NoNotification';
+import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
 
 const Drawer = createDrawerNavigator();
 
@@ -42,8 +43,18 @@ const AuthStack = () => {
           ),
         }}
       />
+      <Drawer.Screen
+        name="Session History"
+        component={SessionHistory}
+        options={{
+          drawerIcon: ({color}) => (
+            // <Ionicons name="home-outline" size={22} color={color} />
+            <Image source={SessionIcon} style={{ width: 25,height: 25}} color={color}/>
+          ),
+        }}
+      />
        <Drawer.Screen
-        name="Help & Support"
+        name="Customer Support"
         component={FaqScreen}
         options={{
           drawerIcon: ({color}) => (
@@ -53,12 +64,22 @@ const AuthStack = () => {
         }}
       />
       <Drawer.Screen
-        name="Term of service"
+        name="Privacy Policy"
         component={TermsScreen}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={helpImg} style={{ width: 25,height: 25}} color={color}/>
+            <Image source={PolicyIcon} style={{ width: 25,height: 25}} color={color}/>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Session Summary"
+        component={UploadSessionSummary}
+        options={{
+          drawerIcon: ({color}) => (
+            // <Ionicons name="settings-outline" size={22} color={color} />
+            <Image source={PolicyIcon} style={{ width: 25,height: 25}} color={color}/>
           ),
         }}
       />

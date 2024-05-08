@@ -99,7 +99,7 @@ export default function CustomHeader({
                             </TouchableOpacity>
                         </View> */}
                         <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
-                            <Text style={{ fontSize: 15, fontFamily: 'DMSans-SemiBold',marginRight: responsiveWidth(2) }}>Current Availability</Text>
+                            <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold',marginRight: responsiveWidth(3) }}>Current Availability</Text>
                             <Switch
                                 trackColor={{ false: '#767577', true: '#000' }}
                                 thumbColor={isEnabled ? '#fff' : '#000'}
@@ -165,13 +165,13 @@ const styles = StyleSheet.create({
     innerPageheaderTitle: {
         color: '#2F2F2F',
         fontSize: responsiveFontSize(2.2),
-        fontFamily: 'Outfit-Bold',
+        fontFamily: 'DMSans-SemiBold',
         marginLeft: 10
     },
     chatPageheaderTitle: {
         color: '#FFF',
         fontSize: responsiveFontSize(2.2),
-        fontFamily: 'Outfit-Bold',
+        fontFamily: 'DMSans-SemiBold',
         marginLeft: 10
     },
     firstSection: {
@@ -184,13 +184,13 @@ const styles = StyleSheet.create({
     },
     firstText: {
         fontSize: responsiveFontSize(2),
-        fontFamily: 'Outfit-Bold',
+        fontFamily: 'DMSans-SemiBold',
         marginLeft: 10,
         color: '#FFFFFF'
     },
     secondText: {
         fontSize: responsiveFontSize(1.5),
-        fontFamily: 'Outfit-Bold',
+        fontFamily: 'DMSans-SemiBold',
         marginLeft: 10,
         color: '#F4F4F4'
     },

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { TextInput as MTextInput } from "@react-native-material/core";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet,Image } from 'react-native';
+import { TextInput as MTextInput, IconButton } from "@react-native-material/core";
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import { YellowTck, eyeIcon } from '../utils/Images';
 
 export default function InputField({
   label,
@@ -41,6 +42,12 @@ export default function InputField({
           onChangeText={onChangeText}
           helperText={helperText}
           error
+          trailing={props => (
+            <IconButton icon={props => <Image
+              source={eyeIcon}
+              style={{ height: 20, width: 20, resizeMode: 'contain' }}
+          />} {...props} />
+          )}
         />
       ) : inputType == 'address' ? (
         <TextInput
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     width: responsiveWidth(89),
-    height: responsiveHeight(20),
+    height: responsiveHeight(30),
     textAlignVertical: 'top',
   },
   noneditinput:{

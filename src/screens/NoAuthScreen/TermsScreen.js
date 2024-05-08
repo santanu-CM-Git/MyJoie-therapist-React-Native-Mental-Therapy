@@ -42,7 +42,7 @@ export default function TermsScreen({ navigation }) {
     const { userInfo } = useContext(AuthContext)
 
     const [selectedTab, setSelectedTab] = useState(1);
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [termsCondition,setTermsCondition] = useState(`
     <h1>This HTML snippet is now rendered with native components !</h1>
     <h2>Enjoy a webview-free and blazing fast application</h2>
@@ -89,7 +89,7 @@ export default function TermsScreen({ navigation }) {
     }
 
     useEffect(() => {
-        fetchTerms();
+        //fetchTerms();
     }, [])
 
     if (isLoading) {
@@ -102,7 +102,7 @@ export default function TermsScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.Container}>
-            <CustomHeader commingFrom={'Terms'} title={'Terms & Conditions'} onPress={() => navigation.goBack()} onPressProfile={() => navigation.navigate('Profile')} />
+            <CustomHeader commingFrom={'Privacy Policy'} title={'Privacy Policy'} onPress={() => navigation.goBack()} onPressProfile={() => navigation.navigate('Profile')} />
             <ScrollView style={styles.wrapper}>
             <RenderHTML contentWidth={width} source={{ html:termsCondition }} /> 
             </ScrollView>

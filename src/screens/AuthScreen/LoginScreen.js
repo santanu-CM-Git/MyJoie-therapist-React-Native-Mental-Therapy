@@ -209,7 +209,7 @@ const LoginScreen = ({ navigation }) => {
             <InputField
               label={'Email Id or Mobile Number'}
               keyboardType="default"
-              inputType="name"
+              inputType="others"
               value={email}
               onChangeText={(text) => onChangeEmail(text)}
             //helperText={mobileError}
@@ -223,7 +223,7 @@ const LoginScreen = ({ navigation }) => {
             <InputField
               label={'Password'}
               keyboardType="default"
-              inputType="name"
+              inputType="others"
               value={email}
               onChangeText={(text) => onChangeEmail(text)}
             //helperText={mobileError}

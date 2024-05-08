@@ -29,15 +29,10 @@ const ScheduleScreen = ({ navigation }) => {
     const [startDay, setStartDay] = useState(null);
     const [endDay, setEndDay] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
-    const [timeRanges, setTimeRanges] = useState([{ startTime: null, endTime: null }]);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [currentRange, setCurrentRange] = useState(null);
-    const [isStartTime, setIsStartTime] = useState(true);
 
-    const showDatePicker = (index, isStart) => {
+    const showDatePicker = () => {
         setDatePickerVisibility(true);
-        setCurrentRange(index);
-        setIsStartTime(isStart);
     };
 
     const hideDatePicker = () => {
@@ -45,29 +40,10 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const handleConfirm = (date) => {
-        setTimeRanges(currentRanges => {
-            const newRanges = [...currentRanges];
-            if (isStartTime) {
-                newRanges[currentRange].startTime = date;
-            } else {
-                newRanges[currentRange].endTime = date;
-            }
-            return newRanges;
-        });
+        console.warn("A date has been picked: ", date);
         hideDatePicker();
     };
 
-    const addNewTimeRange = () => {
-        setTimeRanges(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
-    };
-
-    const deleteTimeRange = index => {
-        setTimeRanges(currentRanges => currentRanges.filter((_, i) => i !== index));
-    };
-
-    const saveTimeRange = () => {
-        console.log(timeRanges)
-    }
     const handleDayPress = (day) => {
         if (startDay && !endDay) {
             const date = {}
@@ -232,41 +208,33 @@ const ScheduleScreen = ({ navigation }) => {
                                         style={styles.switchStyle}
                                     />
                                 </View>
-                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
-                                    {timeRanges.map((range, index) => (
-                                        <View key={index} style={styles.timeRangeContainer}>
-                                            <TouchableOpacity onPress={() => showDatePicker(index, true)} style={styles.timePicker}>
-                                                <Text style={styles.timeText}>
-                                                    {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
-                                                </Text>
-                                                <Image source={timeIcon} style={styles.icon} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => showDatePicker(index, false)} style={styles.timePicker}>
-                                                <Text style={styles.timeText}>
-                                                    {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
-                                                </Text>
-                                                <Image source={timeIcon} style={styles.icon} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => deleteTimeRange(index)} style={styles.deleteButton}>
-                                                <Image source={deleteImg} style={styles.deleteIcon} />
-                                            </TouchableOpacity>
-                                        </View>
-                                    ))}
-                                {/* </View> */}
-                                <TouchableOpacity onPress={()=>addNewTimeRange()} >
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
-
-                                        <View style={styles.inActiveButtonInsideView}>
-                                            <Image
-                                                source={plus}
-                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-                                            />
-                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
-                                        </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <TouchableOpacity onPress={()=> showDatePicker()}>
+                                    <View style={{flexDirection:'row',justifyContent: 'space-between',alignItems:'center', borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, height: responsiveHeight(6), width: responsiveWidth(40),padding: 5 }}>
+                                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Start Time</Text>
+                                        <Image
+                                            source={timeIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
                                     </View>
-                                </TouchableOpacity>
-                                <View style={{marginTop: responsiveHeight(2)}}>
-                                <CustomButton label={"Save"} onPress={() => { saveTimeRange() }} />
+                                    </TouchableOpacity>
+                                    <View style={{flexDirection:'row',justifyContent: 'space-between',alignItems:'center', borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, height: responsiveHeight(6), width: responsiveWidth(40),padding: 5 }}>
+                                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>End Time</Text>
+                                        <Image
+                                            source={timeIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                    <View style={styles.inActiveButtonInsideView}>
+                                        <Image
+                                            source={plus}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                    </View>
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
@@ -408,37 +376,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    timePicker: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E3E3E3',
-        borderRadius: 15,
-        padding: 10,
-        width: responsiveWidth(35),
-        justifyContent:'space-between'
-    },
-    icon: {
-        width: 20,
-        height: 20,
-        resizeMode: 'contain',
-    },
-    timeRangeContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    timeText: {
-        marginRight: 10,
-        fontSize: responsiveFontSize(1.7),
-    },
-    deleteButton: {
-        // Additional styles may be required
-    },
-    deleteIcon: {
-        width: 24,
-        height: 24,
-    }
+
 
 });

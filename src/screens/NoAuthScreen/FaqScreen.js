@@ -24,7 +24,7 @@ import { API_URL } from '@env'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../../store/cartSlice';
-import { chatImg, emailImg, forwordImg, phoneImg } from '../../utils/Images';
+import { chatImg, emailIcon, emailImg, facebookIcon, forwordImg, instagramIcon, phoneImg, pointerImg, whatsappIcon, youtubeIcon } from '../../utils/Images';
 import Loader from '../../utils/Loader';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import CustomHeader from '../../components/CustomHeader';
@@ -46,7 +46,7 @@ export default function FaqScreen({ navigation }) {
     const [activeSections, setActiveSections] = useState([]);
     const [collapsed, setCollapsed] = useState(true);
     const [getFaq, setFaq] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [getAllData, setAllData] = useState([])
 
     const fetchTerms = () => {
@@ -60,7 +60,7 @@ export default function FaqScreen({ navigation }) {
                 })
                 .then(res => {
                     // console.log(res.data.Termsandconditions[0], 'terms and condition')
-                    
+
                     if (res.data.response.status.code === 200) {
                         setAllData(res.data.response.records)
                         setFaq(res.data.response.records.faq)
@@ -86,75 +86,9 @@ export default function FaqScreen({ navigation }) {
     }
 
     useEffect(() => {
-        fetchTerms();
+        //fetchTerms();
     }, [])
 
-
-    const toggleExpanded = () => {
-        setCollapsed(!collapsed)
-    };
-
-    const setSections = sections => {
-        setActiveSections(sections.includes(undefined) ? [] : sections)
-    };
-
-    const renderHeader = (section, _, isActive) => {
-        return (
-            <Animatable.View
-                duration={400}
-                style={[styles.header, isActive ? styles.active : styles.inactive]}
-                transition="backgroundColor"
-            >
-                <View style={styles.questionView}>
-                    <View style={{ width: responsiveWidth(70) }}>
-                        <Text style={styles.headerText}>{section.title}</Text>
-                    </View>
-
-                    {isActive ?
-                        <Icon name="keyboard-arrow-up" size={30} color="#000000" />
-                        :
-                        <Icon name="keyboard-arrow-down" size={30} color="#000000" />
-                    }
-                </View>
-            </Animatable.View>
-        );
-    };
-
-    const renderContent = (section, _, isActive) => {
-        return (
-            <Animatable.View
-                duration={400}
-                style={[styles.content, isActive ? styles.active : styles.inactive]}
-                transition="backgroundColor"
-            >
-
-                <View style={styles.answerView}>
-                    <Animatable.Text animation={isActive ? 'zoomIn' : undefined} style={styles.headerText}>
-                        {section.description.replace(/<\/?[^>]+(>|$)/g, "")}
-                    </Animatable.Text>
-                    {/* <Animatable.Image
-                        animation={isActive ? 'zoomIn' : undefined}
-                        style={{height:responsiveHeight(10),width:responsiveWidth(85),resizeMode:'cover',marginTop:20}}
-                        source={{uri:section.imgUrl}}
-                    /> */}
-                </View>
-
-            </Animatable.View>
-        );
-    }
-
-    const handlePress = async (url) => {
-        // Checking if the link is supported for links with custom URL scheme.
-        const supported = await Linking.canOpenURL(url);
-
-        if (supported) {
-            // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-            // by some browser in the mobile
-            await Linking.openURL(url);
-        } else {
-            Alert.alert(`Don't know how to open this URL: ${url}`);
-        }
-    };
 
     if (isLoading) {
         return (
@@ -165,79 +99,83 @@ export default function FaqScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.Container}>
-            <CustomHeader commingFrom={'FAQs'} title={'Help & Support'} onPress={() => navigation.goBack()} onPressProfile={() => navigation.navigate('Profile')} />
+            <CustomHeader commingFrom={'Customer Support'} title={'Customer Support'} onPress={() => navigation.goBack()} onPressProfile={() => navigation.navigate('Profile')} />
             <ScrollView style={styles.wrapper}>
-                <Collapsible collapsed={collapsed} align="center">
-                    <View style={styles.content}>
-                        <Text>
-                            Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
-                            ribs
-                        </Text>
-                    </View>
-                </Collapsible>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15, marginBottom: 10 }}>
-                    <View style={styles.firstCardView}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.header}>Talk to us</Text>
+                <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>We want to make expert advice and healthcare more accessible to everyone. Reach out to us for any queries or issues you might be facing.</Text>
+                <View style={{ flexDirection: 'row', marginTop: responsiveHeight(4), }}>
+                    <View style={{ width: responsiveWidth(20), }}>
+                        <View style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: '#EFFBF7', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
-                                source={chatImg}
-                                style={styles.iconImage}
+                                source={whatsappIcon}
+                                style={{ height: 20, width: 20, resizeMode: 'contain', }}
                             />
-                            <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Contact Us</Text>
                         </View>
-
-                        <TouchableOpacity onPress={() => Linking.openURL(`https://api.whatsapp.com/send/?phone=${getAllData?.help.chatWithUs}&type=phone_number&app_absent=0`)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#339999', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), }}>Chat with us</Text>
-                                <Image
-                                    source={forwordImg}
-                                    style={styles.iconImage}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
                     </View>
-                    <View style={styles.firstCardView}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: responsiveWidth(70), }}>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>ZERO Wait Time</Text>
+                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7), lineHeight: responsiveHeight(2.5) }}>Connect on Whatsapp</Text>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Our customer team is dedicated to helping you out</Text>
+                    </View>
+                </View>
+                <View style={{ borderBottomColor: '#E3E3E3', borderBottomWidth: 1, marginHorizontal: 10, marginTop: 10 }} />
+                <View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), }}>
+                    <View style={{ width: responsiveWidth(20), }}>
+                        <View style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: '#FFFAEC', justifyContent: 'center', alignItems: 'center' }}>
                             <Image
-                                source={emailImg}
-                                style={styles.iconImage}
+                                source={emailIcon}
+                                style={{ height: 20, width: 20, resizeMode: 'contain', }}
                             />
-                            <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Email Us</Text>
                         </View>
-                        {getAllData?
-                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${getAllData?.help?.supportMail}`)}>
-                            <Text style={{ color: '#339999', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginTop: 10 }}>{getAllData?.help.supportMail}</Text>
-                        </TouchableOpacity>
-                        :<></>}
                     </View>
-
+                    <View style={{ width: responsiveWidth(70), }}>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Get in touch with us</Text>
+                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7), lineHeight: responsiveHeight(2.5) }}>Support@swastilife.com</Text>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>We want to address your concerns and
+                            value your feedback</Text>
+                    </View>
                 </View>
-                <View style={styles.secondCardView}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image
-                            source={phoneImg}
-                            style={styles.iconImage}
-                        />
-                        <Text style={{ color: '#9C9C9C', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginLeft: 10 }}>Call Us</Text>
+                <View style={{ borderBottomColor: '#E3E3E3', borderBottomWidth: 1, marginHorizontal: 10, marginTop: 10 }} />
+                <View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), }}>
+                    <View style={{ width: responsiveWidth(20), }}>
+                        <View style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: '#FFF5F7', justifyContent: 'center', alignItems: 'center' }}>
+                            <Image
+                                source={pointerImg}
+                                style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                            />
+                        </View>
                     </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                        <Text style={{ color: '#339999', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginTop: 10 }}>{getAllData?.help.phonOne}</Text>
-                        <View style={styles.verticleLine}></View>
-                        <Text style={{ color: '#339999', fontFamily: 'Outfit-Medium', fontSize: responsiveFontSize(2), marginTop: 10 }}>{getAllData?.help.phoneTwo}</Text>
+                    <View style={{ width: responsiveWidth(70), }}>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Address</Text>
+                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7), lineHeight: responsiveHeight(2.5) }}>N1/46, First lane, IRC Village, Nayapa</Text>
+                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Gurgaon, Uttar Pradesh, India</Text>
                     </View>
-
                 </View>
-                <Text style={{ color: '#2F2F2F', fontFamily: 'Outfit-Bold', fontSize: responsiveFontSize(2.2), marginBottom: 10 }}>Frequently asked questuion</Text>
-                <Accordion
-                    activeSections={activeSections}
-                    sections={getFaq}
-                    touchableComponent={TouchableOpacity}
-                    renderHeader={renderHeader}
-                    renderContent={renderContent}
-                    duration={400}
-                    onChange={setSections}
-                />
+
             </ScrollView>
+            <View style={{ position: 'absolute', bottom: 30, alignSelf: 'center' }}>
+                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2), lineHeight: responsiveHeight(2.5) }}>Stay Connected Online</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center',marginTop: responsiveHeight(1) }}>
+                    <View style={{ height: 40, width: 40, borderRadius: 10, backgroundColor: '#ECFCFA',borderColor:'#87ADA8',borderWidth:1, justifyContent: 'center', alignItems: 'center',marginHorizontal: responsiveWidth(2) }}>
+                        <Image
+                            source={facebookIcon}
+                            style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                        />
+                    </View>
+                    <View style={{ height: 40, width: 40, borderRadius: 10, backgroundColor: '#ECFCFA',borderColor:'#87ADA8',borderWidth:1, justifyContent: 'center', alignItems: 'center',marginHorizontal: responsiveWidth(2) }}>
+                        <Image
+                            source={instagramIcon}
+                            style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                        />
+                    </View>
+                    <View style={{ height: 40, width: 40, borderRadius: 10, backgroundColor: '#ECFCFA',borderColor:'#87ADA8',borderWidth:1, justifyContent: 'center', alignItems: 'center',marginHorizontal: responsiveWidth(2) }}>
+                        <Image
+                            source={youtubeIcon}
+                            style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                        />
+                    </View>
+                </View>
+            </View>
         </SafeAreaView >
     );
 }
@@ -252,63 +190,11 @@ const styles = StyleSheet.create({
         padding: 20,
         //paddingBottom: responsiveHeight(2)
     },
-    iconimg: {
-        height: responsiveHeight(5),
-        width: responsiveWidth(5),
-        resizeMode: 'contain',
-    },
-    headerText: {
-        color: '#3A3232',
-        fontFamily: 'Outfit-Medium',
+    header: {
+        fontFamily: 'DMSans-SemiBold',
         fontSize: responsiveFontSize(2),
+        color: '#2F2F2F',
+        marginBottom: responsiveHeight(1),
     },
-    questionView: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        backgroundColor: '#F8F7F9',
-        borderColor: '#E0E0E0',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginBottom: 5
-    },
-    answerView: {
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        backgroundColor: '#FFFFFF',
-        borderColor: '#E0E0E0',
-        borderWidth: 1,
-        //paddingBottom:10
-    },
-    iconImage: {
-        width: 23,
-        height: 23,
-    },
-    firstCardView: {
-        height: responsiveHeight(13),
-        width: responsiveWidth(42),
-        backgroundColor: '#F6F6F6',
-        borderRadius: 8,
-        padding: 10,
-        borderColor: '#E0E0E0',
-        borderWidth: 1
-    },
-    secondCardView: {
-        height: responsiveHeight(13),
-        width: responsiveWidth(89),
-        backgroundColor: '#F6F6F6',
-        borderRadius: 8,
-        padding: 10,
-        borderColor: '#E0E0E0',
-        borderWidth: 1,
-        marginBottom: 10
-    },
-    verticleLine: {
-        height: '100%',
-        width: 1,
-        backgroundColor: '#339999',
-    }
 
 });
