@@ -6,8 +6,8 @@ export default function CustomButton({ label, onPress, buttonIcon, buttonColor }
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={buttonColor == 'red' ? styles.buttonViewRed : buttonColor == 'gray' ? styles.buttonViewGray : styles.buttonView}>
-      
+      style={buttonColor == 'red' ? styles.buttonViewRed : buttonColor == 'gray' ? styles.buttonViewGray : buttonColor == 'small' ? styles.buttonViewSmall : styles.buttonView}>
+
       <Text
         style={buttonColor == 'red' ? styles.buttonTextRed : styles.buttonText}>
         {label}
@@ -22,7 +22,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECFCFA',
     borderColor: '#87ADA8',
     borderWidth: 1,
-    padding: 20,
+    padding: 17,
+    borderRadius: 8,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  buttonViewSmall: {
+    backgroundColor: '#ECFCFA',
+    borderColor: '#87ADA8',
+    borderWidth: 1,
+    padding: 10,
     borderRadius: 8,
     marginBottom: 20,
     flexDirection: 'row',
@@ -32,15 +42,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderColor: '#E3E3E3',
     borderWidth: 1,
-    padding: 20,
+    padding: 17,
     borderRadius: 8,
     marginBottom: 20,
     flexDirection: 'row',
     justifyContent: 'center'
   },
-  buttonViewGray:{
+  buttonViewGray: {
     backgroundColor: '#B6B6B6',
-    padding: 20,
+    padding: 17,
     borderRadius: 8,
     marginBottom: 30,
     flexDirection: 'row',

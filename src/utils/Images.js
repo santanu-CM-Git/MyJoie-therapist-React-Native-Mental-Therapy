@@ -65,3 +65,5 @@ export const emailIcon = require("../assets/images/email.png");
 export const facebookIcon = require("../assets/images/facebook.png");
 export const instagramIcon = require("../assets/images/instagram.png");
 export const youtubeIcon = require("../assets/images/youtube.png");
+export const blockIcon = require("../assets/images/block.png");
+export const dotIcon = require("../assets/images/dot.png");

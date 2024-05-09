@@ -197,17 +197,17 @@ const LoginScreen = ({ navigation }) => {
               helperText={mobileError}
             />
           </View> */}
-          <View style={{ marginBottom: responsiveHeight(1) }}>
+          <View style={{ marginBottom: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Welcome Back</Text>
             <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Enter your Email ID & Password to continue with your account.<Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5) }}> Create Account</Text></Text>
           </View>
           <Text
             style={styles.header}>
-            Email Id or Mobile Number
+            Therapist ID
           </Text>
           <View style={styles.textinputview}>
             <InputField
-              label={'Email Id or Mobile Number'}
+              label={'Therapist ID'}
               keyboardType="default"
               inputType="others"
               value={email}
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     fontFamily: 'DMSans-SemiBold',
     fontSize: responsiveFontSize(2),
     color: '#2F2F2F',
-    marginBottom: responsiveHeight(2),
+    marginBottom: responsiveHeight(1),
   },
   subheader: {
     fontFamily: 'Outfit-Medium',

@@ -34,17 +34,17 @@ const AuthStack = () => {
         //swipeEdgeWidth: 0, //for off the drawer swipe
       }}>
       <Drawer.Screen
-        name="Home"
+        name="  Home"
         component={TabNavigator}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={homeImg} style={{ width: 25,height: 25}} color={color}/>
+            <Image source={homeImg} style={{ width: 25,height: 25,}} color={color}/>
           ),
         }}
       />
       <Drawer.Screen
-        name="Session History"
+        name="  Session History"
         component={SessionHistory}
         options={{
           drawerIcon: ({color}) => (
@@ -54,7 +54,7 @@ const AuthStack = () => {
         }}
       />
        <Drawer.Screen
-        name="Customer Support"
+        name="  Customer Support"
         component={FaqScreen}
         options={{
           drawerIcon: ({color}) => (
@@ -64,7 +64,7 @@ const AuthStack = () => {
         }}
       />
       <Drawer.Screen
-        name="Privacy Policy"
+        name="  Privacy Policy"
         component={TermsScreen}
         options={{
           drawerIcon: ({color}) => (
@@ -74,7 +74,7 @@ const AuthStack = () => {
         }}
       />
       <Drawer.Screen
-        name="Session Summary"
+        name="  Session Summary"
         component={UploadSessionSummary}
         options={{
           drawerIcon: ({color}) => (

@@ -182,7 +182,7 @@ const PersonalInformation = ({ navigation, route }) => {
           <View style={styles.textinputview}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Name</Text>
-              <Text style={styles.requiredheader}>(Mandatory)</Text>
+              <Text style={styles.requiredheader}>*</Text>
             </View>
             {firstNameError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{firstNameError}</Text> : <></>}
             <View style={styles.inputView}>
@@ -197,7 +197,7 @@ const PersonalInformation = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Email Id</Text>
-              <Text style={styles.requiredheader}>(Mandatory)</Text>
+              <Text style={styles.requiredheader}>*</Text>
             </View>
             <View style={styles.inputView}>
               <InputField
@@ -211,7 +211,7 @@ const PersonalInformation = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Mobile Number</Text>
-              <Text style={styles.requiredheader}>(Mandatory)</Text>
+              <Text style={styles.requiredheader}>*</Text>
             </View>
             <View style={styles.inputView}>
               <InputField
@@ -240,38 +240,7 @@ const PersonalInformation = ({ navigation, route }) => {
               />
             </View> */}
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.header}>Password</Text>
-              <Text style={styles.requiredheader}>(Mandatory)</Text>
-            </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
-            <View style={styles.inputView}>
-              <InputField
-                label={'Password'}
-                keyboardType=" "
-                value={Password}
-                //helperText={'Please enter lastname'}
-                inputType={'others'}
-                onChangeText={(text) => changePassword(text)}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.header}>Confirm Password</Text>
-              <Text style={styles.requiredheader}>(Mandatory)</Text>
-            </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
-            <View style={styles.inputView}>
-              <InputField
-                label={'Confirm Password'}
-                keyboardType=" "
-                value={Password}
-                //helperText={'Please enter lastname'}
-                inputType={'others'}
-                onChangeText={(text) => changePassword(text)}
-              />
-            </View>
-
-            <Text
+            {/* <Text
               style={styles.header}>
               Upload Supporting Documents
             </Text>
@@ -314,8 +283,8 @@ const PersonalInformation = ({ navigation, route }) => {
                 </View>
               </View>
 
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>
+            </View> */}
+            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
@@ -350,12 +319,12 @@ const PersonalInformation = ({ navigation, route }) => {
                   }
                 </View>
               </View>
-            </View>
-            <Text
+            </View> */}
+            {/* <Text
               style={styles.header}>
               Upload Picture
-            </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginBottom: responsiveHeight(2),marginTop: responsiveHeight(1) }}>
+            </Text> */}
+            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginBottom: responsiveHeight(2),marginTop: responsiveHeight(1) }}>
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
@@ -373,7 +342,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   }
                 </View>
               </View>
-            </View>
+            </View> */}
           </View>
 
         </View>
