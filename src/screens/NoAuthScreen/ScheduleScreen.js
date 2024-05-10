@@ -47,7 +47,7 @@ const ScheduleScreen = ({ navigation }) => {
     const [endDay, setEndDay] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
     // Monday 
-    const [timeRanges, setTimeRanges] = useState([{"endTime": "2024-05-09 18:20:00", "startTime": "2024-05-09 17:10:00"}, {"endTime": "2024-05-09 14:33:00", "startTime": "2024-05-09 15:28:00"}]);
+    const [timeRanges, setTimeRanges] = useState([{ "endTime": "2024-05-09 18:20:00", "startTime": "2024-05-09 17:10:00" }, { "endTime": "2024-05-09 14:33:00", "startTime": "2024-05-09 15:28:00" }]);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [currentRange, setCurrentRange] = useState(null);
     const [isStartTime, setIsStartTime] = useState(true);
@@ -315,50 +315,50 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(filteredEvents)
     }
 
-     // Sunday
-     const [timeRangesSunday, setTimeRangesSunday] = useState([{ startTime: null, endTime: null }]);
-     const [isDatePickerVisibleSunday, setDatePickerVisibilitySunday] = useState(false);
-     const [currentRangeSunday, setCurrentRangeSunday] = useState(null);
-     const [isStartTimeSunday, setIsStartTimeSunday] = useState(true);
- 
-     const showDatePickerSunday = (index, isStart) => {
-         setDatePickerVisibilitySunday(true);
-         setCurrentRangeSunday(index);
-         setIsStartTimeSunday(isStart);
-     };
- 
-     const hideDatePickerSunday = () => {
-         setDatePickerVisibilitySunday(false);
-     };
- 
-     const handleConfirmSunday = (date) => {
-         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
- 
-         setTimeRangesSunday(currentRanges => {
-             const newRanges = [...currentRanges];
-             if (isStartTimeSunday) {
-                 newRanges[currentRangeSunday].startTime = dateInIST;
-             } else {
-                 newRanges[currentRangeSunday].endTime = dateInIST;
-             }
-             return newRanges;
-         });
-         hideDatePickerSunday();
-     };
- 
-     const addNewTimeRangeSunday = () => {
-         setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
-     };
- 
-     const deleteTimeRangeSunday = index => {
-         setTimeRangesSunday(currentRanges => currentRanges.filter((_, i) => i !== index));
-     };
- 
-     const saveTimeRangeSunday = () => {
-         console.log(timeRangesSunday)
-         let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
-         console.log(filteredEvents)
-     }
+    // Sunday
+    const [timeRangesSunday, setTimeRangesSunday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleSunday, setDatePickerVisibilitySunday] = useState(false);
+    const [currentRangeSunday, setCurrentRangeSunday] = useState(null);
+    const [isStartTimeSunday, setIsStartTimeSunday] = useState(true);
+
+    const showDatePickerSunday = (index, isStart) => {
+        setDatePickerVisibilitySunday(true);
+        setCurrentRangeSunday(index);
+        setIsStartTimeSunday(isStart);
+    };
+
+    const hideDatePickerSunday = () => {
+        setDatePickerVisibilitySunday(false);
+    };
+
+    const handleConfirmSunday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesSunday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeSunday) {
+                newRanges[currentRangeSunday].startTime = dateInIST;
+            } else {
+                newRanges[currentRangeSunday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerSunday();
+    };
+
+    const addNewTimeRangeSunday = () => {
+        setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeSunday = index => {
+        setTimeRangesSunday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeSunday = () => {
+        console.log(timeRangesSunday)
+        let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+    }
 
     const handleDayPress = (day) => {
         if (startDay && !endDay) {
@@ -507,7 +507,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Availability</Text>
                             </View>
                             {/* Monday card */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabled ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -528,25 +528,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRanges.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePicker(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePicker(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRange(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabled && deleteTimeRange(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRange()} >
+                                <TouchableOpacity onPress={() => isEnabled && addNewTimeRange()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -571,7 +571,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Tuesday card */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledTuesday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -592,25 +592,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesTuesday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerTuesday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerTuesday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeTuesday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && deleteTimeRangeTuesday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeTuesday()} >
+                                <TouchableOpacity onPress={() => isEnabledTuesday && addNewTimeRangeTuesday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -635,7 +635,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Wednesday */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledWednesday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -656,25 +656,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesWednesday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerWednesday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerWednesday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeWednesday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && deleteTimeRangeWednesday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeWednesday()} >
+                                <TouchableOpacity onPress={() => isEnabledWednesday && addNewTimeRangeWednesday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -699,7 +699,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Thursday */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledThursday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -720,25 +720,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesThursday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerThursday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerThursday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeThursday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && deleteTimeRangeThursday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeThursday()} >
+                                <TouchableOpacity onPress={() => isEnabledThursday && addNewTimeRangeThursday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -763,7 +763,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Friday */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledFriday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -784,25 +784,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesFriday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerFriday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerFriday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeFriday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && deleteTimeRangeFriday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeFriday()} >
+                                <TouchableOpacity onPress={() => isEnabledFriday && addNewTimeRangeFriday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -827,7 +827,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Saturday */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledSaturday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -848,25 +848,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesSaturday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerSaturday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerSaturday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeSaturday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && deleteTimeRangeSaturday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeSaturday()} >
+                                <TouchableOpacity onPress={() => isEnabledSaturday && addNewTimeRangeSaturday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -891,7 +891,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Sunday */}
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={{ width: '99%', backgroundColor: isEnabledSunday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -912,25 +912,25 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesSunday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => showDatePickerSunday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, true)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => showDatePickerSunday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, false)} style={styles.timePicker}>
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => deleteTimeRangeSunday(index)} style={styles.deleteButton}>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && deleteTimeRangeSunday(index)} style={styles.deleteButton}>
                                             <Image source={deleteImg} style={styles.deleteIcon} />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 {/* </View> */}
-                                <TouchableOpacity onPress={() => addNewTimeRangeSunday()} >
+                                <TouchableOpacity onPress={() => isEnabledSunday && addNewTimeRangeSunday()} >
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
                                         <View style={styles.inActiveButtonInsideView}>
@@ -965,7 +965,7 @@ const ScheduleScreen = ({ navigation }) => {
                     justifyContent: 'flex-end',
                 }}>
                 <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
-                    <Icon name="cross" size={30} color="#000" onPress={toggleModal} />
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
                 </View>
                 <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
                     <View style={{ padding: 20 }}>
@@ -1109,6 +1109,7 @@ const styles = StyleSheet.create({
     timeText: {
         marginRight: 10,
         fontSize: responsiveFontSize(1.7),
+        color:'#746868'
     },
     deleteButton: {
         // Additional styles may be required

@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Imag
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { filesendImg, sendImg, userPhoto } from '../../utils/Images'
+import { GreenTick, callIcon, chatImg, filesendImg, sendImg, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
 import { GiftedChat, InputToolbar, Bubble, Send } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as DocumentPicker from 'react-native-document-picker';
@@ -18,6 +18,9 @@ import database from '@react-native-firebase/database';
 import storage from '@react-native-firebase/storage';
 import RNFetchBlob from 'rn-fetch-blob'
 // import { CometChat } from '@cometchat/chat-sdk-react-native'
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Entypo';
+import Modal from "react-native-modal";
 
 const ChatScreen = ({ navigation }) => {
   const [messages, setMessages] = useState([])
@@ -27,6 +30,11 @@ const ChatScreen = ({ navigation }) => {
   const [imagePath, setImagePath] = useState('');
   const [filePath, setFilePath] = useState('');
   const [fileVisible, setFileVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('chat')
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   useEffect(() => {
     //receivedMsg()
@@ -144,17 +152,17 @@ const ChatScreen = ({ navigation }) => {
         <TouchableOpacity
           style={{
             ...styles.fileContainer,
-            backgroundColor: props.currentMessage.user._id === 2 ? '#4B47FF' : '#efefef',
+            backgroundColor: props.currentMessage.user._id === 2 ? '#ECFCFA' : '#EAECF0',
             borderBottomLeftRadius: props.currentMessage.user._id === 2 ? 15 : 5,
             borderBottomRightRadius: props.currentMessage.user._id === 2 ? 5 : 15,
           }}
           onPress={() => setFileVisible(true)}
         >
-         
+
           <View style={{ flexDirection: 'column' }}>
             <Text style={{
               ...styles.fileText,
-              color: currentMessage.user._id === 2 ? 'white' : 'black',
+              color: currentMessage.user._id === 2 ? '#2D2D2D' : '#2D2D2D',
             }} >
               {currentMessage.text}
             </Text>
@@ -167,13 +175,26 @@ const ChatScreen = ({ navigation }) => {
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#4B47FF',
+            backgroundColor: '#ECFCFA',
           },
         }}
         textStyle={{
           right: {
-            color: '#efefef',
+            color: '#2D2D2D',
+            fontFamily: 'DMSans-Regular'
           },
+          left: {
+            color: '#2D2D2D',
+            fontFamily: 'DMSans-Regular'
+          },
+        }}
+        timeTextStyle={{
+          left: {
+            color: '#8A91A8', // Change the color of timestamp text for left bubbles
+          },
+          right: {
+            color: '#8A91A8', // Change the color of timestamp text for right bubbles
+          }
         }}
       />
     );
@@ -184,18 +205,18 @@ const ChatScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    // setMessages([
-    //   {
-    //     _id: 1,
-    //     text: 'Hello developer',
-    //     createdAt: new Date(),
-    //     user: {
-    //       _id: 2,
-    //       name: 'React Native',
-    //       avatar: require('../../assets/images/user-profile.jpg'),
-    //     },
-    //   },
-    // ])
+    setMessages([
+      {
+        _id: 1,
+        text: 'Hello developer',
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: 'React Native',
+          avatar: require('../../assets/images/user-profile.jpg'),
+        },
+      },
+    ])
   }, [])
 
   const onSend = useCallback((messages = []) => {
@@ -265,28 +286,214 @@ const ChatScreen = ({ navigation }) => {
     [filePath, imagePath, isAttachFile, isAttachImage],
   );
 
- 
+
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
-      <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} />
-      <GiftedChat
-        messages={messages}
-        renderInputToolbar={props => customtInputToolbar(props)}
-        renderBubble={renderBubble}
-        isTyping
-        alwaysShowSend
-        scrollToBottom
-        scrollToBottomComponent={scrollToBottomComponent}
-        renderChatFooter={renderChatFooter}
-        renderSend={renderSend}
-        onSend={messages => onSend(messages)}
-        style={styles.messageContainer}
-        user={{
-          _id: 1,
-          avatar: require('../../assets/images/user-profile.jpg'),
-        }}
-      //user={user}
-      />
+      {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
+      <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <Ionicons name="chevron-back" size={25} color="#000" />
+          <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Sourav Ganguly</Text>
+            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Patient</Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: '#CC2131', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(5) }}>14:59</Text>
+          <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
+            <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>End</Text>
+          </View>
+        </View>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
+        {activeTab == 'chat' ?
+          <>
+            <TouchableOpacity onPress={() => setActiveTab('audio')}>
+              <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <Image
+                  source={callIcon}
+                  style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                />
+                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Audio Call</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setActiveTab('video')}>
+              <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <Image
+                  source={videoIcon}
+                  style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                />
+                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Video Call</Text>
+              </View>
+            </TouchableOpacity>
+          </>
+          : activeTab == 'audio' ?
+          <>
+          <TouchableOpacity onPress={() => setActiveTab('chat')}>
+            <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={chatImg}
+                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+              />
+              <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Chat</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setActiveTab('video')}>
+            <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={videoIcon}
+                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+              />
+              <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Video Call</Text>
+            </View>
+          </TouchableOpacity>
+        </>
+        :
+        <>
+        <TouchableOpacity onPress={() => setActiveTab('chat')}>
+          <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+              source={chatImg}
+              style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+            />
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Chat</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setActiveTab('audio')}>
+          <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+              source={callIcon}
+              style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+            />
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Audio Call</Text>
+          </View>
+        </TouchableOpacity>
+      </>
+  }
+      </View>
+      <TouchableOpacity onPress={() => toggleModal()}>
+        <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
+          <Image
+            source={summaryIcon}
+            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+          />
+          <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={{ height: responsiveHeight(75), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+        {activeTab == 'chat' ?
+          <GiftedChat
+            messages={messages}
+            renderInputToolbar={props => customtInputToolbar(props)}
+            renderBubble={renderBubble}
+            isTyping
+            alwaysShowSend
+            scrollToBottom
+            scrollToBottomComponent={scrollToBottomComponent}
+            renderChatFooter={renderChatFooter}
+            renderSend={renderSend}
+            onSend={messages => onSend(messages)}
+            style={styles.messageContainer}
+            user={{
+              _id: 1,
+              avatar: require('../../assets/images/user-profile.jpg'),
+            }}
+          //user={user}
+          />
+          : activeTab == 'audio' ?
+            <Text>audio call</Text>
+            :
+            <Text>video call</Text>
+        }
+      </View>
+      <Modal
+        isVisible={isModalVisible}
+        // onBackdropPress={() => setIsFocus(false)} // modal off by clicking outside of the modal
+        style={{
+          margin: 0, // Add this line to remove the default margin
+          justifyContent: 'flex-end',
+        }}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '55%', left: '45%', right: '45%' }}>
+          <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
+        </View>
+        {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
+        <View style={{ height: '50%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+          <View style={{ padding: 20 }}>
+            <ScrollView horizontal={true}>
+              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
+                <View style={{ padding: 15 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Image
+                        source={GreenTick}
+                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                      />
+                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
+                  </View>
+                  <View style={{ marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
+                  </View>
+                </View>
+              </View>
+              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
+                <View style={{ padding: 15 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <Image
+                        source={GreenTick}
+                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                      />
+                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
+                  </View>
+                  <View style={{ marginTop: responsiveHeight(1.5) }}>
+                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
+                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
+                  </View>
+                </View>
+              </View>
+            </ScrollView>
+
+          </View>
+        </View>
+        {/* </TouchableWithoutFeedback> */}
+      </Modal>
     </SafeAreaView>
   )
 }
@@ -296,11 +503,12 @@ export default ChatScreen
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingBottom: 10
+    backgroundColor: '#EAECF0',
+    paddingBottom: 10,
   },
   messageContainer: {
-    backgroundColor: 'red'
+    backgroundColor: 'red',
+    height: responsiveHeight(70)
   },
   imageView1: {
     width: 30,
@@ -313,7 +521,7 @@ const styles = StyleSheet.create({
     marginBottom: responsiveHeight(2)
   },
   chatFooter: {
-    shadowColor: '#1F2687',
+    shadowColor: '#ECFCFA',
     shadowOpacity: 0.37,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 8 },
@@ -368,10 +576,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginLeft: 10,
     marginRight: 5,
+    color: '#2D2D2D'
   },
   textTime: {
     fontSize: 10,
-    color: 'gray',
+    color: '#2D2D2D',
     marginLeft: 2,
   },
 

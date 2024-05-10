@@ -116,7 +116,7 @@ export default function CustomHeader({
                     <>
                         <View style={styles.chatPageheaderView}>
                             <TouchableOpacity onPress={onPress}>
-                                <Ionicons name="arrow-back" size={25} color="#FFF" />
+                                <Ionicons name="chevron-back" size={25} color="#FFF" />
                             </TouchableOpacity>
                             <Image
                                 source={userPhoto}
@@ -130,7 +130,7 @@ export default function CustomHeader({
                     <>
                         <View style={styles.innerPageheaderView}>
                             <TouchableOpacity onPress={onPress}>
-                                <Ionicons name="arrow-back" size={25} color="#000" />
+                                <Ionicons name="chevron-back" size={25} color="#000" />
                             </TouchableOpacity>
                             <Text style={styles.innerPageheaderTitle}>{title}</Text>
                         </View>

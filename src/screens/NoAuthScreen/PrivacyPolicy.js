@@ -35,7 +35,7 @@ const BannerWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
-export default function TermsScreen({ navigation }) {
+export default function PrivacyPolicy({ navigation }) {
 
     const dispatch = useDispatch();
     const { data: products, status } = useSelector(state => state.products)
@@ -44,11 +44,16 @@ export default function TermsScreen({ navigation }) {
     const [selectedTab, setSelectedTab] = useState(1);
     const [isLoading, setIsLoading] = useState(false)
     const [termsCondition,setTermsCondition] = useState(`
-    <h1>This HTML snippet is now rendered with native components !</h1>
-    <h2>Enjoy a webview-free and blazing fast application</h2>
+    <h1>Policy</h1>
+    <h2>Update on 16-05-2024</h2>
     <img src="https://i.imgur.com/dHLmxfO.jpg?2" />
     <em style="textAlign: center;">Look at how happy this native cat is</em>
   `)
+  const tagsStyles = {
+    h1: { color: '#2D2D2D',fontSize: responsiveFontSize(3),fontFamily:'DMSans-SemiBold' },
+    h2: { color: '#444343',fontSize: responsiveFontSize(2),fontFamily:'DMSans-Regular'  }, // Example of adding more styles
+    em: { color: 'red', textAlign: 'center' }
+  };
 
     const { width } = useWindowDimensions();
 
@@ -104,7 +109,7 @@ export default function TermsScreen({ navigation }) {
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Privacy Policy'} title={'Privacy Policy'} onPress={() => navigation.goBack()} onPressProfile={() => navigation.navigate('Profile')} />
             <ScrollView style={styles.wrapper}>
-            <RenderHTML contentWidth={width} source={{ html:termsCondition }} /> 
+            <RenderHTML contentWidth={width} source={{ html:termsCondition }} tagsStyles={tagsStyles}/> 
             </ScrollView>
         </SafeAreaView >
     );

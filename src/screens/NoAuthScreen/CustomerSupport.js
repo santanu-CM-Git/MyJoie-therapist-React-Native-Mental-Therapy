@@ -37,7 +37,7 @@ const BannerWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
-export default function FaqScreen({ navigation }) {
+export default function CustomerSupport({ navigation }) {
 
     const dispatch = useDispatch();
     const { data: products, status } = useSelector(state => state.products)
@@ -135,22 +135,7 @@ export default function FaqScreen({ navigation }) {
                             value your feedback</Text>
                     </View>
                 </View>
-                <View style={{ borderBottomColor: '#E3E3E3', borderBottomWidth: 1, marginHorizontal: 10, marginTop: 10 }} />
-                <View style={{ flexDirection: 'row', marginTop: responsiveHeight(2), }}>
-                    <View style={{ width: responsiveWidth(20), }}>
-                        <View style={{ height: 40, width: 40, borderRadius: 20, backgroundColor: '#FFF5F7', justifyContent: 'center', alignItems: 'center' }}>
-                            <Image
-                                source={pointerImg}
-                                style={{ height: 20, width: 20, resizeMode: 'contain', }}
-                            />
-                        </View>
-                    </View>
-                    <View style={{ width: responsiveWidth(70), }}>
-                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Address</Text>
-                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7), lineHeight: responsiveHeight(2.5) }}>N1/46, First lane, IRC Village, Nayapa</Text>
-                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Gurgaon, Uttar Pradesh, India</Text>
-                    </View>
-                </View>
+                
 
             </ScrollView>
             <View style={{ position: 'absolute', bottom: 30, alignSelf: 'center' }}>

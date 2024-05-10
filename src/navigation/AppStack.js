@@ -6,10 +6,10 @@ import CustomDrawer from '../components/CustomDrawer';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import FaqScreen from '../screens/NoAuthScreen/FaqScreen';
+import CustomerSupport from '../screens/NoAuthScreen/CustomerSupport';
 
 import TabNavigator from './TabNavigator';
-import TermsScreen from '../screens//NoAuthScreen/TermsScreen';
+import PrivacyPolicy from '../screens//NoAuthScreen/PrivacyPolicy';
 
 import SessionHistory from '../screens/NoAuthScreen/SessionHistory';
 import NoNotification from '../screens/NoAuthScreen/NoNotification';
@@ -55,7 +55,7 @@ const AuthStack = () => {
       />
        <Drawer.Screen
         name="  Customer Support"
-        component={FaqScreen}
+        component={CustomerSupport}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
@@ -65,7 +65,7 @@ const AuthStack = () => {
       />
       <Drawer.Screen
         name="  Privacy Policy"
-        component={TermsScreen}
+        component={PrivacyPolicy}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="settings-outline" size={22} color={color} />

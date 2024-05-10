@@ -16,7 +16,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 
-import TermsScreen from '../screens/NoAuthScreen/TermsScreen';
+import PrivacyPolicy from '../screens/NoAuthScreen/PrivacyPolicy';
 import OrderSummary from '../screens/NoAuthScreen/OrderSummary';
 import ChatScreen from '../screens/NoAuthScreen/ChatScreen';
 import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
@@ -43,7 +43,11 @@ const HomeStack = () => {
         component={OrderSummary}
         options={{ headerShown: false }}
       />
-
+      <Stack.Screen
+        name='ChatScreen'
+        component={ChatScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
@@ -83,8 +87,8 @@ const ProfileStack = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="TermsScreen"
-        component={TermsScreen}
+        name="PrivacyPolicy"
+        component={PrivacyPolicy}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -124,8 +128,8 @@ const TabNavigator = () => {
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', }}>
-              {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
-              <Ionicons name="home-outline" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+              {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
+              <Ionicons name="home-outline" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -151,8 +155,8 @@ const TabNavigator = () => {
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', }}>
-            {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
-            <FontAwesome name="rupee-sign" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+              {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
+              <FontAwesome name="rupee-sign" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -178,8 +182,8 @@ const TabNavigator = () => {
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', }}>
-            {focused && <View style={{width: responsiveWidth(12), borderColor: color,backgroundColor: color, borderWidth: 2,borderBottomLeftRadius:5,borderBottomRightRadius:5 }} />}
-            <AntDesign name="calendar" color={color} size={size} style={{marginTop:responsiveHeight(1.2)}}/>
+              {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
+              <AntDesign name="calendar" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -195,7 +199,7 @@ const TabNavigator = () => {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
             width: responsiveWidth(100),
-            height: responsiveHeight(9),
+            height: responsiveHeight(8),
             alignSelf: 'center',
             //marginTop: -responsiveHeight(10),
             //borderRadius: 30,

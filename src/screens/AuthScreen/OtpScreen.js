@@ -151,8 +151,8 @@ const OtpScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-                <MaterialIcons name="arrow-back" size={25} color="#000" onPress={() => navigation.goBack()} />
+            <View style={{ paddingHorizontal: 20, paddingVertical: 10,marginTop: responsiveHeight(5) }}>
+                <MaterialIcons name="arrow-back-ios-new" size={25} color="#000" onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.wrapper}>
                 <Text
@@ -188,14 +188,14 @@ const OtpScreen = ({ navigation, route }) => {
                     />
                 </View>
                 {errors &&
-                    <Text style={{ fontSize: responsiveFontSize(1.5), color: 'red', marginBottom: 20, marginTop: -25, alignSelf: 'center' }}>{errorText}</Text>
+                    <Text style={{ fontSize: responsiveFontSize(1.5), color: 'red', marginBottom: 20, marginTop: -25, alignSelf: 'center',fontFamily:'DMSans-Medium' }}>{errorText}</Text>
                 }
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Didn’t receive OTP?</Text>
                     <TouchableOpacity onPress={() => resendOtp()}>
                         <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7) }}>Resend OTP</Text>
                     </TouchableOpacity>
-                    <Text style={{color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7)}}>{formatTime(timer)}</Text>
+                    <Text style={{color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7)}}>{formatTime(timer)}</Text>
                 </View>
 
             </View>
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     wrapper: {
         paddingHorizontal: 25,
         height: responsiveHeight(80),
-        marginTop: responsiveHeight(10)
+        marginTop: responsiveHeight(5)
     },
     header: {
         fontFamily: 'DMSans-Bold',

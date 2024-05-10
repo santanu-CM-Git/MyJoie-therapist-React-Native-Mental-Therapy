@@ -9,6 +9,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoNotification from './NoNotification';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Dropdown } from 'react-native-element-dropdown';
+import Modal from "react-native-modal";
+import Icon from 'react-native-vector-icons/Entypo';
+import InputField from '../../components/InputField';
+import CustomButton from '../../components/CustomButton';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -19,6 +23,10 @@ const SessionHistory = ({ navigation }) => {
     const [notifyStatus, setnotifyStatus] = useState(false)
     const [value, setValue] = useState('1');
     const [isFocus, setIsFocus] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
 
     useEffect(() => {
         if (Platform.OS == 'android') {
@@ -109,7 +117,12 @@ const SessionHistory = ({ navigation }) => {
                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
                         </View>
                         <View style={{ marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
+                                <TouchableOpacity onPress={() => toggleModal()}>
+                                    <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Edit</Text>
+                                </TouchableOpacity>
+                            </View>
                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
                         </View>
                         <View style={{ height: responsiveHeight(5), width: responsiveWidth(78), marginTop: responsiveHeight(2), backgroundColor: '#F4F5F5', borderRadius: 15, padding: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
@@ -120,47 +133,40 @@ const SessionHistory = ({ navigation }) => {
                             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7) }}>Payment Received : ₹ 800</Text>
                         </View>
                     </View>
-                    <View style={{ width: '99%', backgroundColor: '#FFF', padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), borderColor: '#F4F5F5', borderWidth: 2, }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Image
-                                    source={GreenTick}
-                                    style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                />
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
-                        </View>
-
-                        <View style={{ height: responsiveHeight(5), width: responsiveWidth(78), marginTop: responsiveHeight(2),marginBottom: responsiveHeight(2), backgroundColor: '#F4F5F5', borderRadius: 15, padding: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={Payment}
-                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-                            />
-                            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7) }}>Payment Received : ₹ 800</Text>
-                        </View>
-                        <View style={styles.activeButtonInsideView}>
-                            <Text style={styles.activeButtonInsideText}>Upload Summary</Text>
-                        </View>
-                    </View>
                 </View>
             </ScrollView>
+            <Modal
+                isVisible={isModalVisible}
+                style={{
+                    margin: 0, // Add this line to remove the default margin
+                    justifyContent: 'flex-end',
+                }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '55%', left: '45%', right: '45%' }}>
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
+                </View>
+                <View style={{ height: '50%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+                    <View style={{ padding: 25 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }}>
+                            <Text style={styles.header}>Session Summary</Text>
+                        </View>
+                        <View style={styles.inputView}>
+                            <InputField
+                                label={'Aadhar No'}
+                                keyboardType=" "
+                                value={'56897 85698 78965 96636'}
+                                //helperText={'Please enter lastname'}
+                                inputType={'address'}
+                                onChangeText={(text) => changePassword(text)}
+                            />
+                        </View>
+                        <CustomButton label={"Upload"}
+                            // onPress={() => { login() }}
+                            onPress={() => { submitForm() }}
+                        />
+                    </View>
+
+                </View>
+            </Modal>
         </SafeAreaView>
     )
 }

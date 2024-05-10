@@ -212,7 +212,11 @@ const UploadSessionSummary = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <CustomHeader commingFrom={'Session Summary'} onPress={() => navigation.goBack()} title={'Session Summary'} />
+            {/* <CustomHeader commingFrom={'Session Summary'} onPress={() => navigation.goBack()} title={'Session Summary'} /> */}
+            <View style={{ paddingHorizontal: 20, paddingVertical: 10, marginTop: responsiveHeight(5) }}>
+                <Text style={styles.header}>Session Summary</Text>
+                <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.7), color: '#746868', marginBottom: responsiveHeight(1), }}>Write session summary to proceed</Text>
+            </View>
             <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: responsiveHeight(4) }}>
                 <View style={styles.wrapper}>
                     <View style={styles.textinputview}>

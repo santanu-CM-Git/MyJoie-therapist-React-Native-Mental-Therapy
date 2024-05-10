@@ -39,6 +39,17 @@ const items = [
   { id: 'sdhyaysdj', name: 'Kaduna' },
   { id: 'suudydjsjd', name: 'Abuja' }
 ];
+const qualificationitemsType = [
+  { id: '1', name: 'Individual' },
+  { id: '2', name: 'Couple' },
+  { id: '3', name: 'Child' },
+
+];
+const qualificationitemsLanguage = [
+  { id: '1', name: 'Hindi' },
+  { id: '2', name: 'English' },
+  { id: '3', name: 'Gujrati' },
+];
 const data = [
   { label: 'Absa Bank Ghana Limited', value: 'Absa Bank Ghana Limited' },
   { label: 'Access Bank (Ghana) Plc', value: 'Access Bank (Ghana) Plc' },
@@ -79,8 +90,6 @@ const ProfileScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false)
   const { login, userToken } = useContext(AuthContext);
 
-  const [selectedItems, setSelectedItems] = useState([]);
-  const multiSelectRef = useRef(null);
   const [statevalue, setStateValue] = useState(null);
   const [isStateFocus, setStateIsFocus] = useState(false);
 
@@ -90,8 +99,24 @@ const ProfileScreen = ({ navigation, route }) => {
   const [monthvalue, setMonthValue] = useState(null);
   const [isMonthFocus, setMonthIsFocus] = useState(false);
 
+  // Qualification dropdown
+  const [selectedItems, setSelectedItems] = useState([]);
+  const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
     setSelectedItems(selectedItems);
+  };
+  // Type dropdown
+  const [selectedItemsType, setSelectedItemsType] = useState([]);
+  const multiSelectRefType = useRef(null);
+  const onSelectedItemsChangeType = selectedItems => {
+    setSelectedItemsType(selectedItems);
+  };
+
+  // Language dropdown
+  const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
+  const multiSelectRefLanguage = useRef(null);
+  const onSelectedItemsChangeLanguage = selectedItems => {
+    setSelectedItemsLanguage(selectedItems);
   };
 
   const toggleModal = () => {
@@ -141,6 +166,10 @@ const ProfileScreen = ({ navigation, route }) => {
     // } else {
     //   setPostaddressError('Please enter Ghana Post Address')
     // }
+  }
+
+  const submitForm = () => {
+    console.log(selectedItemsType," type off therapist")
   }
 
   // const submitForm = () => {
@@ -341,16 +370,87 @@ const ProfileScreen = ({ navigation, route }) => {
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Type of Therapies</Text>
+             
+            </View>
+            <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
+              <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
+                <MultiSelect
+                  hideTags
+                  items={qualificationitemsType}
+                  uniqueKey="id"
+                  ref={multiSelectRefType}
+                  onSelectedItemsChange={onSelectedItemsChangeType}
+                  selectedItems={selectedItemsType}
+                  selectText="Pick Type"
+                  searchInputPlaceholderText="Search Type..."
+                  onChangeInput={(text) => console.log(text)}
+                  altFontFamily="DMSans-Regular"
+                  tagRemoveIconColor="#000000"
+                  tagBorderColor="#87ADA8"
+                  tagTextColor="#2D2D2D"
+                  selectedItemTextColor="#000"
+                  selectedItemIconColor="#000"
+                  itemTextColor="#746868"
+                  displayKey="name"
+                  searchInputStyle={styles.searchInput}
+                  styleDropdownMenu={styles.dropdownMenu}
+                  styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
+                  styleMainWrapper={styles.mainWrapper}
+                  submitButtonColor="#87ADA8"
+                  submitButtonText="Submit"
+                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                //hideSubmitButton
+                />
+              </View>
+              <View style={{ marginVertical: responsiveHeight(2) }}>
+                {multiSelectRefType.current && multiSelectRefType.current.getSelectedItemsExt(selectedItemsType)}
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.header}>Language</Text>
+              
+            </View>
+            <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
+              <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
+                <MultiSelect
+                  hideTags
+                  items={qualificationitemsLanguage}
+                  uniqueKey="id"
+                  ref={multiSelectRefLanguage}
+                  onSelectedItemsChange={onSelectedItemsChangeLanguage}
+                  selectedItems={selectedItemsLanguage}
+                  selectText="Pick Language"
+                  searchInputPlaceholderText="Search Language..."
+                  onChangeInput={(text) => console.log(text)}
+                  altFontFamily="DMSans-Regular"
+                  tagRemoveIconColor="#000000"
+                  tagBorderColor="#87ADA8"
+                  tagTextColor="#2D2D2D"
+                  selectedItemTextColor="#000"
+                  selectedItemIconColor="#000"
+                  itemTextColor="#746868"
+                  displayKey="name"
+                  searchInputStyle={styles.searchInput}
+                  styleDropdownMenu={styles.dropdownMenu}
+                  styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
+                  styleMainWrapper={styles.mainWrapper}
+                  submitButtonColor="#87ADA8"
+                  submitButtonText="Submit"
+                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                //hideSubmitButton
+                />
+              </View>
+              <View style={{ marginVertical: responsiveHeight(2) }}>
+                {multiSelectRefLanguage.current && multiSelectRefLanguage.current.getSelectedItemsExt(selectedItemsLanguage)}
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Qualification</Text>
             </View>
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{
-                fontFamily: 'Outfit-Regular',
-                paddingHorizontal: 5,
-                borderColor: '#E0E0E0',
-                borderWidth: 1,
-                borderRadius: 8,
-                width: responsiveWidth(88)
+                fontFamily: 'Outfit-Regular', paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88)
               }}>
                 <MultiSelect
                   hideTags
@@ -376,7 +476,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6 }}
+                  styleIndicator={{marginTop: -6,marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -752,8 +852,9 @@ const styles = StyleSheet.create({
     marginBottom: responsiveHeight(4)
   },
   placeholderStyle: {
-    fontSize: 16,
-    color: '#2F2F2F'
+    fontSize: responsiveFontSize(1.8),
+    color: '#2F2F2F',
+    fontFamily: 'DMSans-Regular'
   },
   selectedTextStyle: {
     fontSize: 16,
