@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect,useRef } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView, PermissionsAndroid } from 'react-native'
+import React, { useState, useCallback, useEffect } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -22,12 +22,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
 import AgoraUIKit, { StreamFallbackOptions } from 'agora-rn-uikit';
-
-import { ClientRoleType, createAgoraRtcEngine, ChannelProfileType } from 'react-native-agora';
-const appId = '975e09acde854ac38b3304da072c111e';
-const channelName = 'testvoice';
-const token = '123456789';
-const uid = Math.random().toString(36).substr(2, 10);
 
 const ChatScreen = ({ navigation }) => {
 
@@ -307,89 +301,6 @@ const ChatScreen = ({ navigation }) => {
   );
 
 
-  // audio call 
-  const agoraEngineRef = useRef(); // Agora engine instance
-  const [isJoined, setIsJoined] = useState(false); // Indicates if the local user has joined the channel
-  const [remoteUid, setRemoteUid] = useState(0); // Uid of the remote user
-  const [message, setMessage] = useState(''); // Message to the user
-
-  function showMessage(msg) {
-    setMessage(msg);
-  }
-
-  const getPermission = async () => {
-    if (Platform.OS === 'android') {
-      await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      ]);
-    }
-  };
-
-  useEffect(() => {
-    // Initialize Agora engine when the app starts
-    setupVoiceSDKEngine();
-  }, []);
-
-  const setupVoiceSDKEngine = async () => {
-    try {
-      // use the helper function to get permissions
-      if (Platform.OS === 'android') await getPermission();
-      agoraEngineRef.current = createAgoraRtcEngine();
-      const agoraEngine = agoraEngineRef.current;
-      agoraEngine.registerEventHandler({
-        onJoinChannelSuccess: () => {
-          showMessage('Successfully joined the channel ' + channelName);
-          setIsJoined(true);
-        },
-        onUserJoined: (_connection, Uid) => {
-          showMessage('Remote user joined with uid ' + Uid);
-          setRemoteUid(Uid);
-        },
-        onUserOffline: (_connection, Uid) => {
-          showMessage('Remote user left the channel. uid: ' + Uid);
-          setRemoteUid(0);
-        },
-      });
-      agoraEngine.initialize({
-        appId: appId,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const join = async () => {
-    console.log('join')
-    console.log(isJoined, 'isjoind status')
-    if (isJoined) {
-      console.log('already joined')
-      return;
-    }
-    try {
-      agoraEngineRef.current?.setChannelProfile(
-        ChannelProfileType.ChannelProfileCommunication
-      );
-      agoraEngineRef.current?.joinChannel(token, channelName, uid, {
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      });
-      setIsJoined(true);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const leave = () => {
-    try {
-      agoraEngineRef.current?.leaveChannel();
-      setRemoteUid(0);
-      setIsJoined(false);
-      showMessage('You left the channel');
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
@@ -504,61 +415,35 @@ const ChatScreen = ({ navigation }) => {
           //user={user}
           />
           : activeTab == 'audio' ?
-            <>
-              <View style={styles.btnContainer}>
-                <Text onPress={join} style={styles.button}>
-                  Join
-                </Text>
-                <Text onPress={leave} style={styles.button}>
-                  Leave
-                </Text>
-              </View>
-              <ScrollView
-                style={styles.scroll}
-                contentContainerStyle={styles.scrollContainer}
-              >
-                {isJoined ? (
-                  <Text style={{ color: '#000' }}>Local user uid: {uid}</Text>
-                ) : (
-                  <Text style={{ color: '#000' }}>Join a channel</Text>
-                )}
-                {isJoined && remoteUid !== 0 ? (
-                  <Text style={{ color: '#000' }}>Remote user uid: {remoteUid}</Text>
-                ) : (
-                  <Text style={{ color: '#000' }}>Waiting for a remote user to join</Text>
-                )}
-                <Text>{message}</Text>
-              </ScrollView>
-            </>
-
+            <Text>audio call</Text>
             :
             <>
               {videoCall ? (
-                <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+                <SafeAreaView style={{ flex: 1,backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
                   <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks} styleProps={{
                     localBtnStyles: {
                       endCall: {
                         height: 40,
-                        width: 40,
+                        width:40,
                         backgroundColor: '#e43',
                         borderWidth: 0,
                       },
                       switchCamera: {
                         height: 40,
-                        width: 40,
+                        width:40,
                         backgroundColor: '#8D9095',
                         borderWidth: 0,
                       },
                       muteLocalAudio: {
                         height: 40,
-                        width: 40,
+                        width:40,
                         backgroundColor: '#8D9095',
                         borderWidth: 0
                       },
                       muteLocalVideo: {
                         height: 40,
-                        width: 40,
+                        width:40,
                         backgroundColor: '#8D9095',
                         borderWidth: 0
                       },
@@ -570,14 +455,14 @@ const ChatScreen = ({ navigation }) => {
                       // marginRight:-20
                     },
                     UIKitContainer: {
-                      flex: 1,
+                      flex:1,
                     },
-                    localBtnContainer: {
+                    localBtnContainer:{
                       backgroundColor: 'rgba(52, 52, 52, 0.8)',
                       height: responsiveHeight(10),
                       //width: responsiveWidth(80),
-                      borderRadius: 50,
-                      alignItems: 'center',
+                      borderRadius:50,
+                      alignItems:'center',
                     },
                   }} />
                 </SafeAreaView>
