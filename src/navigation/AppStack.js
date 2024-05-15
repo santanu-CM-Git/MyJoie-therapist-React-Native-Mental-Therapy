@@ -1,7 +1,7 @@
 import React from 'react';
 import {Image} from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import { homeImg, contactImg, helpImg, bankDetailsImg, documentImg , capacityImg, reviewImg, earningImg, acceptedOrderImg, completedOrderImg, availabilityImg, SessionIcon, PolicyIcon} from '../utils/Images';
+import { homeImg, contactImg, helpImg, bankDetailsImg, documentImg , capacityImg, reviewImg, earningImg, acceptedOrderImg, completedOrderImg, availabilityImg, SessionIcon, PolicyIcon, availabilityBlackImg, earningBlackImg} from '../utils/Images';
 import CustomDrawer from '../components/CustomDrawer';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -14,6 +14,8 @@ import PrivacyPolicy from '../screens//NoAuthScreen/PrivacyPolicy';
 import SessionHistory from '../screens/NoAuthScreen/SessionHistory';
 import NoNotification from '../screens/NoAuthScreen/NoNotification';
 import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
+import ScheduleScreen from '../screens/NoAuthScreen/ScheduleScreen';
+import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -40,6 +42,26 @@ const AuthStack = () => {
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
             <Image source={homeImg} style={{ width: 25,height: 25,}} color={color}/>
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="  Availability"
+        component={ScheduleScreen}
+        options={{
+          drawerIcon: ({color}) => (
+            // <Ionicons name="home-outline" size={22} color={color} />
+            <Image source={availabilityBlackImg} style={{ width: 25,height: 25,}} color={color}/>
+          ),
+        }}
+      />
+       <Drawer.Screen
+        name="  Earning"
+        component={EarningScreen}
+        options={{
+          drawerIcon: ({color}) => (
+            // <Ionicons name="home-outline" size={22} color={color} />
+            <Image source={earningBlackImg} style={{ width: 25,height: 25,}} color={color}/>
           ),
         }}
       />
