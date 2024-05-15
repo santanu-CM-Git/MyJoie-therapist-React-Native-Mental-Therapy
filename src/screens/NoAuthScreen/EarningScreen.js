@@ -129,7 +129,7 @@ const EarningScreen = ({ navigation }) => {
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>GST </Text>
-                                <Text style={{ color: '#E1293B', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>(₹ 90,000)</Text>
+                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>- ₹ 90,000</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>Net Payable</Text>
@@ -137,7 +137,7 @@ const EarningScreen = ({ navigation }) => {
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>TDS</Text>
-                                <Text style={{ color: '#E1293B', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>(₹ 41,000)</Text>
+                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>- ₹ 41,000</Text>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                                 <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold' }}>Transfer to account</Text>
