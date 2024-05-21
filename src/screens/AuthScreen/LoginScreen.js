@@ -32,13 +32,12 @@ const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
 const LoginScreen = ({ navigation }) => {
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [therapistId, setTherapistId] = useState('');
+  const [therapistIdError, settherapistIdError] = useState('')
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('')
   const [deviceId, setDeviceId] = useState('')
-  const [mobileError, setMobileError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [show, setShow] = useState(false);
-  const [countryCode, setCountryCode] = useState('+233');
 
   const { login, userToken } = useContext(AuthContext);
 
@@ -67,22 +66,33 @@ const LoginScreen = ({ navigation }) => {
     });
   }
 
-  const onChangeText = (text) => {
-    const phoneRegex = /^\d{10}$/;
-    setPhone(text)
-    if (!phoneRegex.test(text)) {
-      setMobileError('Please enter a 10-digit number.')
+
+  const onChangetherapistId = (text) => {
+    setTherapistId(text)
+    if (text) {
+      settherapistIdError('')
     } else {
-      setMobileError('')
+      settherapistIdError('Please enter Therapist Id')
     }
   }
 
-  const onChangeEmail = (text) => {
-    setEmail(text)
+  const onChangePassword = (text) => {
+    setPassword(text)
+    if (text) {
+      setPasswordError('')
+    } else {
+      setPasswordError('Please enter Password')
+    }
   }
-
   const handleSubmit = () => {
-    login()
+    //login()
+    if(!therapistId){
+      settherapistIdError('Please enter Therapist Id')
+    }else if(!password){
+      setPasswordError('Please enter Password')
+    }else{
+      login()
+    }
     // const phoneRegex = /^\d{10}$/;
     // if (!phone) {
     //   setMobileError('Please enter Mobile no')
@@ -153,50 +163,6 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.wrapper}>
-
-          {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
-              style={styles.header}>
-              Enter your mobile number
-            </Text>
-            <Text style={{ color: 'red', marginBottom: responsiveHeight(2), fontFamily: 'DMSans-SemiBold', }}> *(Required)</Text>
-          </View> */}
-          {/* <View style={styles.textinputview}>
-           
-            <View style={styles.countryModal}>
-              <TouchableOpacity
-                onPress={() => setShow(true)}
-                style={styles.countryInputView}
-              >
-                <Text style={{
-                  color: '#808080',
-                  fontSize: responsiveFontSize(2),
-                }}>
-                  {countryCode}
-                </Text>
-              </TouchableOpacity>
-              <CountryPicker
-                show={show}
-                initialState={'+233'}
-                pickerButtonOnPress={(item) => {
-                  setCountryCode(item.dial_code);
-                  setShow(false);
-                }}
-                style={{
-                  modal: {
-                    height: responsiveHeight(60),
-                  },
-                }}
-              />
-            </View>
-            <InputField
-              label={'Mobile Number'}
-              keyboardType="numeric"
-              value={phone}
-              onChangeText={(text) => onChangeText(text)}
-              helperText={mobileError}
-            />
-          </View> */}
           <View style={{ marginBottom: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Welcome Back</Text>
             <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Enter your Email ID & Password to continue with your account.<Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5) }}> Create Account</Text></Text>
@@ -205,13 +171,14 @@ const LoginScreen = ({ navigation }) => {
             style={styles.header}>
             Therapist ID
           </Text>
+          {therapistIdError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{therapistIdError}</Text> : <></>}
           <View style={styles.textinputview}>
             <InputField
               label={'Therapist ID'}
               keyboardType="default"
               inputType="others"
-              value={email}
-              onChangeText={(text) => onChangeEmail(text)}
+              value={therapistId}
+              onChangeText={(text) => onChangetherapistId(text)}
             //helperText={mobileError}
             />
           </View>
@@ -219,13 +186,14 @@ const LoginScreen = ({ navigation }) => {
             style={styles.header}>
             Password
           </Text>
+          {passwordError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{passwordError}</Text> : <></>}
           <View style={styles.textinputview}>
             <InputField
               label={'Password'}
               keyboardType="default"
               inputType="others"
-              value={email}
-              onChangeText={(text) => onChangeEmail(text)}
+              value={password}
+              onChangeText={(text) => onChangePassword(text)}
             //helperText={mobileError}
             />
           </View>

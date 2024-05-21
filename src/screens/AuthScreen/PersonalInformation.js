@@ -61,12 +61,14 @@ const dataMonth = [
 
 const PersonalInformation = ({ navigation, route }) => {
   const concatNo = route?.params?.countrycode + '-' + route?.params?.phoneno;
-  const [phoneno, setPhoneno] = useState('');
+
   const [firstname, setFirstname] = useState('');
   const [firstNameError, setFirstNameError] = useState('')
-  const [lastname, setLastname] = useState('');
-  const [lastNameError, setLastNameError] = useState('')
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('')
+  const [phoneno, setPhoneno] = useState('');
+  const [phonenoError, setPhonenoError] = useState('')
+
   const [isLoading, setIsLoading] = useState(false)
   const { login, userToken } = useContext(AuthContext);
 
@@ -79,16 +81,20 @@ const PersonalInformation = ({ navigation, route }) => {
 
   // Type dropdown
   const [selectedItemsType, setSelectedItemsType] = useState([]);
+  const [selectedItemError, setSelectedItemError] = useState('')
   const multiSelectRefType = useRef(null);
   const onSelectedItemsChangeType = selectedItems => {
     setSelectedItemsType(selectedItems);
+    setSelectedItemError('')
   };
 
   // Language dropdown
   const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
+  const [selectedItemLanguageError, setSelectedItemLanguageError] = useState('')
   const multiSelectRefLanguage = useRef(null);
   const onSelectedItemsChangeLanguage = selectedItems => {
     setSelectedItemsLanguage(selectedItems);
+    setSelectedItemLanguageError('')
   };
 
   // experience dropdown
@@ -104,115 +110,114 @@ const PersonalInformation = ({ navigation, route }) => {
     if (text) {
       setFirstNameError('')
     } else {
-      setFirstNameError('Please enter First name')
+      setFirstNameError('Please enter Name')
     }
   }
 
-  const changeLastname = (text) => {
-    setLastname(text)
-    if (text) {
-      setLastNameError('')
+  const changeEmail = (text) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(text) === false) {
+      console.log("Email is Not Correct");
+      setEmail(text)
+      setEmailError('Please enter correct Email Id')
+      return false;
+    }
+    else {
+      setEmailError('')
+      console.log("Email is Correct");
+      setEmail(text)
+    }
+  }
+
+  const changePhone = (text) => {
+    let phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(text)) {
+      setPhoneno(text)
+      setPhonenoError('Please enter a 10-digit number.')
+      return false;
     } else {
-      setLastNameError('Please enter Last name')
+      setPhonenoError('')
+      setPhoneno(text)
     }
   }
 
-  const changePassword = (text) => {
-    setPassword(text)
-    if (text) {
-      setPasswordError('')
+
+  const submitForm = () => {
+    //navigation.navigate('DocumentsUpload')
+    if (!firstname) {
+      setFirstNameError('Please enter Name')
+    } else if (!email) {
+      setEmailError('Please enter Email Id')
+    } else if (!phoneno) {
+      setPhonenoError('Please enter Mobile No')
+    } else if (selectedItemsType && selectedItemsType.length == 0) {
+      setSelectedItemError('Please select type of therapist')
+    } else if (selectedItemsLanguage && selectedItemsLanguage.length == 0) {
+      setSelectedItemLanguageError('Please select Language')
     } else {
-      setPasswordError('Please enter Address')
+      //selectedItems
+      //yearvalue
+      //monthvalue
+      navigation.navigate('Thankyou')
+      //   setIsLoading(true)
+      //   var option = {}
+      //   if(email){
+      //     var option = {
+      //       "firstName": firstname,
+      //       "lastName": lastname,
+      //       "email": email,
+      //       "address": address,
+      //       "zipcode": postaddress,
+      //       "city" : city
+      //     }
+      //   }else{
+      //     var option = {
+      //       "firstName": firstname,
+      //       "lastName": lastname,
+      //       "address": address,
+      //       "zipcode": postaddress,
+      //       "city" : city
+      //     }
+      //   }
+
+      //   axios.post(`${API_URL}/api/driver/updateInformation`, option, {
+      //     headers: {
+      //       Accept: 'application/json',
+      //       "Authorization": 'Bearer ' + route?.params?.usertoken,
+      //     },
+      //   })
+      //     .then(res => {
+      //       console.log(res.data)
+      //       if (res.data.response.status.code === 200) {
+      //         setIsLoading(false)
+      //         navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
+      //     } else {
+      //         Alert.alert('Oops..', "Something went wrong", [
+      //             {
+      //                 text: 'Cancel',
+      //                 onPress: () => console.log('Cancel Pressed'),
+      //                 style: 'cancel',
+      //             },
+      //             { text: 'OK', onPress: () => console.log('OK Pressed') },
+      //         ]);
+      //     }
+      //     })
+      //     .catch(e => {
+      //       setIsLoading(false)
+      //       console.log(`user update error ${e}`)
+      //       console.log(e.response.data?.response.records)
+      //       Alert.alert('Oops..', "Something went wrong", [
+      //         {
+      //             text: 'Cancel',
+      //             onPress: () => console.log('Cancel Pressed'),
+      //             style: 'cancel',
+      //         },
+      //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+      //     ]);
+      //     });
+
     }
   }
-  const changeCity = (text) => {
-    setCity(text)
-    if (text) {
-      setCityError('')
-    } else {
-      setCityError('Please enter City')
-    }
-  }
-  const changePostAddress = (text) => {
-    setPostaddress(text)
-    // if (text) {
-    //   setPostaddressError('')
-    // } else {
-    //   setPostaddressError('Please enter Ghana Post Address')
-    // }
-  }
-
-  // const submitForm = () => {
-  //   //navigation.navigate('DocumentsUpload')
-  //   if (!firstname) {
-  //     setFirstNameError('Please enter First name')
-  //   }else if(!lastname){
-  //     setLastNameError('Please enter Last name')
-  //   }else if(!address){
-  //     setAddressError('Please enter Address')
-  //   }else if(!city){
-  //     setCityError('Please enter City')
-  //   } else {
-  //     setIsLoading(true)
-  //     var option = {}
-  //     if(email){
-  //       var option = {
-  //         "firstName": firstname,
-  //         "lastName": lastname,
-  //         "email": email,
-  //         "address": address,
-  //         "zipcode": postaddress,
-  //         "city" : city
-  //       }
-  //     }else{
-  //       var option = {
-  //         "firstName": firstname,
-  //         "lastName": lastname,
-  //         "address": address,
-  //         "zipcode": postaddress,
-  //         "city" : city
-  //       }
-  //     }
-
-  //     axios.post(`${API_URL}/api/driver/updateInformation`, option, {
-  //       headers: {
-  //         Accept: 'application/json',
-  //         "Authorization": 'Bearer ' + route?.params?.usertoken,
-  //       },
-  //     })
-  //       .then(res => {
-  //         console.log(res.data)
-  //         if (res.data.response.status.code === 200) {
-  //           setIsLoading(false)
-  //           navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
-  //       } else {
-  //           Alert.alert('Oops..', "Something went wrong", [
-  //               {
-  //                   text: 'Cancel',
-  //                   onPress: () => console.log('Cancel Pressed'),
-  //                   style: 'cancel',
-  //               },
-  //               { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //           ]);
-  //       }
-  //       })
-  //       .catch(e => {
-  //         setIsLoading(false)
-  //         console.log(`user update error ${e}`)
-  //         console.log(e.response.data?.response.records)
-  //         Alert.alert('Oops..', "Something went wrong", [
-  //           {
-  //               text: 'Cancel',
-  //               onPress: () => console.log('Cancel Pressed'),
-  //               style: 'cancel',
-  //           },
-  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //       ]);
-  //       });
-  //   }
-
-
-  // }
 
   if (isLoading) {
     return (
@@ -236,7 +241,7 @@ const PersonalInformation = ({ navigation, route }) => {
               <Text style={styles.header}>Name</Text>
               <Text style={styles.requiredheader}>*</Text>
             </View>
-            {firstNameError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{firstNameError}</Text> : <></>}
+            {firstNameError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{firstNameError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'First name'}
@@ -251,6 +256,7 @@ const PersonalInformation = ({ navigation, route }) => {
               <Text style={styles.header}>Email Id</Text>
               <Text style={styles.requiredheader}>*</Text>
             </View>
+            {emailError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{emailError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'e.g. abc@gmail.com'}
@@ -258,27 +264,29 @@ const PersonalInformation = ({ navigation, route }) => {
                 value={email}
                 //helperText={'Please enter lastname'}
                 inputType={'others'}
-                onChangeText={(text) => setEmail(text)}
+                onChangeText={(text) => changeEmail(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Mobile Number</Text>
               <Text style={styles.requiredheader}>*</Text>
             </View>
+            {phonenoError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{phonenoError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'Mobile number'}
                 keyboardType=" "
                 value={phoneno}
-                helperText={firstNameError}
+                //helperText={firstNameError}
                 inputType={'others'}
-              //onChangeText={(text) => changeFirstname(text)}
+                onChangeText={(text) => changePhone(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Type of Therapies</Text>
               <Text style={styles.requiredheader}>*</Text>
             </View>
+            {selectedItemError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{selectedItemError}</Text> : <></>}
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
                 <MultiSelect
@@ -305,7 +313,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -317,6 +325,7 @@ const PersonalInformation = ({ navigation, route }) => {
               <Text style={styles.header}>Language</Text>
               <Text style={styles.requiredheader}>*</Text>
             </View>
+            {selectedItemLanguageError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{selectedItemLanguageError}</Text> : <></>}
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
                 <MultiSelect
@@ -343,7 +352,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -380,7 +389,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -440,8 +449,8 @@ const PersonalInformation = ({ navigation, route }) => {
         </View>
         <View style={styles.buttonwrapper}>
           <CustomButton label={"Submit"}
-            onPress={() => { navigation.navigate('Thankyou') }}
-          //onPress={() => { submitForm() }}
+            //onPress={() => { navigation.navigate('Thankyou') }}
+            onPress={() => { submitForm() }}
           />
         </View>
         <View style={{ paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', }}>
@@ -559,7 +568,7 @@ const styles = StyleSheet.create({
   placeholderStyle: {
     fontSize: responsiveFontSize(1.8),
     color: '#2F2F2F',
-    fontFamily:'DMSans-Regular'
+    fontFamily: 'DMSans-Regular'
   },
   selectedTextStyle: {
     fontSize: 16,

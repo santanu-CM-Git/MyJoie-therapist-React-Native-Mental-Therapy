@@ -17,7 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import DocumentPicker from 'react-native-document-picker';
 import InputField from '../../components/InputField';
 import CustomButton from '../../components/CustomButton';
-import { plus, uploadImg, uploadPicImg, userPhoto } from '../../utils/Images';
+import { deleteRoundImg, plus, uploadImg, uploadPicImg, userPhoto } from '../../utils/Images';
 import { AuthContext } from '../../context/AuthContext';
 import Loader from '../../utils/Loader';
 import axios from 'axios';
@@ -68,19 +68,20 @@ const dataMonth = [
 
 const ProfileScreen = ({ navigation, route }) => {
   const concatNo = route?.params?.countrycode + '-' + route?.params?.phoneno;
-  const [phoneno, setPhoneno] = useState('');
   const [firstname, setFirstname] = useState('Jennifer Kourtney');
-  const [firstNameError, setFirstNameError] = useState('')
-  const [lastname, setLastname] = useState('');
-  const [lastNameError, setLastNameError] = useState('')
   const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('')
-  const [Password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('')
+  const [phoneno, setPhoneno] = useState('');
+  const [dob, setdob] = useState('');
+  const [gender, setGender] = useState('');
+  const [panno, setPanno] = useState('');
+  const [aadhar, setAadhar] = useState('')
   const [city, setCity] = useState('');
-  const [cityError, setCityError] = useState('')
-  const [postaddress, setPostaddress] = useState('');
-  const [postaddressError, setPostaddressError] = useState('')
+  const [accountno, setAccountno] = useState('')
+
+  const [accountChangeRequest, setAccountChangeRequest] = useState(false)
+
+  const [pickedDocument, setPickedDocument] = useState(null);
+  const [pickedCancelCheque, setCancelCheque] = useState(null);
   const [pickedDrivingLicenseFront, setPickedDrivingLicenseFront] = useState(null);
   const [DrivingLicenseFrontError, setDrivingLicenseFrontError] = useState('')
   const [pickedDrivingLicenseBack, setPickedDrivingLicenseback] = useState(null);
@@ -120,56 +121,55 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+    //setModalVisible(!isModalVisible);
+    setAccountChangeRequest(!accountChangeRequest)
   };
 
-
-
-  const changeFirstname = (text) => {
-    setFirstname(text)
-    if (text) {
-      setFirstNameError('')
-    } else {
-      setFirstNameError('Please enter First name')
-    }
+  const changeAccountNo = (text) => {
+    setAccountno(text)
   }
 
-  const changeLastname = (text) => {
-    setLastname(text)
-    if (text) {
-      setLastNameError('')
-    } else {
-      setLastNameError('Please enter Last name')
-    }
-  }
-
-  const changePassword = (text) => {
-    setPassword(text)
-    if (text) {
-      setPasswordError('')
-    } else {
-      setPasswordError('Please enter Address')
-    }
-  }
   const changeCity = (text) => {
     setCity(text)
-    if (text) {
-      setCityError('')
-    } else {
-      setCityError('Please enter City')
-    }
-  }
-  const changePostAddress = (text) => {
-    setPostaddress(text)
-    // if (text) {
-    //   setPostaddressError('')
-    // } else {
-    //   setPostaddressError('Please enter Ghana Post Address')
-    // }
   }
 
+
+  const pickDocument = async (forwhat) => {
+    try {
+      const result = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+
+      //console.log('URI: ', result[0].uri);
+      //console.log('Type: ', result[0].type);
+      //console.log('Name: ', result[0].name);
+      //console.log('Size: ', result[0].size);
+      if (forwhat == 'profilepic') {
+        setPickedDocument(result[0]);
+      } else if (forwhat == 'CancelCheque') {
+        setCancelCheque(result[0])
+      }
+
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the document picker
+        console.log('Document picker was cancelled');
+      } else {
+        console.error('Error picking document', err);
+      }
+    }
+  };
+  const deleteProfileImg = () => {
+    setPickedDocument(null)
+
+  }
+  const deleteCancelChequeImg = () => {
+    setCancelCheque(null)
+  }
+
+
   const submitForm = () => {
-    console.log(selectedItemsType," type off therapist")
+    console.log(selectedItemsType, " type off therapist")
   }
 
   // const submitForm = () => {
@@ -259,7 +259,6 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Name</Text>
             </View>
-            {firstNameError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{firstNameError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'Name'}
@@ -267,7 +266,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 value={firstname}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => changeFirstname(text)}
+              //onChangeText={(text) => changeFirstname(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -280,7 +279,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 value={email}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => setEmail(text)}
+              //onChangeText={(text) => setEmail(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -291,87 +290,68 @@ const ProfileScreen = ({ navigation, route }) => {
                 label={'Mobile number'}
                 keyboardType=" "
                 value={phoneno}
-                helperText={firstNameError}
+                //helperText={firstNameError}
                 inputType={'nonedit'}
               //onChangeText={(text) => changeFirstname(text)}
               />
             </View>
 
-            {/* <Text
-              style={styles.header}>
-              Last Name
-            </Text>
-            {lastNameError?<Text style={{color:'red',fontFamily:'Outfit-Regular'}}>{lastNameError}</Text>:<></>}
-            <View style={styles.inputView}>
-              <InputField
-                label={'Last Name'}
-                keyboardType=" "
-                value={lastname}
-                //helperText={'Please enter lastname'}
-                inputType={'others'}
-                onChangeText={(text) => changeLastname(text)}
-              />
-            </View> */}
-
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Date of Birth</Text>
             </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'Date of Birth'}
                 keyboardType=" "
-                value={Password}
+                value={dob}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => changePassword(text)}
+              //onChangeText={(text) => changePassword(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Gender</Text>
             </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'Gender'}
                 keyboardType=" "
-                value={Password}
+                value={gender}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => changePassword(text)}
+              //onChangeText={(text) => changePassword(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Pan Number</Text>
             </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
             <View style={styles.inputView}>
               <InputField
                 label={'Pan Number'}
                 keyboardType=" "
-                value={Password}
+                value={panno}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => changePassword(text)}
+              //onChangeText={(text) => changePassword(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Aadhar No</Text>
             </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            {/* {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>} */}
             <View style={styles.inputView}>
               <InputField
                 label={'Aadhar No'}
                 keyboardType=" "
-                value={Password}
+                value={aadhar}
                 //helperText={'Please enter lastname'}
                 inputType={'nonedit'}
-                onChangeText={(text) => changePassword(text)}
+              //onChangeText={(text) => changePassword(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Type of Therapies</Text>
-             
+
             </View>
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
@@ -399,7 +379,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -409,7 +389,7 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Language</Text>
-              
+
             </View>
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
@@ -437,7 +417,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{ marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -476,7 +456,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleMainWrapper={styles.mainWrapper}
                   submitButtonColor="#87ADA8"
                   submitButtonText="Submit"
-                  styleIndicator={{marginTop: -6,marginRight: - responsiveWidth(6) }}
+                  styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
                 />
               </View>
@@ -487,15 +467,15 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>City</Text>
             </View>
-            {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>}
+            {/* {passwordError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{passwordError}</Text> : <></>} */}
             <View style={styles.inputView}>
               <InputField
                 label={'City'}
                 keyboardType=" "
-                value={Password}
+                value={city}
                 //helperText={'Please enter lastname'}
                 inputType={'others'}
-                onChangeText={(text) => changePassword(text)}
+                onChangeText={(text) => changeCity(text)}
               />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -572,19 +552,46 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={styles.header}>Bank Account</Text>
               <TouchableOpacity onPress={() => toggleModal()}>
-                <Text style={{ fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), color: '#444343', marginBottom: responsiveHeight(1), }}>Change</Text>
+                <Text style={{ fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), color: '#444343', marginBottom: responsiveHeight(1), }}>{accountChangeRequest ? 'Cancel' : 'Change'}</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.inputView}>
               <InputField
-                label={'Aadhar No'}
+                label={'Account No'}
                 keyboardType=" "
-                value={'56897 85698 78965 96636'}
+                value={accountno}
                 //helperText={'Please enter lastname'}
-                inputType={'nonedit'}
-                onChangeText={(text) => changePassword(text)}
+                inputType={accountChangeRequest ? 'others' : 'nonedit'}
+                onChangeText={(text) => changeAccountNo(text)}
               />
             </View>
+            {accountChangeRequest ?
+              pickedCancelCheque == null ?
+                <View style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA',marginBottom: responsiveHeight(2) }}>
+                  <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+
+                    <TouchableOpacity onPress={() => pickDocument('CancelCheque')}>
+                      <Image
+                        source={uploadImg}
+                        style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                      />
+                    </TouchableOpacity>
+                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Cancel Cheque</Text>
+                  </View>
+                </View>
+                :
+                <View>
+                  <Image source={{ uri: pickedCancelCheque.uri }} style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderRadius: 10,marginBottom: responsiveHeight(2) }} />
+                  <View style={{ position: 'absolute', right: 15, top: 7 }}>
+                    <TouchableOpacity onPress={() => deleteCancelChequeImg()}>
+                      <Image
+                        source={deleteRoundImg}
+                        style={{ height: 25, width: 25 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              : <></>}
             <Text
               style={styles.header}>
               Upload Supporting Documents
@@ -596,12 +603,12 @@ const ProfileScreen = ({ navigation, route }) => {
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
-                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
-                    <Image
-                      source={uploadImg}
-                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                    />
-                  </TouchableOpacity>
+                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}> */}
+                  <Image
+                    source={uploadImg}
+                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                  />
+                  {/* </TouchableOpacity> */}
 
                   {!pickedDrivingLicenseFront ?
                     <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
@@ -613,12 +620,12 @@ const ProfileScreen = ({ navigation, route }) => {
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
-                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}>
-                    <Image
-                      source={uploadImg}
-                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                    />
-                  </TouchableOpacity>
+                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}> */}
+                  <Image
+                    source={uploadImg}
+                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                  />
+                  {/* </TouchableOpacity> */}
 
                   {!pickedDrivingLicenseBack ?
                     <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
@@ -633,12 +640,12 @@ const ProfileScreen = ({ navigation, route }) => {
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
-                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
-                    <Image
-                      source={uploadImg}
-                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                    />
-                  </TouchableOpacity>
+                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}> */}
+                  <Image
+                    source={uploadImg}
+                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                  />
+                  {/* </TouchableOpacity> */}
 
                   {!pickedDrivingLicenseFront ?
                     <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
@@ -650,12 +657,12 @@ const ProfileScreen = ({ navigation, route }) => {
               <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
                 <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
-                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}>
-                    <Image
-                      source={uploadImg}
-                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                    />
-                  </TouchableOpacity>
+                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}> */}
+                  <Image
+                    source={uploadImg}
+                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                  />
+                  {/* </TouchableOpacity> */}
 
                   {!pickedDrivingLicenseBack ?
                     <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
@@ -670,23 +677,32 @@ const ProfileScreen = ({ navigation, route }) => {
               Upload Picture
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: responsiveHeight(2), marginTop: responsiveHeight(1) }}>
-              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+              {pickedDocument == null ?
+                <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
+                  <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
-                  <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}>
-                    <Image
-                      source={uploadPicImg}
-                      style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                    />
-                  </TouchableOpacity>
-
-                  {!pickedDrivingLicenseFront ?
+                    <TouchableOpacity onPress={() => pickDocument('profilepic')}>
+                      <Image
+                        source={uploadPicImg}
+                        style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
+                      />
+                    </TouchableOpacity>
                     <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Photo</Text>
-                    :
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
-                  }
+                  </View>
                 </View>
-              </View>
+                :
+                <View>
+                  <Image source={{ uri: pickedDocument.uri }} style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderRadius: 10 }} />
+                  <View style={{ position: 'absolute', right: 15, top: 7 }}>
+                    <TouchableOpacity onPress={() => deleteProfileImg()}>
+                      <Image
+                        source={deleteRoundImg}
+                        style={{ height: 25, width: 25 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              }
             </View>
           </View>
 
@@ -722,7 +738,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 value={'56897 85698 78965 96636'}
                 //helperText={'Please enter lastname'}
                 inputType={'others'}
-                onChangeText={(text) => changePassword(text)}
+                onChangeText={(text) => changeAadhar(text)}
               />
             </View>
             <View style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>

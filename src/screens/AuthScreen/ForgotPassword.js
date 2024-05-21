@@ -33,57 +33,64 @@ const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
 const ForgotPassword = ({ navigation }) => {
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [deviceId, setDeviceId] = useState('')
-    const [mobileError, setMobileError] = useState('')
+    const [inputText, setinputText] = useState('');
+    const [inputTextError, setinputTextError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [show, setShow] = useState(false);
-    const [countryCode, setCountryCode] = useState('+233');
 
     const { login, userToken } = useContext(AuthContext);
 
-    const getFCMToken = async () => {
-        try {
-            // if (Platform.OS == 'android') {
-            await messaging().registerDeviceForRemoteMessages();
-            // }
-            const token = await messaging().getToken();
-            AsyncStorage.setItem('fcmToken', token)
-            console.log(token, 'fcm token');
-        } catch (e) {
-            console.log(e);
-        }
+    const isEmail = (text) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(text);
+    };
+    const isPhoneNumber = (text) => {
+        // This regex matches phone numbers with or without country code, with various separators
+        const phoneRegex = /^(\+?\d{1,3}?[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$/;
+        return phoneRegex.test(text);
     };
 
-    useEffect(() => {
-        getDeviceInfo()
-        getFCMToken()
-    }, [])
-
-    const getDeviceInfo = () => {
-        DeviceInfo.getUniqueId().then((deviceUniqueId) => {
-            console.log(deviceUniqueId)
-            setDeviceId(deviceUniqueId)
-        });
-    }
-
-    const onChangeText = (text) => {
-        const phoneRegex = /^\d{10}$/;
-        setPhone(text)
-        if (!phoneRegex.test(text)) {
-            setMobileError('Please enter a 10-digit number.')
+    const onChangeinputText = (text) => {
+        setinputText(text)
+        if (text) {
+            setinputTextError('')
         } else {
-            setMobileError('')
+            setinputTextError('Please enter Mobile Number or Email Id')
         }
-    }
 
-    const onChangeEmail = (text) => {
-        setEmail(text)
     }
 
     const handleSubmit = () => {
-        login()
+        // if (!inputText) {
+        //     setinputTextError('Please enter Mobile Number or Email Id')
+        // }
+        // else {
+        //     navigation.push('Otp')
+        // }
+
+        if (isEmail(inputText)) {
+            let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+            if (reg.test(inputText) === false) {
+                console.log("Email is Not Correct");
+                setinputTextError('Please enter correct Email Id')
+                return false;
+            } else {
+                setinputTextError('The input is an Email ID');
+                //navigation.push('Otp')
+            }
+        } else if (isPhoneNumber(inputText)) {
+            let phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(inputText)) {
+                setinputTextError('Please enter a 10-digit number.')
+                return false;
+            } else {
+                setinputTextError('The input is a Phone Number');
+                // navigation.push('Otp')
+            }
+        } else {
+            setinputTextError('Please enter Correct Mobile Number or Email Id')
+        }
+
         // const phoneRegex = /^\d{10}$/;
         // if (!phone) {
         //   setMobileError('Please enter Mobile no')
@@ -149,56 +156,14 @@ const ForgotPassword = ({ navigation }) => {
                     <MaterialIcons name="arrow-back" size={25} color="#000" onPress={() => navigation.goBack()} />
                 </View>
                 <View style={styles.wrapper}>
-                    <View style={{ flex: 0.7, justifyContent: 'center', alignItems: 'center',marginBottom: responsiveHeight(3) }}>
+                    <View style={{ flex: 0.7, justifyContent: 'center', alignItems: 'center', marginBottom: responsiveHeight(3) }}>
                         <ForgotPass
                             width={300}
                             height={200}
                         //style={{transform: [{rotate: '-15deg'}]}}
                         />
                     </View>
-                    {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
-              style={styles.header}>
-              Enter your mobile number
-            </Text>
-            <Text style={{ color: 'red', marginBottom: responsiveHeight(2), fontFamily: 'DMSans-SemiBold', }}> *(Required)</Text>
-          </View> */}
-                    {/* <View style={styles.textinputview}>
-           
-            <View style={styles.countryModal}>
-              <TouchableOpacity
-                onPress={() => setShow(true)}
-                style={styles.countryInputView}
-              >
-                <Text style={{
-                  color: '#808080',
-                  fontSize: responsiveFontSize(2),
-                }}>
-                  {countryCode}
-                </Text>
-              </TouchableOpacity>
-              <CountryPicker
-                show={show}
-                initialState={'+233'}
-                pickerButtonOnPress={(item) => {
-                  setCountryCode(item.dial_code);
-                  setShow(false);
-                }}
-                style={{
-                  modal: {
-                    height: responsiveHeight(60),
-                  },
-                }}
-              />
-            </View>
-            <InputField
-              label={'Mobile Number'}
-              keyboardType="numeric"
-              value={phone}
-              onChangeText={(text) => onChangeText(text)}
-              helperText={mobileError}
-            />
-          </View> */}
+
                     <View style={{ marginBottom: responsiveHeight(1) }}>
                         <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Forgot Password</Text>
                         <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Enter your email address so we can send you a link to your email address<Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5) }}> Create Account</Text></Text>
@@ -207,13 +172,14 @@ const ForgotPassword = ({ navigation }) => {
                         style={styles.header}>
                         Email Id or Mobile Number
                     </Text>
+                    {inputTextError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{inputTextError}</Text> : <></>}
                     <View style={styles.textinputview}>
                         <InputField
                             label={'Email Id or Mobile Number'}
                             keyboardType="default"
                             inputType={'others'}
-                            value={email}
-                            onChangeText={(text) => onChangeEmail(text)}
+                            value={inputText}
+                            onChangeText={(text) => onChangeinputText(text)}
                         //helperText={mobileError}
                         />
                     </View>
@@ -222,8 +188,8 @@ const ForgotPassword = ({ navigation }) => {
 
             <View style={styles.buttonwrapper}>
                 <CustomButton label={"Submit"}
-                    //onPress={() => handleSubmit()}
-                onPress={() => { navigation.push('Otp') }}
+                    onPress={() => handleSubmit()}
+                //onPress={() => { navigation.push('Otp') }}
                 />
             </View>
         </SafeAreaView>

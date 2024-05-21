@@ -54,11 +54,11 @@ export default function CustomHeader({
     }
 
     useEffect(() => {
-        fetchProfileDetails()
+       // fetchProfileDetails()
     }, [])
     useFocusEffect(
         React.useCallback(() => {
-            fetchProfileDetails()
+            //fetchProfileDetails()
         }, [])
     )
     return (

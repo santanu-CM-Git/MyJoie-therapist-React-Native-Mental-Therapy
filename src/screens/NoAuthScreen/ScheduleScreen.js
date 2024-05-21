@@ -70,6 +70,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
             } else {
+                //newRanges[currentRange].endTime = dateInIST;
+                const startTime = newRanges[currentRange].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRange].endTime = dateInIST;
             }
             return newRanges;
@@ -88,7 +94,13 @@ const ScheduleScreen = ({ navigation }) => {
     const saveTimeRange = () => {
         console.log(timeRanges)
         let filteredEvents = timeRanges.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        console.log(filteredEvents, 'Monday time')
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     // Tuesday
@@ -108,6 +120,7 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const handleConfirmTuesday = (date) => {
+        console.log('hiiiii');
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
 
         setTimeRangesTuesday(currentRanges => {
@@ -115,6 +128,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeTuesday) {
                 newRanges[currentRangeTuesday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeTuesday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeTuesday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeTuesday].endTime = dateInIST;
             }
             return newRanges;
@@ -133,7 +152,13 @@ const ScheduleScreen = ({ navigation }) => {
     const saveTimeRangeTuesday = () => {
         console.log(timeRangesTuesday)
         let filteredEvents = timeRangesTuesday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        console.log(filteredEvents, 'Tuesday time')
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     // Wednesday
@@ -160,6 +185,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeWednesday) {
                 newRanges[currentRangeWednesday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeWednesday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeWednesday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeWednesday].endTime = dateInIST;
             }
             return newRanges;
@@ -179,6 +210,12 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesWednesday)
         let filteredEvents = timeRangesWednesday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     // Thursday
@@ -205,6 +242,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeThursday) {
                 newRanges[currentRangeThursday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeThursday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeThursday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeThursday].endTime = dateInIST;
             }
             return newRanges;
@@ -224,6 +267,12 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesThursday)
         let filteredEvents = timeRangesThursday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
     // Friday
     const [timeRangesFriday, setTimeRangesFriday] = useState([{ startTime: null, endTime: null }]);
@@ -249,6 +298,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeFriday) {
                 newRanges[currentRangeFriday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeFriday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeFriday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeFriday].endTime = dateInIST;
             }
             return newRanges;
@@ -268,6 +323,12 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesFriday)
         let filteredEvents = timeRangesFriday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     // Saturday
@@ -294,6 +355,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeSaturday) {
                 newRanges[currentRangeSaturday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeSaturday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeSaturday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeSaturday].endTime = dateInIST;
             }
             return newRanges;
@@ -313,6 +380,12 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSaturday)
         let filteredEvents = timeRangesSaturday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     // Sunday
@@ -339,6 +412,12 @@ const ScheduleScreen = ({ navigation }) => {
             if (isStartTimeSunday) {
                 newRanges[currentRangeSunday].startTime = dateInIST;
             } else {
+                //newRanges[currentRangeSunday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeSunday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
                 newRanges[currentRangeSunday].endTime = dateInIST;
             }
             return newRanges;
@@ -358,6 +437,12 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSunday)
         let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
     }
 
     const handleDayPress = (day) => {
@@ -1109,7 +1194,7 @@ const styles = StyleSheet.create({
     timeText: {
         marginRight: 10,
         fontSize: responsiveFontSize(1.7),
-        color:'#746868'
+        color: '#746868'
     },
     deleteButton: {
         // Additional styles may be required

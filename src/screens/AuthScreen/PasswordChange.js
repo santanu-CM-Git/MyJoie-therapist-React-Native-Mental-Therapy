@@ -33,57 +33,42 @@ const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
 const PasswordChange = ({ navigation }) => {
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
-    const [deviceId, setDeviceId] = useState('')
-    const [mobileError, setMobileError] = useState('')
+    const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [show, setShow] = useState(false);
     const [countryCode, setCountryCode] = useState('+233');
 
     const { login, userToken } = useContext(AuthContext);
 
-    const getFCMToken = async () => {
-        try {
-            // if (Platform.OS == 'android') {
-            await messaging().registerDeviceForRemoteMessages();
-            // }
-            const token = await messaging().getToken();
-            AsyncStorage.setItem('fcmToken', token)
-            console.log(token, 'fcm token');
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    useEffect(() => {
-        getDeviceInfo()
-        getFCMToken()
-    }, [])
-
-    const getDeviceInfo = () => {
-        DeviceInfo.getUniqueId().then((deviceUniqueId) => {
-            console.log(deviceUniqueId)
-            setDeviceId(deviceUniqueId)
-        });
-    }
-
-    const onChangeText = (text) => {
-        const phoneRegex = /^\d{10}$/;
-        setPhone(text)
-        if (!phoneRegex.test(text)) {
-            setMobileError('Please enter a 10-digit number.')
+    const onChangePassword = (text) => {
+        setPassword(text)
+        if (text) {
+            setPasswordError('')
         } else {
-            setMobileError('')
+            setPasswordError('Please enter Password')
+        }
+    }
+    const onChangeConfirmPassword = (text) => {
+        setConfirmPassword(text)
+        if (text) {
+            setConfirmPasswordError('')
+        } else {
+            setConfirmPasswordError('Please enter Confirm Password')
         }
     }
 
-    const onChangeEmail = (text) => {
-        setEmail(text)
-    }
 
     const handleSubmit = () => {
-        login()
+        if(!password){
+            setPasswordError('Please enter Password')
+          }else if(!confirmPassword){
+            setConfirmPasswordError('Please enter Confirm Password')
+          }else{
+            //login()
+          }
         // const phoneRegex = /^\d{10}$/;
         // if (!phone) {
         //   setMobileError('Please enter Mobile no')
@@ -149,71 +134,29 @@ const PasswordChange = ({ navigation }) => {
                     <MaterialIcons name="arrow-back" size={25} color="#000" onPress={() => navigation.goBack()} />
                 </View>
                 <View style={styles.wrapper}>
-                    {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
-              style={styles.header}>
-              Enter your mobile number
-            </Text>
-            <Text style={{ color: 'red', marginBottom: responsiveHeight(2), fontFamily: 'DMSans-SemiBold', }}> *(Required)</Text>
-          </View> */}
-                    {/* <View style={styles.textinputview}>
-           
-            <View style={styles.countryModal}>
-              <TouchableOpacity
-                onPress={() => setShow(true)}
-                style={styles.countryInputView}
-              >
-                <Text style={{
-                  color: '#808080',
-                  fontSize: responsiveFontSize(2),
-                }}>
-                  {countryCode}
-                </Text>
-              </TouchableOpacity>
-              <CountryPicker
-                show={show}
-                initialState={'+233'}
-                pickerButtonOnPress={(item) => {
-                  setCountryCode(item.dial_code);
-                  setShow(false);
-                }}
-                style={{
-                  modal: {
-                    height: responsiveHeight(60),
-                  },
-                }}
-              />
-            </View>
-            <InputField
-              label={'Mobile Number'}
-              keyboardType="numeric"
-              value={phone}
-              onChangeText={(text) => onChangeText(text)}
-              helperText={mobileError}
-            />
-          </View> */}
                     <View style={{ marginBottom: responsiveHeight(1) }}>
                         <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Create New Password</Text>
                         <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Your new password must be different from previously used password</Text>
                     </View>
-                   
+                    {passwordError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{passwordError}</Text> : <></>}
                     <View style={styles.textinputview}>
                         <InputField
                             label={'Password'}
                             keyboardType="default"
                             inputType={'others'}
-                            value={email}
-                            onChangeText={(text) => onChangeEmail(text)}
+                            value={password}
+                            onChangeText={(text) => onChangePassword(text)}
                         //helperText={mobileError}
                         />
                     </View>
+                    {confirmPasswordError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{confirmPasswordError}</Text> : <></>}
                     <View style={styles.textinputview}>
                         <InputField
                             label={'Confirm Password'}
                             keyboardType="default"
                             inputType={'others'}
-                            value={email}
-                            onChangeText={(text) => onChangeEmail(text)}
+                            value={confirmPassword}
+                            onChangeText={(text) => onChangeConfirmPassword(text)}
                         //helperText={mobileError}
                         />
                     </View>
@@ -222,7 +165,7 @@ const PasswordChange = ({ navigation }) => {
 
             <View style={styles.buttonwrapper}>
                 <CustomButton label={"Continue"}
-                    //onPress={() => handleSubmit()}
+                onPress={() => handleSubmit()}
                 //onPress={() => { navigation.push('Otp') }}
                 />
             </View>

@@ -35,10 +35,6 @@ import messaging from '@react-native-firebase/messaging';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import LinearGradient from 'react-native-linear-gradient';
 
-const data = [
-  { label: 'Today', value: '1' },
-  { label: 'Date Wise', value: '2' },
-];
 
 export default function HomeScreen({ navigation }) {
 
@@ -53,11 +49,6 @@ export default function HomeScreen({ navigation }) {
   const [startDay, setStartDay] = useState(null);
   const [endDay, setEndDay] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
-  const [completed, setCompleted] = useState(0);
-  const [accepted, setAccepted] = useState(0);
-  const [declined, setDeclined] = useState(0);
-  const [todayEarning, setTodayearning] = useState(0);
-  const [noofDeliverd, setNoofDeliverd] = useState(0)
   const [todaysDate, setTodaysDate] = useState('')
   const [notificationStatus, setNotificationStatus] = useState(false)
 
@@ -75,19 +66,6 @@ export default function HomeScreen({ navigation }) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    LocationServicesDialogBox.checkLocationServicesIsEnabled({
-      message: "<font color='#000'>To provide location-based services, we require your permission to access your device's location. Would you like to grant permission?</font>",
-      ok: "YES",
-      //cancel: "NO",
-
-    }).then(function (success) {
-      console.log(success);
-    }).catch((error) => {
-      console.log(error.message);
-    });
-  }, [])
 
   useEffect(() => {
     getFCMToken()
@@ -168,7 +146,7 @@ export default function HomeScreen({ navigation }) {
     console.log(startDay)
     console.log(endDay)
     //fetchData()
-    toggleModal()
+    toggleCalendarModal()
   }
 
   useEffect(() => {
