@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef,useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Image,
   Alert,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from 'react-native';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -107,7 +107,7 @@ const ProfileScreen = ({ navigation, route }) => {
     setSelectedItems(selectedItems);
   };
   // Type dropdown
-  const [selectedItemsType, setSelectedItemsType] = useState([]);
+  const [selectedItemsType, setSelectedItemsType] = useState(['2','1']);
   const multiSelectRefType = useRef(null);
   const onSelectedItemsChangeType = selectedItems => {
     setSelectedItemsType(selectedItems);
@@ -385,6 +385,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
               <View style={{ marginVertical: responsiveHeight(2) }}>
                 {multiSelectRefType.current && multiSelectRefType.current.getSelectedItemsExt(selectedItemsType)}
+               
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>

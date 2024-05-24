@@ -89,38 +89,38 @@ const SessionHistory = ({ navigation }) => {
                             />
                         </View>
                     </View> */}
-                    <View style={{ width: '99%', backgroundColor: '#FFF', padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), borderColor: '#F4F5F5', borderWidth: 2, }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={styles.cardView}>
+                        <View style={styles.flexStyle}>
+                            <Text style={styles.userName}>Rohit Sharma</Text>
+                            <View style={styles.flexCenter}>
                                 <Image
                                     source={GreenTick}
-                                    style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                                    style={styles.iconstyle}
                                 />
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
+                                <Text style={styles.completedText}>Completed</Text>
                             </View>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
+                        <View style={styles.paraView}>
+                            <Text style={styles.paraIndex}>Order ID :</Text>
+                            <Text style={styles.paraValue}>1923659</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
+                        <View style={styles.paraView}>
+                            <Text style={styles.paraIndex}>Date :</Text>
+                            <Text style={styles.paraValue}>24-02-2024, 09:30 PM</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
+                        <View style={styles.paraView}>
+                            <Text style={styles.paraIndex}>Appointment Time :</Text>
+                            <Text style={styles.paraValue}>60 Min</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
+                        <View style={styles.paraView}>
+                            <Text style={styles.paraIndex}>Rate :</Text>
+                            <Text style={styles.paraValue}>Rs 1100 for 30 Min</Text>
                         </View>
                         <View style={{ marginTop: responsiveHeight(1.5) }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
+                                <Text style={styles.paraIndex}>Session Summary :</Text>
                                 <TouchableOpacity onPress={() => toggleModal()}>
-                                    <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Edit</Text>
+                                    <Text style={styles.editText}>Edit</Text>
                                 </TouchableOpacity>
                             </View>
                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
@@ -231,5 +231,62 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Bold',
         fontSize: responsiveFontSize(1.7)
     },
+    cardView: {
+        width: '99%',
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        borderColor: '#F4F5F5',
+        borderWidth: 2,
+    },
+    flexStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    userName: {
+        color: '#2D2D2D',
+        fontSize: responsiveFontSize(2),
+        fontFamily: 'DMSans-Bold'
+    },
+    flexCenter: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    iconstyle: {
+        height: 20,
+        width: 20,
+        resizeMode: 'contain'
+    },
+    completedText: {
+        color: '#444343',
+        fontSize: responsiveFontSize(1.7),
+        fontFamily: 'DMSans-SemiBold',
+        marginLeft: responsiveWidth(1)
+    },
+    paraView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: responsiveHeight(1.5)
+    },
+    paraIndex: {
+        color: '#444343',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7),
+        marginRight: responsiveWidth(2)
+    },
+    paraValue: {
+        color: '#746868',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
+    editText: {
+        color: '#5C9ECF',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7),
+        marginRight: responsiveWidth(2)
+    }
 
 });

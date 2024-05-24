@@ -70,10 +70,10 @@ const EarningScreen = ({ navigation }) => {
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Earnings'} onPress={() => navigation.goBack()} title={'Earnings'} />
             <ScrollView style={styles.wrapper}>
-                <View style={{ alignItems: 'center',marginBottom: responsiveHeight(3) }}>
-                    <View style={{ height: responsiveHeight(45), width: '100%', backgroundColor: '#F4F5F5', padding: 20, borderRadius: 20, }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: responsiveHeight(2) }}>
-                            <Text style={{ color: '#07273E', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Medium' }}>Total Earnings</Text>
+                <View style={{ alignItems: 'center', marginBottom: responsiveHeight(3) }}>
+                    <View style={styles.outerView}>
+                        <View style={styles.insideView}>
+                            <Text style={styles.headerText}>Total Earnings</Text>
                             <View style={{ width: responsiveWidth(30), }}>
                                 <Dropdown
                                     style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
@@ -106,42 +106,37 @@ const EarningScreen = ({ navigation }) => {
                                 />
                             </View>
                         </View>
-                        <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(3), fontFamily: 'DMSans-Bold', }}>₹ 5,00,000</Text>
-                        <View style={{ height: responsiveHeight(25), width: '100%', backgroundColor: '#FFF', padding: 20, borderRadius: 20, marginTop: responsiveHeight(2) }}>
+                        <Text style={styles.priceText}>₹ 5,00,000</Text>
+                        <View style={styles.priceBreakdownView}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ color: '#07273E', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Medium' }}>Earning Breakdown</Text>
-                                <Image
+                                <Text style={styles.earningText}>Earning Breakdown</Text>
+                                {/* <Image
                                     source={ArrowUp}
                                     style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                />
+                                /> */}
                             </View>
                             <View
-                                style={{
-                                    borderBottomColor: '#E3E3E3',
-                                    borderBottomWidth: 1,
-                                    marginTop: 10
-
-                                }}
+                                style={styles.horizontalLine}
                             />
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>Earning</Text>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>₹ 5,00,000</Text>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>Earning</Text>
+                                <Text style={styles.earningItemText}>₹ 5,00,000</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>GST </Text>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>- ₹ 90,000</Text>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>GST </Text>
+                                <Text style={styles.earningItemText}>- ₹ 90,000</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>Net Payable</Text>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>₹ 4,10,000</Text>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>Net Payable</Text>
+                                <Text style={styles.earningItemText}>₹ 4,10,000</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>TDS</Text>
-                                <Text style={{ color: '#746868', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-Regular' }}>- ₹ 41,000</Text>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>TDS</Text>
+                                <Text style={styles.earningItemText}>- ₹ 41,000</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold' }}>Transfer to account</Text>
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold' }}>₹ 3,69,000</Text>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemTextBold}>Transfer to account</Text>
+                                <Text style={styles.earningItemTextBold}>₹ 3,69,000</Text>
                             </View>
                         </View>
                     </View>
@@ -154,76 +149,42 @@ const EarningScreen = ({ navigation }) => {
                             />
                         </View>
                     </View> */}
-                    <View style={{ width: '99%', backgroundColor: '#FFF', padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), borderColor: '#F4F5F5', borderWidth: 2, }}>
+                    <View style={styles.singleEarningView}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
+                            <Text style={styles.earningPersonName}>Rohit Sharma</Text>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                 <Image
                                     source={GreenTick}
                                     style={{ height: 20, width: 20, resizeMode: 'contain' }}
                                 />
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
+                                <Text style={styles.statusText}>Completed</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
+                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Order ID :</Text>
+                            <Text style={styles.indexText}>1923659</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
+                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Date :</Text>
+                            <Text style={styles.indexText}>24-02-2024, 09:30 PM</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
+                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Appointment Time :</Text>
+                            <Text style={styles.indexText}>60 Min</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
+                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Rate :</Text>
+                            <Text style={styles.indexText}>Rs 1100 for 30 Min</Text>
                         </View>
-                        <View style={{ height: responsiveHeight(5), width: responsiveWidth(78), marginTop: responsiveHeight(2), backgroundColor: '#F4F5F5', borderRadius: 15, padding: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={styles.paymentRecevedView}>
                             <Image
                                 source={Payment}
-                                style={{ height: 20, width: 20, resizeMode: 'contain',marginRight:5 }}
+                                style={styles.paymentIcon}
                             />
-                            <Text style={{color:'#2D2D2D',fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7)}}>Payment Received : ₹ 800</Text>
+                            <Text style={styles.paymentRecevedText}>Payment Received : ₹ 800</Text>
                         </View>
                     </View>
-                    <View style={{ width: '99%', backgroundColor: '#FFF', padding: 20, borderRadius: 20, marginTop: responsiveHeight(2), borderColor: '#F4F5F5', borderWidth: 2, }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Image
-                                    source={YellowTck}
-                                    style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                />
-                                <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
-                        </View>
-                        <View style={{ height: responsiveHeight(5), width: responsiveWidth(78), marginTop: responsiveHeight(2), backgroundColor: '#F4F5F5', borderRadius: 15, padding: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                            <Image
-                                source={Payment}
-                                style={{ height: 20, width: 20, resizeMode: 'contain',marginRight:5 }}
-                            />
-                            <Text style={{color:'#2D2D2D',fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7)}}>Payment Received : ₹ 800</Text>
-                        </View>
-                    </View>
+
 
                 </View>
             </ScrollView>
@@ -274,5 +235,110 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         resizeMode: 'contain'
     },
+    outerView: {
+        height: responsiveHeight(45),
+        width: '100%',
+        backgroundColor: '#F4F5F5',
+        padding: 20,
+        borderRadius: 20,
+    },
+    insideView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: responsiveHeight(2)
+    },
+    headerText: {
+        color: '#07273E',
+        fontSize: responsiveFontSize(2),
+        fontFamily: 'DMSans-Medium'
+    },
+    priceText: {
+        color: '#2D2D2D',
+        fontSize: responsiveFontSize(3),
+        fontFamily: 'DMSans-Bold',
+    },
+    priceBreakdownView: {
+        height: responsiveHeight(25),
+        width: '100%',
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2)
+    },
+    earningText: {
+        color: '#07273E',
+        fontSize: responsiveFontSize(2),
+        fontFamily: 'DMSans-Medium'
+    },
+    horizontalLine: {
+        borderBottomColor: '#E3E3E3',
+        borderBottomWidth: 1,
+        marginTop: 10
+    },
+    earningItemView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10
+    },
+    earningItemText: {
+        color: '#746868',
+        fontSize: responsiveFontSize(1.7),
+        fontFamily: 'DMSans-Regular'
+    },
+    earningItemTextBold: {
+        color: '#444343',
+        fontSize: responsiveFontSize(1.7),
+        fontFamily: 'DMSans-SemiBold'
+    },
+    singleEarningView: {
+        width: '99%',
+        backgroundColor: '#FFF',
+        padding: 20,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        borderColor: '#F4F5F5',
+        borderWidth: 2,
+    },
+    indexText: {
+        color: '#444343',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7),
+
+    },
+    paymentRecevedView: {
+        height: responsiveHeight(5),
+        width: responsiveWidth(78),
+        marginTop: responsiveHeight(2),
+        backgroundColor: '#F4F5F5',
+        borderRadius: 15,
+        padding: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    paymentIcon: {
+        height: 20,
+        width: 20,
+        resizeMode: 'contain',
+        marginRight: 5
+    },
+    paymentRecevedText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-SemiBold',
+        fontSize: responsiveFontSize(1.7)
+    },
+    statusText: {
+        color: '#444343',
+        fontSize: responsiveFontSize(1.7),
+        fontFamily: 'DMSans-SemiBold',
+        marginLeft: responsiveWidth(1)
+    },
+    earningPersonName: {
+        color: '#2D2D2D',
+        fontSize: responsiveFontSize(2),
+        fontFamily: 'DMSans-Bold'
+    }
 
 });

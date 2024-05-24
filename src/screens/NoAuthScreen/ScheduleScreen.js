@@ -517,28 +517,28 @@ const ScheduleScreen = ({ navigation }) => {
                     {activeTab == 'Calender' ?
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
-                                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
+                                <Text style={styles.headerText}>Calender</Text>
                                 <TouchableOpacity onPress={toggleModal}>
                                     <Image
                                         source={dateIcon}
-                                        style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                                        style={styles.iconStyle}
                                     />
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
-                                <View style={{ flexDirection: 'row', height: responsiveHeight(7), backgroundColor: '#DEDEDE', borderTopRightRadius: 10, borderTopLeftRadius: 10, alignItems: 'center', }}>
-                                    <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), fontWeight: 'bold', textAlign: 'center', marginLeft: responsiveWidth(2) }}>03-05-2024</Text>
+                            <View style={styles.upcomingCard}>
+                                <View style={styles.upcomingCardDate}>
+                                    <Text style={styles.upcomingCardDateText}>03-05-2024</Text>
                                 </View>
                                 <>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
+                                    <View style={styles.headerTextView}>
+                                        <Text style={styles.headerText}>Shubham Halder</Text>
                                         <Image
                                             source={ArrowGratter}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                                            style={styles.iconStyle}
                                         />
                                     </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
+                                    {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
                                             <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
@@ -546,53 +546,30 @@ const ScheduleScreen = ({ navigation }) => {
                                             </View>
                                         </View>
                                         <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            borderBottomColor: '#E3E3E3',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: 10,
-                                            marginTop: 5
-
-                                        }}
-                                    />
-                                </>
-                                <>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
-                                        <Image
-                                            source={ArrowGratter}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                        />
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                                            <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
-                                                <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
+                                    </View> */}
+                                    <View style={styles.itemtimeView}>
+                                        <View style={styles.flexStyle}>
+                                            <Text style={styles.itemTimeText}>06:00 PM - 06:15 PM</Text>
+                                            <View style={styles.itemTagView}>
+                                                <Text style={styles.itemTagText}>New</Text>
                                             </View>
                                         </View>
-                                        <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
+                                        <Text style={styles.freeText}>Free</Text>
                                     </View>
                                     <View
-                                        style={{
-                                            borderBottomColor: '#E3E3E3',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: 10,
-                                            marginTop: 5
-
-                                        }}
+                                        style={styles.horizontalLine}
                                     />
                                 </>
+
                             </View>
                         </>
                         :
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
-                                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Availability</Text>
+                                <Text style={styles.headerText}>Availability</Text>
                             </View>
                             {/* Monday card */}
-                            <View style={{ width: '99%', backgroundColor: isEnabled ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -656,7 +633,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Tuesday card */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledTuesday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -720,7 +697,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Wednesday */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledWednesday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -784,7 +761,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Thursday */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledThursday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -848,7 +825,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Friday */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledFriday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -912,7 +889,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Saturday */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledSaturday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -976,7 +953,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Sunday */}
-                            <View style={{ width: '99%', backgroundColor: isEnabledSunday ? '#FFF' : '#D3D3D3', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -1202,6 +1179,97 @@ const styles = StyleSheet.create({
     deleteIcon: {
         width: 24,
         height: 24,
-    }
+    },
+    cardView: {
+        width: '99%',
+        marginHorizontal: 2,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        elevation: 5,
+        padding: 15
+    },
+    headerText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2)
+    },
+    iconStyle: {
+        height: 20,
+        width: 20,
+        resizeMode: 'contain',
+    },
+    upcomingCard: {
+        width: '99%',
+        backgroundColor: '#FFF',
+        marginHorizontal: 2,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        elevation: 5
+    },
+    upcomingCardDate: {
+        flexDirection: 'row',
+        height: responsiveHeight(7),
+        backgroundColor: '#DEDEDE',
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+        alignItems: 'center',
+    },
+    upcomingCardDateText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2),
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginLeft: responsiveWidth(2)
+    },
+    headerTextView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginTop: 5
+    },
+    horizontalLine: {
+        borderBottomColor: '#E3E3E3',
+        borderBottomWidth: 1,
+        marginHorizontal: 10,
+        marginTop: 5
+
+    },
+    itemtimeView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    flexStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    itemTimeText: {
+        color: '#969696',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
+    itemTagView: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        backgroundColor: '#FF9E45',
+        borderRadius: 15,
+        marginLeft: responsiveWidth(2)
+    },
+    itemTagText: {
+        color: '#FFF',
+        fontFamily: 'DMSans-Semibold',
+        fontSize: responsiveFontSize(1.5)
+    },
+    freeText: {
+        color: '#5C9ECF',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
 
 });
