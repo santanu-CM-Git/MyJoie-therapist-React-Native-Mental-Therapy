@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -25,38 +25,39 @@ import { API_URL } from '@env'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import MultiSelect from 'react-native-multiple-select';
 import { Dropdown } from 'react-native-element-dropdown';
+import Toast from 'react-native-toast-message';
 
-const qualificationitems = [
-  { id: '92iijs7yta', name: 'Ondo' },
-  { id: 'a0s0a8ssbsd', name: 'Ogun' },
-  { id: '16hbajsabsd', name: 'Calabar' },
-  { id: 'nahs75a5sg', name: 'Lagos' },
-  { id: '667atsas', name: 'Maiduguri' },
-  { id: 'hsyasajs', name: 'Anambra' },
-  { id: 'djsjudksjd', name: 'Benue' },
-  { id: 'sdhyaysdj', name: 'Kaduna' },
-  { id: 'suudydjsjd', name: 'Abuja' }
-];
-const qualificationitemsType = [
-  { id: '1', name: 'Individual' },
-  { id: '2', name: 'Couple' },
-  { id: '3', name: 'Child' },
+// const qualificationitems = [
+//   { id: '92iijs7yta', name: 'Ondo' },
+//   { id: 'a0s0a8ssbsd', name: 'Ogun' },
+//   { id: '16hbajsabsd', name: 'Calabar' },
+//   { id: 'nahs75a5sg', name: 'Lagos' },
+//   { id: '667atsas', name: 'Maiduguri' },
+//   { id: 'hsyasajs', name: 'Anambra' },
+//   { id: 'djsjudksjd', name: 'Benue' },
+//   { id: 'sdhyaysdj', name: 'Kaduna' },
+//   { id: 'suudydjsjd', name: 'Abuja' }
+// ];
+// const qualificationitemsType = [
+//   { id: '1', name: 'Individual' },
+//   { id: '2', name: 'Couple' },
+//   { id: '3', name: 'Child' },
 
-];
-const qualificationitemsLanguage = [
-  { id: '1', name: 'Hindi' },
-  { id: '2', name: 'English' },
-  { id: '3', name: 'Gujrati' },
-];
+// ];
+// const qualificationitemsLanguage = [
+//   { id: '1', content: 'Hindi' },
+//   { id: '2', content: 'English' },
+//   { id: '3', content: 'Gujrati' },
+// ];
 const dataYear = [
-  { label: '01', value: '01' },
-  { label: '02', value: '02' },
-  { label: '03', value: '03' },
+  { label: '01', value: '1' },
+  { label: '02', value: '2' },
+  { label: '03', value: '3' },
 ];
 const dataMonth = [
-  { label: '01', value: '01' },
-  { label: '02', value: '02' },
-  { label: '03', value: '03' },
+  { label: '01', value: '1' },
+  { label: '02', value: '2' },
+  { label: '03', value: '3' },
 ];
 
 const PersonalInformation = ({ navigation, route }) => {
@@ -69,10 +70,11 @@ const PersonalInformation = ({ navigation, route }) => {
   const [phoneno, setPhoneno] = useState('');
   const [phonenoError, setPhonenoError] = useState('')
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { login, userToken } = useContext(AuthContext);
 
   // Qualification dropdown
+  const [qualificationitems, setqualificationitems] = useState([])
   const [selectedItems, setSelectedItems] = useState([]);
   const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
@@ -80,6 +82,7 @@ const PersonalInformation = ({ navigation, route }) => {
   };
 
   // Type dropdown
+  const [qualificationitemsType, setqualificationitemsType] = useState([])
   const [selectedItemsType, setSelectedItemsType] = useState([]);
   const [selectedItemError, setSelectedItemError] = useState('')
   const multiSelectRefType = useRef(null);
@@ -89,6 +92,7 @@ const PersonalInformation = ({ navigation, route }) => {
   };
 
   // Language dropdown
+  const [qualificationitemsLanguage, setqualificationitemsLanguage] = useState([])
   const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
   const [selectedItemLanguageError, setSelectedItemLanguageError] = useState('')
   const multiSelectRefLanguage = useRef(null);
@@ -141,6 +145,58 @@ const PersonalInformation = ({ navigation, route }) => {
     }
   }
 
+  const fetchLanguage = () => {
+    axios.get(`${API_URL}/languages`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let languageInfo = res.data.data;
+        //console.log(languageInfo, 'bbbbbbb')
+        setqualificationitemsLanguage(languageInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`Language fetch error ${e}`)
+      });
+  }
+  const fetchQualification = () => {
+    axios.get(`${API_URL}/qualifications`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let qualificationInfo = res.data.data;
+        setqualificationitems(qualificationInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`qualification fetch error ${e}`)
+      });
+  }
+  const fetchTherapyType = () => {
+    axios.get(`${API_URL}/therapy-type`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let therapyTypeInfo = res.data.data;
+        setqualificationitemsType(therapyTypeInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`therapytype fetch error ${e}`)
+      });
+  }
+
+  useEffect(() => {
+    fetchLanguage();
+    fetchQualification();
+    fetchTherapyType();
+  }, [])
 
   const submitForm = () => {
     //navigation.navigate('DocumentsUpload')
@@ -155,67 +211,80 @@ const PersonalInformation = ({ navigation, route }) => {
     } else if (selectedItemsLanguage && selectedItemsLanguage.length == 0) {
       setSelectedItemLanguageError('Please select Language')
     } else {
-      //selectedItems
-      //yearvalue
-      //monthvalue
-      navigation.navigate('Thankyou')
-      //   setIsLoading(true)
-      //   var option = {}
-      //   if(email){
-      //     var option = {
-      //       "firstName": firstname,
-      //       "lastName": lastname,
-      //       "email": email,
-      //       "address": address,
-      //       "zipcode": postaddress,
-      //       "city" : city
-      //     }
-      //   }else{
-      //     var option = {
-      //       "firstName": firstname,
-      //       "lastName": lastname,
-      //       "address": address,
-      //       "zipcode": postaddress,
-      //       "city" : city
-      //     }
-      //   }
+      //   const formData = new FormData();
+      //   formData.append("name", firstname);
+      //   formData.append("email", email);
+      //   formData.append("mobile", phoneno);
+      //   formData.append("therapy_types", selectedItemsType);
+      //   formData.append("languages", selectedItemsLanguage);
+      //   formData.append("qualifications", selectedItems);
+      //   const experienceValue = yearvalue + '.' + monthvalue;
+      //   formData.append("experience", experienceValue);
+      //  console.log(JSON.stringify(formData), 'form data')
+      setIsLoading(true)
+      var experienceValue = ''
+      if(yearvalue && monthvalue){
+        var experienceValue = yearvalue + '.' + monthvalue;
+      }else{
+        var experienceValue = '';
+      }
+      
+      const option = {
+        "name": firstname,
+        "email": email,
+        "mobile": phoneno,
+        "therapy_types": selectedItemsType,
+        "languages": selectedItemsLanguage,
+        "qualifications": selectedItems,
+        "experience": experienceValue,
+      }
+      console.log(option, 'kkkkkkkkk')
+      //navigation.navigate('Thankyou')
 
-      //   axios.post(`${API_URL}/api/driver/updateInformation`, option, {
-      //     headers: {
-      //       Accept: 'application/json',
-      //       "Authorization": 'Bearer ' + route?.params?.usertoken,
-      //     },
-      //   })
-      //     .then(res => {
-      //       console.log(res.data)
-      //       if (res.data.response.status.code === 200) {
-      //         setIsLoading(false)
-      //         navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
-      //     } else {
-      //         Alert.alert('Oops..', "Something went wrong", [
-      //             {
-      //                 text: 'Cancel',
-      //                 onPress: () => console.log('Cancel Pressed'),
-      //                 style: 'cancel',
-      //             },
-      //             { text: 'OK', onPress: () => console.log('OK Pressed') },
-      //         ]);
-      //     }
-      //     })
-      //     .catch(e => {
-      //       setIsLoading(false)
-      //       console.log(`user update error ${e}`)
-      //       console.log(e.response.data?.response.records)
-      //       Alert.alert('Oops..', "Something went wrong", [
-      //         {
-      //             text: 'Cancel',
-      //             onPress: () => console.log('Cancel Pressed'),
-      //             style: 'cancel',
-      //         },
-      //         { text: 'OK', onPress: () => console.log('OK Pressed') },
-      //     ]);
-      //     });
-
+      axios.post(`${API_URL}/therapist/registration`, option, {
+        headers: {
+          'Accept': 'application/json',
+          //'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            setIsLoading(false)
+            Toast.show({
+              type: 'success',
+              text1: 'Hello',
+              text2: "Registration Successfull",
+              position: 'top',
+              topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+            navigation.navigate('Thankyou')
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+              Alert.alert('Oops..', "Something went wrong", [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+              ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user register error ${e}`)
+          console.log(e.response)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
     }
   }
 
@@ -306,7 +375,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="type"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -345,7 +414,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="content"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -382,7 +451,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="content"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -455,7 +524,9 @@ const PersonalInformation = ({ navigation, route }) => {
         </View>
         <View style={{ paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', }}>
           <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#746868' }}>Already Have an account?</Text>
-          <Text style={{ fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.5), color: '#2D2D2D' }}>Sign In</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={{ fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.5), color: '#2D2D2D' }}>Sign In</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAwareScrollView>
 

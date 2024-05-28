@@ -29,14 +29,15 @@ const CustomDrawer = props => {
 
   const fetchProfileDetails = () => {
     AsyncStorage.getItem('userToken', (err, usertoken) => {
-      axios.get(`${API_URL}/api/driver/driver-profile`, {
+      console.log(usertoken,'usertoken')
+      axios.post(`${API_URL}/therapist/profile`,{}, {
         headers: {
-          "Authorization": 'Bearer ' + usertoken,
+          "Authorization": `Bearer ${usertoken}`,
           "Content-Type": 'application/json'
         },
       })
         .then(res => {
-          let userInfo = res.data.response.records.data;
+          let userInfo = res.data.data;
           console.log(userInfo, 'user data from contact informmation')
           setuserInfo(userInfo)
         })
@@ -76,7 +77,7 @@ const CustomDrawer = props => {
                   fontFamily: 'Outfit-Medium',
                   marginBottom: 5,
                 }}>
-                {userInfo.name}Jennifer Kourtney
+                {userInfo.name}
               </Text>
               <Text
                 style={{

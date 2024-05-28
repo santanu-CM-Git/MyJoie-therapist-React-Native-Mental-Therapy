@@ -20,6 +20,7 @@ import CustomButton from '../../components/CustomButton';
 import { deleteRoundImg, plus, uploadImg, uploadPicImg, userPhoto } from '../../utils/Images';
 import { AuthContext } from '../../context/AuthContext';
 import Loader from '../../utils/Loader';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
 import { API_URL } from '@env'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -28,28 +29,7 @@ import MultiSelect from 'react-native-multiple-select';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/Entypo';
-const items = [
-  { id: '92iijs7yta', name: 'Ondo' },
-  { id: 'a0s0a8ssbsd', name: 'Ogun' },
-  { id: '16hbajsabsd', name: 'Calabar' },
-  { id: 'nahs75a5sg', name: 'Lagos' },
-  { id: '667atsas', name: 'Maiduguri' },
-  { id: 'hsyasajs', name: 'Anambra' },
-  { id: 'djsjudksjd', name: 'Benue' },
-  { id: 'sdhyaysdj', name: 'Kaduna' },
-  { id: 'suudydjsjd', name: 'Abuja' }
-];
-const qualificationitemsType = [
-  { id: '1', name: 'Individual' },
-  { id: '2', name: 'Couple' },
-  { id: '3', name: 'Child' },
 
-];
-const qualificationitemsLanguage = [
-  { id: '1', name: 'Hindi' },
-  { id: '2', name: 'English' },
-  { id: '3', name: 'Gujrati' },
-];
 const data = [
   { label: 'Absa Bank Ghana Limited', value: 'Absa Bank Ghana Limited' },
   { label: 'Access Bank (Ghana) Plc', value: 'Access Bank (Ghana) Plc' },
@@ -67,8 +47,7 @@ const dataMonth = [
 ];
 
 const ProfileScreen = ({ navigation, route }) => {
-  const concatNo = route?.params?.countrycode + '-' + route?.params?.phoneno;
-  const [firstname, setFirstname] = useState('Jennifer Kourtney');
+  const [firstname, setFirstname] = useState('');
   const [email, setEmail] = useState('');
   const [phoneno, setPhoneno] = useState('');
   const [dob, setdob] = useState('');
@@ -76,6 +55,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [panno, setPanno] = useState('');
   const [aadhar, setAadhar] = useState('')
   const [city, setCity] = useState('');
+  const [state, setState] = useState('');
   const [accountno, setAccountno] = useState('')
 
   const [accountChangeRequest, setAccountChangeRequest] = useState(false)
@@ -88,7 +68,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [DrivingLicenseBackError, setDrivingLicenseBackError] = useState('')
 
   const [isModalVisible, setModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const { login, userToken } = useContext(AuthContext);
 
   const [statevalue, setStateValue] = useState(null);
@@ -100,24 +80,28 @@ const ProfileScreen = ({ navigation, route }) => {
   const [monthvalue, setMonthValue] = useState(null);
   const [isMonthFocus, setMonthIsFocus] = useState(false);
 
-  // Qualification dropdown
-  const [selectedItems, setSelectedItems] = useState([]);
-  const multiSelectRef = useRef(null);
-  const onSelectedItemsChange = selectedItems => {
-    setSelectedItems(selectedItems);
-  };
+  
   // Type dropdown
-  const [selectedItemsType, setSelectedItemsType] = useState(['2','1']);
+  const [itemsType, setitemsType] = useState([])
+  const [selectedItemsType, setSelectedItemsType] = useState([]);
   const multiSelectRefType = useRef(null);
   const onSelectedItemsChangeType = selectedItems => {
     setSelectedItemsType(selectedItems);
   };
 
   // Language dropdown
+  const [qualificationitemsLanguage, setqualificationitemsLanguage] = useState([])
   const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
   const multiSelectRefLanguage = useRef(null);
   const onSelectedItemsChangeLanguage = selectedItems => {
     setSelectedItemsLanguage(selectedItems);
+  };
+  // Qualification dropdown
+  const [qualificationitems, setqualificationitems] = useState([])
+  const [selectedItems, setSelectedItems] = useState([]);
+  const multiSelectRef = useRef(null);
+  const onSelectedItemsChange = selectedItems => {
+    setSelectedItems(selectedItems);
   };
 
   const toggleModal = () => {
@@ -131,6 +115,9 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const changeCity = (text) => {
     setCity(text)
+  }
+  const changeState = (text) => {
+    setState(text)
   }
 
 
@@ -167,82 +154,104 @@ const ProfileScreen = ({ navigation, route }) => {
     setCancelCheque(null)
   }
 
+  const fetchUserData = () => {
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      console.log(usertoken,'usertoken')
+      axios.post(`${API_URL}/therapist/profile`,{}, {
+        headers: {
+          "Authorization": `Bearer ${usertoken}`,
+          "Content-Type": 'application/json'
+        },
+      })
+        .then(res => {
+          let userInfo = res.data.data;
+          console.log(userInfo, 'user data from profile api ')
+          setFirstname(userInfo?.name)
+          setEmail(userInfo?.email)
+          setPhoneno(userInfo?.mobile)
+          setdob(userInfo?.dob)
+          setGender(userInfo?.gender)
+          setPanno(userInfo?.therapist_details1?.pan_no)
+          setAadhar(userInfo?.therapist_details1?.addhar_no)
+          setSelectedItemsType([1,2])
+          setSelectedItemsLanguage([1])
+          setSelectedItems([2])
+          setCity(userInfo?.city)
+          setState(userInfo?.state)
+          setAccountno(userInfo?.therapist_details1?.bank_ac_no)
+          //setPickedDocument(userInfo?.profile_pic)
+          setIsLoading(false)
+        })
+        .catch(e => {
+          console.log(`Profile error ${e}`)
+          setIsLoading(false)
+        });
+    });
+  }
+
+  const fetchLanguage = () => {
+    axios.get(`${API_URL}/languages`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let languageInfo = res.data.data;
+        //console.log(languageInfo, 'bbbbbbb')
+        setqualificationitemsLanguage(languageInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`Language fetch error ${e}`)
+      });
+  }
+  const fetchQualification = () => {
+    axios.get(`${API_URL}/qualifications`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let qualificationInfo = res.data.data;
+        setqualificationitems(qualificationInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`qualification fetch error ${e}`)
+      });
+  }
+  const fetchTherapyType = () => {
+    axios.get(`${API_URL}/therapy-type`, {
+      headers: {
+        "Content-Type": 'application/json'
+      },
+    })
+      .then(res => {
+        let therapyTypeInfo = res.data.data;
+        setitemsType(therapyTypeInfo)
+        setIsLoading(false);
+      })
+      .catch(e => {
+        console.log(`therapytype fetch error ${e}`)
+      });
+  }
+
+  useEffect(() => {
+    fetchLanguage();
+    fetchQualification();
+    fetchTherapyType();
+  }, [])
+
+  useEffect(() => {
+    fetchUserData();
+  }, [])
+
 
   const submitForm = () => {
     console.log(selectedItemsType, " type off therapist")
   }
 
-  // const submitForm = () => {
-  //   //navigation.navigate('DocumentsUpload')
-  //   if (!firstname) {
-  //     setFirstNameError('Please enter First name')
-  //   }else if(!lastname){
-  //     setLastNameError('Please enter Last name')
-  //   }else if(!address){
-  //     setAddressError('Please enter Address')
-  //   }else if(!city){
-  //     setCityError('Please enter City')
-  //   } else {
-  //     setIsLoading(true)
-  //     var option = {}
-  //     if(email){
-  //       var option = {
-  //         "firstName": firstname,
-  //         "lastName": lastname,
-  //         "email": email,
-  //         "address": address,
-  //         "zipcode": postaddress,
-  //         "city" : city
-  //       }
-  //     }else{
-  //       var option = {
-  //         "firstName": firstname,
-  //         "lastName": lastname,
-  //         "address": address,
-  //         "zipcode": postaddress,
-  //         "city" : city
-  //       }
-  //     }
-
-  //     axios.post(`${API_URL}/api/driver/updateInformation`, option, {
-  //       headers: {
-  //         Accept: 'application/json',
-  //         "Authorization": 'Bearer ' + route?.params?.usertoken,
-  //       },
-  //     })
-  //       .then(res => {
-  //         console.log(res.data)
-  //         if (res.data.response.status.code === 200) {
-  //           setIsLoading(false)
-  //           navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
-  //       } else {
-  //           Alert.alert('Oops..', "Something went wrong", [
-  //               {
-  //                   text: 'Cancel',
-  //                   onPress: () => console.log('Cancel Pressed'),
-  //                   style: 'cancel',
-  //               },
-  //               { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //           ]);
-  //       }
-  //       })
-  //       .catch(e => {
-  //         setIsLoading(false)
-  //         console.log(`user update error ${e}`)
-  //         console.log(e.response.data?.response.records)
-  //         Alert.alert('Oops..', "Something went wrong", [
-  //           {
-  //               text: 'Cancel',
-  //               onPress: () => console.log('Cancel Pressed'),
-  //               style: 'cancel',
-  //           },
-  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //       ]);
-  //       });
-  //   }
-
-
-  // }
+ 
 
   if (isLoading) {
     return (
@@ -357,7 +366,7 @@ const ProfileScreen = ({ navigation, route }) => {
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
                 <MultiSelect
                   hideTags
-                  items={qualificationitemsType}
+                  items={itemsType}
                   uniqueKey="id"
                   ref={multiSelectRefType}
                   onSelectedItemsChange={onSelectedItemsChangeType}
@@ -372,7 +381,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="type"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -411,7 +420,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="content"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -435,7 +444,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }}>
                 <MultiSelect
                   hideTags
-                  items={items}
+                  items={qualificationitems}
                   uniqueKey="id"
                   ref={multiSelectRef}
                   onSelectedItemsChange={onSelectedItemsChange}
@@ -450,7 +459,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
                   itemTextColor="#746868"
-                  displayKey="name"
+                  displayKey="content"
                   searchInputStyle={styles.searchInput}
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
@@ -482,7 +491,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>State</Text>
             </View>
-            <Dropdown
+            {/* <Dropdown
               style={[styles.dropdown, isStateFocus && { borderColor: '#DDD' }]}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -502,7 +511,17 @@ const ProfileScreen = ({ navigation, route }) => {
                 setStateValue(item.value);
                 setStateIsFocus(false);
               }}
-            />
+            /> */}
+             <View style={styles.inputView}>
+              <InputField
+                label={'State'}
+                keyboardType=" "
+                value={state}
+                //helperText={'Please enter lastname'}
+                inputType={'others'}
+                onChangeText={(text) => changeState(text)}
+              />
+            </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Experience</Text>
             </View>

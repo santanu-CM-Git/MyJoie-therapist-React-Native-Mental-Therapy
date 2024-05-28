@@ -13,53 +13,55 @@ export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState([])
 
 
-    // const login = (token) => {
-    //     setIsLoading(true);
-    //     axios.get(`${API_URL}/api/driver/driver-profile`, {
-    //         headers: {
-    //             "Authorization": 'Bearer ' + token,
-    //             "Content-Type": 'application/json'
-    //         },
-    //     })
-    //         .then(res => {
-    //             //console.log(res.data,'user details')
-    //             let userInfo = res.data.response.records.data;
-    //             console.log(userInfo,'userInfo from loginnnnn')
-    //             AsyncStorage.setItem('userToken', token)
-    //             AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
-    //             setUserInfo(userInfo)
-    //             setUserToken(token)
-    //             setIsLoading(false);
-    //         })
-    //         .catch(e => {
-    //             console.log(`Login error ${e}`)
-    //         });
-    // }
-
-    const login = () => {
-        fetch('https://dummyjson.com/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: 'kminchelle',
-                password: '0lelplR',
-                expiresInMins: 30 // optional, defaults to 60
-            })
+    const login = (token) => {
+        console.log(token)
+        setIsLoading(true);
+        axios.post(`${API_URL}/therapist/profile`,{}, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": 'application/json'
+            },
         })
-            .then(res => res.json())
-            .then(data => {
-                let userInfo = data;
+            .then(res => {
+                //console.log(res.data,'user details')
+                let userInfo = res.data.data;
                 console.log(userInfo,'userInfo from loginnnnn')
-                AsyncStorage.setItem('userToken', userInfo.token)
+                AsyncStorage.setItem('userToken', token)
                 AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
                 setUserInfo(userInfo)
-                setUserToken(userInfo.token)
+                setUserToken(token)
                 setIsLoading(false);
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(e => {
+                console.log(`Login error ${e}`)
+                console.log(e.response?.data?.message)
             });
     }
+
+    // const login = () => {
+    //     fetch('https://dummyjson.com/auth/login', {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify({
+    //             username: 'kminchelle',
+    //             password: '0lelplR',
+    //             expiresInMins: 30 // optional, defaults to 60
+    //         })
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             let userInfo = data;
+    //             console.log(userInfo,'userInfo from loginnnnn')
+    //             AsyncStorage.setItem('userToken', userInfo.token)
+    //             AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
+    //             setUserInfo(userInfo)
+    //             setUserToken(userInfo.token)
+    //             setIsLoading(false);
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //         });
+    // }
 
     const logout = () => {
         setIsLoading(true)

@@ -26,6 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 const BannerWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
@@ -86,62 +87,68 @@ const LoginScreen = ({ navigation }) => {
   }
   const handleSubmit = () => {
     //login()
-    if(!therapistId){
+    if (!therapistId) {
       settherapistIdError('Please enter Therapist Id')
-    }else if(!password){
+    } else if (!password) {
       setPasswordError('Please enter Password')
-    }else{
-      login()
+    } else {
+      //login()
+      setIsLoading(true)
+      AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
+        console.log(fcmToken, 'firebase token')
+        console.log(deviceId, 'device id')
+        const option = {
+          "therapist_id": therapistId,
+          "password": password,
+          //"deviceid": deviceId,
+          //"deviceToken": fcmToken
+        }
+        axios.post(`${API_URL}/therapist/login`, option, {
+          headers: {
+            'Accept': 'application/json',
+            //'Content-Type': 'multipart/form-data',
+          },
+        })
+          .then(res => {
+            console.log(res.data)
+            if (res.data.response == true) {
+              setIsLoading(false)
+              Toast.show({
+                type: 'success',
+                text1: 'Hello',
+                text2: "Login Successfull",
+                position: 'top',
+                topOffset: Platform.OS == 'ios' ? 55 : 20
+              });
+              login(res.data.token)
+            } else {
+              console.log('not okk')
+              setIsLoading(false)
+                Alert.alert('Oops..', "Something went wrong", [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ]);
+            }
+          })
+          .catch(e => {
+            setIsLoading(false)
+            console.log(`user register error ${e}`)
+            console.log(e.response)
+            Alert.alert('Oops..', e.response?.data?.message, [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          });
+      });
     }
-    // const phoneRegex = /^\d{10}$/;
-    // if (!phone) {
-    //   setMobileError('Please enter Mobile no')
-    // } else if (!phoneRegex.test(phone)) {
-    //   setMobileError('Please enter a 10-digit number.')
-    // } else {
-    //   setIsLoading(true)
-    //   AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
-    //     const option = {
-    //       "code": countryCode,
-    //       "phone": phone,
-    //       "deviceid": deviceId,
-    //       "email": email,
-    //       "deviceToken": fcmToken
-    //     }
-
-    //     console.log(option)
-    //     axios.post(`${API_URL}/api/driver/registration`, option)
-    //       .then(res => {
-    //         console.log(JSON.stringify(res.data))
-    //         if (res.data.response.status.code === 200) {
-    //           setIsLoading(false)
-    //           navigation.push('Otp', { counterycode: countryCode, phoneno: phone, userid: res.data?.response.records.userData.id })
-    //         } else {
-    //           setIsLoading(false)
-    //           Alert.alert('Oops..', "Something went wrong", [
-    //             {
-    //               text: 'Cancel',
-    //               onPress: () => console.log('Cancel Pressed'),
-    //               style: 'cancel',
-    //             },
-    //             { text: 'OK', onPress: () => console.log('OK Pressed') },
-    //           ]);
-    //         }
-    //       })
-    //       .catch(e => {
-    //         setIsLoading(false)
-    //         console.log(`user register error ${e}`)
-    //         Alert.alert('Oops..', e.response.data?.response.records.message, [
-    //           {
-    //             text: 'Cancel',
-    //             onPress: () => console.log('Cancel Pressed'),
-    //             style: 'cancel',
-    //           },
-    //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-    //         ]);
-    //       });
-    //   });
-    // }
   }
 
   if (isLoading) {
