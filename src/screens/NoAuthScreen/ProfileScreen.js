@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef,useEffect } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -29,6 +29,8 @@ import MultiSelect from 'react-native-multiple-select';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/Entypo';
+import { useFocusEffect } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 const data = [
   { label: 'Absa Bank Ghana Limited', value: 'Absa Bank Ghana Limited' },
@@ -36,14 +38,28 @@ const data = [
   { label: 'Agricultural Development Bank Plc', value: 'Agricultural Development Bank Plc' },
 ];
 const dataYear = [
-  { label: '01', value: '01' },
-  { label: '02', value: '02' },
-  { label: '03', value: '03' },
+  { label: '01', value: '1' },
+  { label: '02', value: '2' },
+  { label: '03', value: '3' },
+  { label: '04', value: '4' },
+  { label: '05', value: '5' },
+  { label: '06', value: '6' },
+  { label: '07', value: '7' },
+  { label: '08', value: '8' },
+  { label: '09', value: '9' },
+  { label: '10', value: '10' },
 ];
 const dataMonth = [
-  { label: '01', value: '01' },
-  { label: '02', value: '02' },
-  { label: '03', value: '03' },
+  { label: '01', value: '1' },
+  { label: '02', value: '2' },
+  { label: '03', value: '3' },
+  { label: '04', value: '4' },
+  { label: '05', value: '5' },
+  { label: '06', value: '6' },
+  { label: '07', value: '7' },
+  { label: '08', value: '8' },
+  { label: '09', value: '9' },
+  { label: '10', value: '10' },
 ];
 
 const ProfileScreen = ({ navigation, route }) => {
@@ -61,11 +77,12 @@ const ProfileScreen = ({ navigation, route }) => {
   const [accountChangeRequest, setAccountChangeRequest] = useState(false)
 
   const [pickedDocument, setPickedDocument] = useState(null);
+  const [profilePic, setProfilePic] = useState(null)
   const [pickedCancelCheque, setCancelCheque] = useState(null);
-  const [pickedDrivingLicenseFront, setPickedDrivingLicenseFront] = useState(null);
-  const [DrivingLicenseFrontError, setDrivingLicenseFrontError] = useState('')
   const [pickedDrivingLicenseBack, setPickedDrivingLicenseback] = useState(null);
-  const [DrivingLicenseBackError, setDrivingLicenseBackError] = useState('')
+
+
+  const [alldocument, setAllDocument] = useState(null)
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
@@ -80,7 +97,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [monthvalue, setMonthValue] = useState(null);
   const [isMonthFocus, setMonthIsFocus] = useState(false);
 
-  
+
   // Type dropdown
   const [itemsType, setitemsType] = useState([])
   const [selectedItemsType, setSelectedItemsType] = useState([]);
@@ -132,7 +149,8 @@ const ProfileScreen = ({ navigation, route }) => {
       //console.log('Name: ', result[0].name);
       //console.log('Size: ', result[0].size);
       if (forwhat == 'profilepic') {
-        setPickedDocument(result[0]);
+        setPickedDocument(result[0].uri);
+        setProfilePic(result[0])
       } else if (forwhat == 'CancelCheque') {
         setCancelCheque(result[0])
       }
@@ -156,8 +174,8 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const fetchUserData = () => {
     AsyncStorage.getItem('userToken', (err, usertoken) => {
-      console.log(usertoken,'usertoken')
-      axios.post(`${API_URL}/therapist/profile`,{}, {
+      console.log(usertoken, 'usertoken')
+      axios.post(`${API_URL}/therapist/profile`, {}, {
         headers: {
           "Authorization": `Bearer ${usertoken}`,
           "Content-Type": 'application/json'
@@ -173,13 +191,32 @@ const ProfileScreen = ({ navigation, route }) => {
           setGender(userInfo?.gender)
           setPanno(userInfo?.therapist_details1?.pan_no)
           setAadhar(userInfo?.therapist_details1?.addhar_no)
-          setSelectedItemsType([1,2])
-          setSelectedItemsLanguage([1])
-          setSelectedItems([2])
+          const type_therapis = userInfo?.therapist_type;
+          const therapyTypeIds = type_therapis.map(item => item.therapy_type_id);
+          console.log(therapyTypeIds)
+          setSelectedItemsType(therapyTypeIds)
+          const language = userInfo?.therapist_languages;
+          const languageIds = language.map(item => item.language_id);
+          console.log(languageIds)
+          setSelectedItemsLanguage(languageIds)
+          const qualification = userInfo?.therapist_qualification;
+          const qualificationIds = qualification.map(item => item.qualification_id);
+          console.log(qualificationIds)
+          setSelectedItems(qualificationIds)
           setCity(userInfo?.city)
           setState(userInfo?.state)
           setAccountno(userInfo?.therapist_details1?.bank_ac_no)
-          //setPickedDocument(userInfo?.profile_pic)
+          const experience = userInfo?.therapist_details1?.experience;
+          const parts = experience.toString().split('.');
+          if (experience) {
+            setYearValue(parts[0])
+            setMonthValue(parts[1])
+          } else {
+            setYearValue(null)
+            setMonthValue(null)
+          }
+          setAllDocument(userInfo?.therapist_documents)
+          setPickedDocument(userInfo?.profile_pic)
           setIsLoading(false)
         })
         .catch(e => {
@@ -199,7 +236,7 @@ const ProfileScreen = ({ navigation, route }) => {
         let languageInfo = res.data.data;
         //console.log(languageInfo, 'bbbbbbb')
         setqualificationitemsLanguage(languageInfo)
-        setIsLoading(false);
+        //setIsLoading(false);
       })
       .catch(e => {
         console.log(`Language fetch error ${e}`)
@@ -214,7 +251,7 @@ const ProfileScreen = ({ navigation, route }) => {
       .then(res => {
         let qualificationInfo = res.data.data;
         setqualificationitems(qualificationInfo)
-        setIsLoading(false);
+        //setIsLoading(false);
       })
       .catch(e => {
         console.log(`qualification fetch error ${e}`)
@@ -229,7 +266,7 @@ const ProfileScreen = ({ navigation, route }) => {
       .then(res => {
         let therapyTypeInfo = res.data.data;
         setitemsType(therapyTypeInfo)
-        setIsLoading(false);
+        //setIsLoading(false);
       })
       .catch(e => {
         console.log(`therapytype fetch error ${e}`)
@@ -245,13 +282,86 @@ const ProfileScreen = ({ navigation, route }) => {
   useEffect(() => {
     fetchUserData();
   }, [])
-
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserData()
+    }, [])
+  )
 
   const submitForm = () => {
     console.log(selectedItemsType, " type off therapist")
+    console.log(selectedItemsLanguage, "language")
+    console.log(selectedItems, 'qualification')
+    console.log(city, 'city')
+    console.log(state, 'state')
+    var experienceValue = ''
+    if (yearvalue && monthvalue) {
+      var experienceValue = yearvalue + '.' + monthvalue;
+    } else {
+      var experienceValue = '';
+    }
+    console.log(experienceValue, 'experience')
+    console.log(profilePic, 'profile pic')
+
+    const formData = new FormData();
+    formData.append("name", firstname);
+    formData.append("email", email);
+    formData.append("mobile", phoneno);
+    formData.append("therapy_types", selectedItemsType);
+    formData.append("languages", selectedItemsLanguage);
+    formData.append("qualifications", selectedItems);
+    formData.append("experience", experienceValue);
+
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/profile-update`, formData, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+          "Authorization": 'Bearer ' + usertoken,
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            setIsLoading(false)
+            Toast.show({
+              type: 'success',
+              text1: 'Hello',
+              text2: "Update data Successfully",
+              position: 'top',
+              topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user register error ${e}`)
+          console.log(e.response)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+
   }
 
- 
+
 
   if (isLoading) {
     return (
@@ -394,7 +504,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
               <View style={{ marginVertical: responsiveHeight(2) }}>
                 {multiSelectRefType.current && multiSelectRefType.current.getSelectedItemsExt(selectedItemsType)}
-               
+
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -512,7 +622,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 setStateIsFocus(false);
               }}
             /> */}
-             <View style={styles.inputView}>
+            <View style={styles.inputView}>
               <InputField
                 label={'State'}
                 keyboardType=" "
@@ -587,7 +697,7 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
             {accountChangeRequest ?
               pickedCancelCheque == null ?
-                <View style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA',marginBottom: responsiveHeight(2) }}>
+                <View style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA', marginBottom: responsiveHeight(2) }}>
                   <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
 
                     <TouchableOpacity onPress={() => pickDocument('CancelCheque')}>
@@ -601,7 +711,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 </View>
                 :
                 <View>
-                  <Image source={{ uri: pickedCancelCheque.uri }} style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderRadius: 10,marginBottom: responsiveHeight(2) }} />
+                  <Image source={{ uri: pickedCancelCheque.uri }} style={{ height: responsiveHeight(18), width: responsiveWidth(88), borderRadius: 10, marginBottom: responsiveHeight(2) }} />
                   <View style={{ position: 'absolute', right: 15, top: 7 }}>
                     <TouchableOpacity onPress={() => deleteCancelChequeImg()}>
                       <Image
@@ -616,84 +726,20 @@ const ProfileScreen = ({ navigation, route }) => {
               style={styles.header}>
               Upload Supporting Documents
             </Text>
-            {DrivingLicenseFrontError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{DrivingLicenseFrontError}</Text> : <></>}
-            {DrivingLicenseBackError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{DrivingLicenseBackError}</Text> : <></>}
+            <ScrollView contentContainerStyle={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), flexWrap: 'wrap', }}>
+              {alldocument.map((doc) => (
+                // <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA',marginBottom:10 }}>
+                <Image
+                  source={{ uri: doc.document_file }}
+                  style={{ height: responsiveHeight(18), width: responsiveWidth(40), resizeMode: 'contain', borderRadius: 10, marginBottom: 10 }}
+                />
+                // </View>
+              ))}
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2) }}>
-              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
+            </ScrollView>
 
-                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}> */}
-                  <Image
-                    source={uploadImg}
-                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                  />
-                  {/* </TouchableOpacity> */}
-
-                  {!pickedDrivingLicenseFront ?
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
-                    :
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
-                  }
-                </View>
-              </View>
-              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
-
-                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}> */}
-                  <Image
-                    source={uploadImg}
-                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                  />
-                  {/* </TouchableOpacity> */}
-
-                  {!pickedDrivingLicenseBack ?
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
-                    :
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseBack.name}</Text>
-                  }
-                </View>
-              </View>
-
-            </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>
-              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
-
-                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseFront')}> */}
-                  <Image
-                    source={uploadImg}
-                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                  />
-                  {/* </TouchableOpacity> */}
-
-                  {!pickedDrivingLicenseFront ?
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Degree</Text>
-                    :
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseFront.name}</Text>
-                  }
-                </View>
-              </View>
-              <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA' }}>
-                <View style={{ flexDirection: 'column', alignItems: 'center', marginVertical: 40 }}>
-
-                  {/* <TouchableOpacity onPress={() => pickDocument('DrivingLicenseBack')}> */}
-                  <Image
-                    source={uploadImg}
-                    style={{ height: 25, width: 25, resizeMode: 'contain', marginBottom: 5 }}
-                  />
-                  {/* </TouchableOpacity> */}
-
-                  {!pickedDrivingLicenseBack ?
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', }}>Upload Marksheets</Text>
-                    :
-                    <Text style={{ fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), color: '#808080', paddingHorizontal: 5 }}>{pickedDrivingLicenseBack.name}</Text>
-                  }
-                </View>
-              </View>
-            </View>
             <Text
-              style={styles.header}>
+              style={[styles.header, { marginTop: responsiveHeight(2) }]}>
               Upload Picture
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: responsiveHeight(2), marginTop: responsiveHeight(1) }}>
@@ -712,7 +758,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 </View>
                 :
                 <View>
-                  <Image source={{ uri: pickedDocument.uri }} style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderRadius: 10 }} />
+                  <Image source={{ uri: pickedDocument }} style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderRadius: 10 }} />
                   <View style={{ position: 'absolute', right: 15, top: 7 }}>
                     <TouchableOpacity onPress={() => deleteProfileImg()}>
                       <Image
