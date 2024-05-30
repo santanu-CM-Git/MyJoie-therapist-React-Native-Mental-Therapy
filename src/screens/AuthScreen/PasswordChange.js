@@ -27,12 +27,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ForgotPass from '../..//assets/images/misc/forgotPass.svg';
+import Toast from 'react-native-toast-message';
 
 const BannerWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
-const PasswordChange = ({ navigation }) => {
+const PasswordChange = ({ navigation, route }) => {
     const [password, setPassword] = useState('');
     const [passwordError, setPasswordError] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -62,62 +63,64 @@ const PasswordChange = ({ navigation }) => {
 
 
     const handleSubmit = () => {
-        if(!password){
-            setPasswordError('Please enter Password')
-          }else if(!confirmPassword){
-            setConfirmPasswordError('Please enter Confirm Password')
-          }else{
-            //login()
-          }
-        // const phoneRegex = /^\d{10}$/;
-        // if (!phone) {
-        //   setMobileError('Please enter Mobile no')
-        // } else if (!phoneRegex.test(phone)) {
-        //   setMobileError('Please enter a 10-digit number.')
-        // } else {
-        //   setIsLoading(true)
-        //   AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
-        //     const option = {
-        //       "code": countryCode,
-        //       "phone": phone,
-        //       "deviceid": deviceId,
-        //       "email": email,
-        //       "deviceToken": fcmToken
-        //     }
+        if (!password) {
+            setPasswordError('Please enter Password');
+        } else if (!confirmPassword) {
+            setConfirmPasswordError('Please enter Confirm Password');
+        } else if (password !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match');
+        } else {
+            setIsLoading(true)
+            const option = {
+                "user_id": route?.params?.userId,
+                "password": password,
+            };
+            axios.post(`${API_URL}/therapist/password-change`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Hello',
+                            text2: res.data.message,
+                            position: 'top',
+                            topOffset: Platform.OS == 'ios' ? 55 : 20
+                        });
+                        navigation.navigate('Login')
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        }
 
-        //     console.log(option)
-        //     axios.post(`${API_URL}/api/driver/registration`, option)
-        //       .then(res => {
-        //         console.log(JSON.stringify(res.data))
-        //         if (res.data.response.status.code === 200) {
-        //           setIsLoading(false)
-        //           navigation.push('Otp', { counterycode: countryCode, phoneno: phone, userid: res.data?.response.records.userData.id })
-        //         } else {
-        //           setIsLoading(false)
-        //           Alert.alert('Oops..', "Something went wrong", [
-        //             {
-        //               text: 'Cancel',
-        //               onPress: () => console.log('Cancel Pressed'),
-        //               style: 'cancel',
-        //             },
-        //             { text: 'OK', onPress: () => console.log('OK Pressed') },
-        //           ]);
-        //         }
-        //       })
-        //       .catch(e => {
-        //         setIsLoading(false)
-        //         console.log(`user register error ${e}`)
-        //         Alert.alert('Oops..', e.response.data?.response.records.message, [
-        //           {
-        //             text: 'Cancel',
-        //             onPress: () => console.log('Cancel Pressed'),
-        //             style: 'cancel',
-        //           },
-        //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-        //         ]);
-        //       });
-        //   });
-        // }
     }
 
     if (isLoading) {
@@ -165,7 +168,7 @@ const PasswordChange = ({ navigation }) => {
 
             <View style={styles.buttonwrapper}>
                 <CustomButton label={"Continue"}
-                onPress={() => handleSubmit()}
+                    onPress={() => handleSubmit()}
                 //onPress={() => { navigation.push('Otp') }}
                 />
             </View>

@@ -48,6 +48,11 @@ const HomeStack = () => {
         component={ChatScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

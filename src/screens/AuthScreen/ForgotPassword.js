@@ -27,6 +27,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ForgotPass from '../..//assets/images/misc/forgotPass.svg';
+import Toast from 'react-native-toast-message';
 
 const BannerWidth = Dimensions.get('window').width;
 const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
@@ -61,6 +62,7 @@ const ForgotPassword = ({ navigation }) => {
     }
 
     const handleSubmit = () => {
+        
         // if (!inputText) {
         //     setinputTextError('Please enter Mobile Number or Email Id')
         // }
@@ -75,8 +77,9 @@ const ForgotPassword = ({ navigation }) => {
                 setinputTextError('Please enter correct Email Id')
                 return false;
             } else {
-                setinputTextError('The input is an Email ID');
-                //navigation.push('Otp')
+                //setinputTextError('The input is an Email ID');
+                setIsLoading(true)
+                forgetPassword(inputText)
             }
         } else if (isPhoneNumber(inputText)) {
             let phoneRegex = /^\d{10}$/;
@@ -84,8 +87,9 @@ const ForgotPassword = ({ navigation }) => {
                 setinputTextError('Please enter a 10-digit number.')
                 return false;
             } else {
-                setinputTextError('The input is a Phone Number');
-                // navigation.push('Otp')
+                //setinputTextError('The input is a Phone Number');
+                setIsLoading(true)
+                forgetPassword(inputText)
             }
         } else {
             setinputTextError('Please enter Correct Mobile Number or Email Id')
@@ -140,6 +144,57 @@ const ForgotPassword = ({ navigation }) => {
         //       });
         //   });
         // }
+    }
+
+    const forgetPassword = (inputText) => {
+        const option = {
+            "input": inputText,
+          }
+        axios.post(`${API_URL}/therapist/forgot-password`, option, {
+            headers: {
+              'Accept': 'application/json',
+              //'Content-Type': 'multipart/form-data',
+            },
+          })
+            .then(res => {
+              console.log(res.data)
+              console.log(res.data.user?.id)
+              if (res.data.response == true) {
+                setIsLoading(false)
+                Toast.show({
+                  type: 'success',
+                  text1: 'Hello',
+                  text2: res.data.message,
+                  position: 'top',
+                  topOffset: Platform.OS == 'ios' ? 55 : 20
+                });
+                navigation.navigate('Otp',{phoneno:inputText,otp:res.data.otp,userId:res.data.user?.id})
+              } else {
+                console.log('not okk')
+                setIsLoading(false)
+                  Alert.alert('Oops..', "Something went wrong", [
+                    {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                  ]);
+              }
+            })
+            .catch(e => {
+              setIsLoading(false)
+              console.log(`user register error ${e}`)
+              console.log(e.response)
+              Alert.alert('Oops..', e.response?.data?.message, [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+              ]);
+            });
     }
 
     if (isLoading) {

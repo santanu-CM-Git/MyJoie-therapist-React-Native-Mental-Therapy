@@ -12,6 +12,10 @@ import Modal from "react-native-modal";
 // import moment from 'moment';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment-timezone';
+import axios from 'axios';
+import { API_URL } from '@env'
+import Toast from 'react-native-toast-message';
+import Loader from '../../utils/Loader';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -19,35 +23,72 @@ const data = [
 
 const ScheduleScreen = ({ navigation }) => {
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const [activeTab, setActiveTab] = useState('Calender')
     // Monday
     const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const toggleSwitch = () => {
+        setIsEnabled(previousState => !previousState)
+        if (timeRanges.length != 0) {
+            availabilityCheck('monday')
+        }
+    };
     // Tuesday
     const [isEnabledTuesday, setIsEnabledTuesday] = useState(false);
-    const toggleSwitchTuesday = () => setIsEnabledTuesday(previousState => !previousState);
+    const toggleSwitchTuesday = () => {
+        setIsEnabledTuesday(previousState => !previousState)
+        if (timeRangesTuesday.length != 0) {
+            availabilityCheck('tuesday')
+        }
+    };
     // Wednesday
     const [isEnabledWednesday, setIsEnabledWednesday] = useState(false);
-    const toggleSwitchWednesday = () => setIsEnabledWednesday(previousState => !previousState);
+    const toggleSwitchWednesday = () => {
+        setIsEnabledWednesday(previousState => !previousState)
+        if (isEnabledWednesday.length != 0) {
+            availabilityCheck('wednessday')
+        }
+    };
     // Thursday
     const [isEnabledThursday, setIsEnabledThursday] = useState(false);
-    const toggleSwitchThursday = () => setIsEnabledThursday(previousState => !previousState);
+    const toggleSwitchThursday = () => {
+        setIsEnabledThursday(previousState => !previousState)
+        if (isEnabledThursday.length != 0) {
+            availabilityCheck('thursday')
+        }
+    };
     // Friday
     const [isEnabledFriday, setIsEnabledFriday] = useState(false);
-    const toggleSwitchFriday = () => setIsEnabledFriday(previousState => !previousState);
+    const toggleSwitchFriday = () => {
+        setIsEnabledFriday(previousState => !previousState)
+        if (isEnabledFriday.length != 0) {
+            availabilityCheck('friday')
+        }
+    };
     // Saturday
     const [isEnabledSaturday, setIsEnabledSaturday] = useState(false);
-    const toggleSwitchSaturday = () => setIsEnabledSaturday(previousState => !previousState);
+    const toggleSwitchSaturday = () => {
+        setIsEnabledSaturday(previousState => !previousState)
+        if (isEnabledSaturday.length != 0) {
+            availabilityCheck('saturday')
+        }
+    };
     // Sunday
     const [isEnabledSunday, setIsEnabledSunday] = useState(false);
-    const toggleSwitchSunday = () => setIsEnabledSunday(previousState => !previousState);
+    const toggleSwitchSunday = () => {
+        setIsEnabledSunday(previousState => !previousState)
+        if (isEnabledSaturday.length != 0) {
+            availabilityCheck('sunday')
+        }
+    };
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [startDay, setStartDay] = useState(null);
     const [endDay, setEndDay] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
     // Monday 
-    const [timeRanges, setTimeRanges] = useState([{ "endTime": "2024-05-09 18:20:00", "startTime": "2024-05-09 17:10:00" }, { "endTime": "2024-05-09 14:33:00", "startTime": "2024-05-09 15:28:00" }]);
+    const [timeRanges, setTimeRanges] = useState([{ startTime: null, endTime: null }]);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [currentRange, setCurrentRange] = useState(null);
     const [isStartTime, setIsStartTime] = useState(true);
@@ -101,6 +142,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("monday", extractedTimes, "1")
     }
 
     // Tuesday
@@ -158,7 +200,8 @@ const ScheduleScreen = ({ navigation }) => {
             endTime: item.endTime.split(' ')[1],
         }));
         // Update state
-        console.log(extractedTimes);
+        console.log(extractedTimes, 'tuesday time');
+        beforetimeEntryRespectOfDay("tuesday", extractedTimes, "1")
     }
 
     // Wednesday
@@ -216,6 +259,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("wednessday", extractedTimes, "1")
     }
 
     // Thursday
@@ -273,6 +317,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("thursday", extractedTimes, "1")
     }
     // Friday
     const [timeRangesFriday, setTimeRangesFriday] = useState([{ startTime: null, endTime: null }]);
@@ -329,6 +374,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("friday", extractedTimes, "1")
     }
 
     // Saturday
@@ -386,6 +432,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("saturday", extractedTimes, "1")
     }
 
     // Sunday
@@ -443,6 +490,7 @@ const ScheduleScreen = ({ navigation }) => {
         }));
         // Update state
         console.log(extractedTimes);
+        beforetimeEntryRespectOfDay("sunday", extractedTimes, "1")
     }
 
     const handleDayPress = (day) => {
@@ -495,6 +543,398 @@ const ScheduleScreen = ({ navigation }) => {
 
     const toggleTab = (name) => {
         setActiveTab(name)
+    }
+
+    const beforetimeEntryRespectOfDay = (day, time, status) => {
+        console.log(day, 'llllllllll')
+        const option = {
+            "day": day,
+        }
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/availabilities-check`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'multipart/form-data',
+                    "Authorization": 'Bearer ' + usertoken,
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+
+                        if (res.data.status == 0) {
+                            timeEntryinRespectOfDay(day, time, status)
+                        } else {
+                            Alert.alert('Hello', res.data.message, [
+                                {
+                                    text: 'Cancel',
+                                    onPress: () => console.log('Cancel Pressed'),
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
+                            ]);
+                        }
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
+    const timeEntryinRespectOfDay = (day, time, status) => {
+        console.log(day, 'day')
+        console.log(time, 'time')
+        console.log(status, 'status')
+        const option = {
+            "day": day,
+            "data": time,
+            "status": status,
+        }
+        console.log(option)
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/set-availabilities`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'multipart/form-data',
+                    "Authorization": 'Bearer ' + usertoken,
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Hello',
+                            text2: "Time added successfully",
+                            position: 'top',
+                            topOffset: Platform.OS == 'ios' ? 55 : 20
+                        });
+                        fetchAvailability()
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
+    const fetchAvailability = () => {
+        setIsLoading(true)
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/availabilities-data`, {}, {
+                headers: {
+                    'Accept': 'application/json',
+                    "Authorization": 'Bearer ' + usertoken,
+                    //'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(res => {
+                    console.log(JSON.stringify(res.data.data))
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+                        const mondayData = [];
+                        const tuesdayData = [];
+                        const wednessdayData = [];
+                        const thursdayData = [];
+                        const fridayData = [];
+                        const saturdayData = [];
+                        const sundayData = [];
+
+                        res.data.data.forEach(item => {
+                            item.availibilities_time.forEach(time => {
+                                const transformedData = {
+                                    startTime: `2024-05-09 ${time.start_time}`,
+                                    endTime: `2024-05-09 ${time.end_time}`
+                                };
+                                if (item.day === 'monday') {
+                                    mondayData.push(transformedData);
+                                    if (item.status === '1') {
+                                        setIsEnabled(true);
+                                    }
+                                } else if (item.day === 'tuesday') {
+                                    tuesdayData.push(transformedData);
+                                    if (item.status === '1') {
+                                        setIsEnabledTuesday(true);
+                                    }
+                                } else if (item.day === 'wednessday') {
+                                    wednessdayData.push(transformedData);
+                                    if (item.status === '1') {
+                                        setIsEnabledWednesday(true);
+                                    }
+                                } else if (item.day === 'thursday') {
+                                    thursdayData.push(transformedData)
+                                    if (item.status === '1') {
+                                        setIsEnabledThursday(true);
+                                    }
+                                } else if (item.day === 'friday') {
+                                    fridayData.push(transformedData)
+                                    if (item.status === '1') {
+                                        setIsEnabledFriday(true);
+                                    }
+                                } else if (item.day === 'saturday') {
+                                    saturdayData.push(transformedData)
+                                    if (item.status === '1') {
+                                        setIsEnabledSaturday(true);
+                                    }
+                                } else if (item.day === 'sunday') {
+                                    sundayData.push(transformedData)
+                                    if (item.status === '1') {
+                                        setIsEnabledSunday(true);
+                                    }
+                                }
+                            });
+                        });
+
+                        // Update the states with the transformed data
+                        setTimeRanges(mondayData);
+                        setTimeRangesTuesday(tuesdayData);
+                        setTimeRangesWednesday(wednessdayData)
+                        setTimeRangesThursday(thursdayData)
+                        setTimeRangesFriday(fridayData)
+                        setTimeRangesSaturday(saturdayData)
+                        setTimeRangesSunday(sundayData)
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
+    const availabilityCheck = (day) => {
+        console.log(day, 'llllllllll')
+        const option = {
+            "day": day,
+        }
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/availabilities-check`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'multipart/form-data',
+                    "Authorization": 'Bearer ' + usertoken,
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+
+                        if (res.data.status == 0) {
+                            actionStatus(day)
+                        } else {
+                            Alert.alert('Hello', res.data.message, [
+                                {
+                                    text: 'Cancel',
+                                    onPress: () => console.log('Cancel Pressed'),
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => actionStatus(day) },
+                            ]);
+                        }
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
+    const actionStatus = (day) => {
+        console.log(day, 'kkkkkkkkkkkkkkk')
+        var status = ''
+        if (day == 'monday') {
+            if (isEnabled == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'tuesday') {
+            if (isEnabledTuesday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'wednessday') {
+            if (isEnabledWednesday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'thursday') {
+            if (isEnabledThursday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'friday') {
+            if (isEnabledFriday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'saturday') {
+            if (isEnabledSaturday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        } else if (day == 'sunday') {
+            if (isEnabledSunday == true) {
+                status = "0"
+            } else {
+                status = "1"
+            }
+        }
+        const option = {
+            "day": day,
+            "status": status
+        }
+        console.log(option)
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/action_availabilities`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    //'Content-Type': 'multipart/form-data',
+                    "Authorization": 'Bearer ' + usertoken,
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Hello',
+                            text2: res.data.message,
+                            position: 'top',
+                            topOffset: Platform.OS == 'ios' ? 55 : 20
+                        });
+
+                        fetchAvailability()
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
+    useEffect(() => {
+        fetchAvailability()
+    }, [])
+
+    if (isLoading) {
+        return (
+            <Loader />
+        )
     }
 
     return (
@@ -569,7 +1009,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 <Text style={styles.headerText}>Availability</Text>
                             </View>
                             {/* Monday card */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabled ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -697,7 +1137,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Wednesday */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledWednesday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -761,7 +1201,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Thursday */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledThursday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -825,7 +1265,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Friday */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledFriday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -889,7 +1329,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Saturday */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledSaturday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -953,7 +1393,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                             </View>
                             {/* Sunday */}
-                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                            <View style={[styles.cardView, { backgroundColor: isEnabledSunday ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image

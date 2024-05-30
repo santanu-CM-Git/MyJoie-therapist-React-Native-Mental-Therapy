@@ -15,7 +15,7 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { AuthContext } from '../context/AuthContext';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect,useNavigation } from '@react-navigation/native';
 import { API_URL } from '@env'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
@@ -26,6 +26,7 @@ const CustomDrawer = props => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
   const [userInfo, setuserInfo] = useState([])
+  const navigation = useNavigation();
 
   const fetchProfileDetails = () => {
     AsyncStorage.getItem('userToken', (err, usertoken) => {
@@ -79,6 +80,7 @@ const CustomDrawer = props => {
                 }}>
                 {userInfo.name}
               </Text>
+              <TouchableOpacity onPress={()=> navigation.navigate('ProfileScreen')}>
               <Text
                 style={{
                   color: '#949494',
@@ -87,6 +89,7 @@ const CustomDrawer = props => {
                 }}>
                 Update Profile
               </Text>
+              </TouchableOpacity>
             </View>
           </View>
           {/* <View style={{ backgroundColor: '#FFFFFF', height: responsiveHeight(6), width: responsiveWidth(61), borderRadius: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10,borderColor:'#E0E0E0',borderWidth:1 }}>

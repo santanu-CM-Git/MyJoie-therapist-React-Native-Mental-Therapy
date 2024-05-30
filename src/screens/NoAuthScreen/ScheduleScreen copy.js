@@ -4,17 +4,17 @@ import CustomHeader from '../../components/CustomHeader'
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { ArrowGratter, ArrowUp, GreenTick, Payment, YellowTck, dateIcon, deleteImg, editImg, notifyImg, plus, timeIcon, userPhoto } from '../../utils/Images'
-import messaging from '@react-native-firebase/messaging';
+import { ArrowGratter, dateIcon, deleteImg, plus, timeIcon } from '../../utils/Images'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NoNotification from './NoNotification';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { Dropdown } from 'react-native-element-dropdown';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
-import moment from 'moment';
+// import moment from 'moment';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import moment from 'moment-timezone';
+import axios from 'axios';
+import { API_URL } from '@env'
+import Toast from 'react-native-toast-message';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -23,16 +23,42 @@ const data = [
 const ScheduleScreen = ({ navigation }) => {
 
     const [activeTab, setActiveTab] = useState('Calender')
+    // Monday
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    // Tuesday
+    const [isEnabledTuesday, setIsEnabledTuesday] = useState(false);
+    const toggleSwitchTuesday = () => setIsEnabledTuesday(previousState => !previousState);
+    // Wednesday
+    const [isEnabledWednesday, setIsEnabledWednesday] = useState(false);
+    const toggleSwitchWednesday = () => setIsEnabledWednesday(previousState => !previousState);
+    // Thursday
+    const [isEnabledThursday, setIsEnabledThursday] = useState(false);
+    const toggleSwitchThursday = () => setIsEnabledThursday(previousState => !previousState);
+    // Friday
+    const [isEnabledFriday, setIsEnabledFriday] = useState(false);
+    const toggleSwitchFriday = () => setIsEnabledFriday(previousState => !previousState);
+    // Saturday
+    const [isEnabledSaturday, setIsEnabledSaturday] = useState(false);
+    const toggleSwitchSaturday = () => setIsEnabledSaturday(previousState => !previousState);
+    // Sunday
+    const [isEnabledSunday, setIsEnabledSunday] = useState(false);
+    const toggleSwitchSunday = () => setIsEnabledSunday(previousState => !previousState);
+
     const [isModalVisible, setModalVisible] = useState(false);
     const [startDay, setStartDay] = useState(null);
     const [endDay, setEndDay] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
+    // Monday 
+    const [timeRanges, setTimeRanges] = useState([{ "endTime": "2024-05-09 18:20:00", "startTime": "2024-05-09 17:10:00" }, { "endTime": "2024-05-09 14:33:00", "startTime": "2024-05-09 15:28:00" }]);
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [currentRange, setCurrentRange] = useState(null);
+    const [isStartTime, setIsStartTime] = useState(true);
 
-    const showDatePicker = () => {
+    const showDatePicker = (index, isStart) => {
         setDatePickerVisibility(true);
+        setCurrentRange(index);
+        setIsStartTime(isStart);
     };
 
     const hideDatePicker = () => {
@@ -40,9 +66,394 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const handleConfirm = (date) => {
-        console.warn("A date has been picked: ", date);
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRanges(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTime) {
+                newRanges[currentRange].startTime = dateInIST;
+            } else {
+                //newRanges[currentRange].endTime = dateInIST;
+                const startTime = newRanges[currentRange].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRange].endTime = dateInIST;
+            }
+            return newRanges;
+        });
         hideDatePicker();
     };
+
+    const addNewTimeRange = () => {
+        setTimeRanges(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRange = index => {
+        setTimeRanges(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRange = () => {
+        console.log(timeRanges)
+        let filteredEvents = timeRanges.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents, 'Monday time')
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("monday",extractedTimes,"1")
+    }
+
+    // Tuesday
+    const [timeRangesTuesday, setTimeRangesTuesday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleTuesday, setDatePickerVisibilityTuesday] = useState(false);
+    const [currentRangeTuesday, setCurrentRangeTuesday] = useState(null);
+    const [isStartTimeTuesday, setIsStartTimeTuesday] = useState(true);
+
+    const showDatePickerTuesday = (index, isStart) => {
+        setDatePickerVisibilityTuesday(true);
+        setCurrentRangeTuesday(index);
+        setIsStartTimeTuesday(isStart);
+    };
+
+    const hideDatePickerTuesday = () => {
+        setDatePickerVisibilityTuesday(false);
+    };
+
+    const handleConfirmTuesday = (date) => {
+        console.log('hiiiii');
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesTuesday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeTuesday) {
+                newRanges[currentRangeTuesday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeTuesday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeTuesday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeTuesday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerTuesday();
+    };
+
+    const addNewTimeRangeTuesday = () => {
+        setTimeRangesTuesday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeTuesday = index => {
+        setTimeRangesTuesday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeTuesday = () => {
+        console.log(timeRangesTuesday)
+        let filteredEvents = timeRangesTuesday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents, 'Tuesday time')
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes,'tuesday time');
+        timeEntryinRespectOfDay("tuesday",extractedTimes,"1")
+    }
+
+    // Wednesday
+    const [timeRangesWednesday, setTimeRangesWednesday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleWednesday, setDatePickerVisibilityWednesday] = useState(false);
+    const [currentRangeWednesday, setCurrentRangeWednesday] = useState(null);
+    const [isStartTimeWednesday, setIsStartTimeWednesday] = useState(true);
+
+    const showDatePickerWednesday = (index, isStart) => {
+        setDatePickerVisibilityWednesday(true);
+        setCurrentRangeWednesday(index);
+        setIsStartTimeWednesday(isStart);
+    };
+
+    const hideDatePickerWednesday = () => {
+        setDatePickerVisibilityWednesday(false);
+    };
+
+    const handleConfirmWednesday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesWednesday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeWednesday) {
+                newRanges[currentRangeWednesday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeWednesday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeWednesday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeWednesday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerWednesday();
+    };
+
+    const addNewTimeRangeWednesday = () => {
+        setTimeRangesWednesday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeWednesday = index => {
+        setTimeRangesWednesday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeWednesday = () => {
+        console.log(timeRangesWednesday)
+        let filteredEvents = timeRangesWednesday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("wednessday",extractedTimes,"1")
+    }
+
+    // Thursday
+    const [timeRangesThursday, setTimeRangesThursday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleThursday, setDatePickerVisibilityThursday] = useState(false);
+    const [currentRangeThursday, setCurrentRangeThursday] = useState(null);
+    const [isStartTimeThursday, setIsStartTimeThursday] = useState(true);
+
+    const showDatePickerThursday = (index, isStart) => {
+        setDatePickerVisibilityThursday(true);
+        setCurrentRangeThursday(index);
+        setIsStartTimeThursday(isStart);
+    };
+
+    const hideDatePickerThursday = () => {
+        setDatePickerVisibilityThursday(false);
+    };
+
+    const handleConfirmThursday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesThursday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeThursday) {
+                newRanges[currentRangeThursday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeThursday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeThursday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeThursday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerThursday();
+    };
+
+    const addNewTimeRangeThursday = () => {
+        setTimeRangesThursday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeThursday = index => {
+        setTimeRangesThursday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeThursday = () => {
+        console.log(timeRangesThursday)
+        let filteredEvents = timeRangesThursday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("thursday",extractedTimes,"1")
+    }
+    // Friday
+    const [timeRangesFriday, setTimeRangesFriday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleFriday, setDatePickerVisibilityFriday] = useState(false);
+    const [currentRangeFriday, setCurrentRangeFriday] = useState(null);
+    const [isStartTimeFriday, setIsStartTimeFriday] = useState(true);
+
+    const showDatePickerFriday = (index, isStart) => {
+        setDatePickerVisibilityFriday(true);
+        setCurrentRangeFriday(index);
+        setIsStartTimeFriday(isStart);
+    };
+
+    const hideDatePickerFriday = () => {
+        setDatePickerVisibilityFriday(false);
+    };
+
+    const handleConfirmFriday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesFriday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeFriday) {
+                newRanges[currentRangeFriday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeFriday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeFriday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeFriday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerFriday();
+    };
+
+    const addNewTimeRangeFriday = () => {
+        setTimeRangesFriday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeFriday = index => {
+        setTimeRangesFriday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeFriday = () => {
+        console.log(timeRangesFriday)
+        let filteredEvents = timeRangesFriday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("friday",extractedTimes,"1")
+    }
+
+    // Saturday
+    const [timeRangesSaturday, setTimeRangesSaturday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleSaturday, setDatePickerVisibilitySaturday] = useState(false);
+    const [currentRangeSaturday, setCurrentRangeSaturday] = useState(null);
+    const [isStartTimeSaturday, setIsStartTimeSaturday] = useState(true);
+
+    const showDatePickerSaturday = (index, isStart) => {
+        setDatePickerVisibilitySaturday(true);
+        setCurrentRangeSaturday(index);
+        setIsStartTimeSaturday(isStart);
+    };
+
+    const hideDatePickerSaturday = () => {
+        setDatePickerVisibilitySaturday(false);
+    };
+
+    const handleConfirmSaturday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesSaturday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeSaturday) {
+                newRanges[currentRangeSaturday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeSaturday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeSaturday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeSaturday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerSaturday();
+    };
+
+    const addNewTimeRangeSaturday = () => {
+        setTimeRangesSaturday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeSaturday = index => {
+        setTimeRangesSaturday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeSaturday = () => {
+        console.log(timeRangesSaturday)
+        let filteredEvents = timeRangesSaturday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("saturday",extractedTimes,"1")
+    }
+
+    // Sunday
+    const [timeRangesSunday, setTimeRangesSunday] = useState([{ startTime: null, endTime: null }]);
+    const [isDatePickerVisibleSunday, setDatePickerVisibilitySunday] = useState(false);
+    const [currentRangeSunday, setCurrentRangeSunday] = useState(null);
+    const [isStartTimeSunday, setIsStartTimeSunday] = useState(true);
+
+    const showDatePickerSunday = (index, isStart) => {
+        setDatePickerVisibilitySunday(true);
+        setCurrentRangeSunday(index);
+        setIsStartTimeSunday(isStart);
+    };
+
+    const hideDatePickerSunday = () => {
+        setDatePickerVisibilitySunday(false);
+    };
+
+    const handleConfirmSunday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+        setTimeRangesSunday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeSunday) {
+                newRanges[currentRangeSunday].startTime = dateInIST;
+            } else {
+                //newRanges[currentRangeSunday].endTime = dateInIST;
+                const startTime = newRanges[currentRangeSunday].startTime;
+                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
+                    return currentRanges; // Do not update state
+                }
+                newRanges[currentRangeSunday].endTime = dateInIST;
+            }
+            return newRanges;
+        });
+        hideDatePickerSunday();
+    };
+
+    const addNewTimeRangeSunday = () => {
+        setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
+    };
+
+    const deleteTimeRangeSunday = index => {
+        setTimeRangesSunday(currentRanges => currentRanges.filter((_, i) => i !== index));
+    };
+
+    const saveTimeRangeSunday = () => {
+        console.log(timeRangesSunday)
+        let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
+        console.log(filteredEvents)
+        const extractedTimes = filteredEvents.map(item => ({
+            startTime: item.startTime.split(' ')[1],
+            endTime: item.endTime.split(' ')[1],
+        }));
+        // Update state
+        console.log(extractedTimes);
+        timeEntryinRespectOfDay("sunday",extractedTimes,"1")
+    }
 
     const handleDayPress = (day) => {
         if (startDay && !endDay) {
@@ -96,6 +507,61 @@ const ScheduleScreen = ({ navigation }) => {
         setActiveTab(name)
     }
 
+    const timeEntryinRespectOfDay = (day,time,status) => {
+        console.log(day, 'day')
+        console.log(time, 'time')
+        console.log(status, 'status')
+        const option = {
+            "day": day,
+            "data": time,
+            "status": status,
+          }
+          console.log(option)
+        // axios.post(`${API_URL}/therapist/set-availabilities`, option, {
+        //     headers: {
+        //       'Accept': 'application/json',
+        //       //'Content-Type': 'multipart/form-data',
+        //     },
+        //   })
+        //     .then(res => {
+        //       console.log(res.data)
+        //       if (res.data.response == true) {
+        //         setIsLoading(false)
+        //         Toast.show({
+        //           type: 'success',
+        //           text1: 'Hello',
+        //           text2: "Time added successfully",
+        //           position: 'top',
+        //           topOffset: Platform.OS == 'ios' ? 55 : 20
+        //         });
+        //       } else {
+        //         console.log('not okk')
+        //         setIsLoading(false)
+        //           Alert.alert('Oops..', "Something went wrong", [
+        //             {
+        //               text: 'Cancel',
+        //               onPress: () => console.log('Cancel Pressed'),
+        //               style: 'cancel',
+        //             },
+        //             { text: 'OK', onPress: () => console.log('OK Pressed') },
+        //           ]);
+        //       }
+        //     })
+        //     .catch(e => {
+        //       setIsLoading(false)
+        //       console.log(`user register error ${e}`)
+        //       console.log(e.response)
+        //       Alert.alert('Oops..', e.response?.data?.message, [
+        //         {
+        //           text: 'Cancel',
+        //           onPress: () => console.log('Cancel Pressed'),
+        //           style: 'cancel',
+        //         },
+        //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+        //       ]);
+        //     });
+    }
+
     return (
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Schedule'} onPress={() => navigation.goBack()} title={'Schedule'} />
@@ -116,81 +582,59 @@ const ScheduleScreen = ({ navigation }) => {
                     {activeTab == 'Calender' ?
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
-                                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
+                                <Text style={styles.headerText}>Calender</Text>
                                 <TouchableOpacity onPress={toggleModal}>
                                     <Image
                                         source={dateIcon}
-                                        style={{ height: 20, width: 20, resizeMode: 'contain', }}
+                                        style={styles.iconStyle}
                                     />
                                 </TouchableOpacity>
                             </View>
 
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5 }}>
-                                <View style={{ flexDirection: 'row', height: responsiveHeight(7), backgroundColor: '#DEDEDE', borderTopRightRadius: 10, borderTopLeftRadius: 10, alignItems: 'center', }}>
-                                    <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), fontWeight: 'bold', textAlign: 'center', marginLeft: responsiveWidth(2) }}>03-05-2024</Text>
+                            <View style={styles.upcomingCard}>
+                                <View style={styles.upcomingCardDate}>
+                                    <Text style={styles.upcomingCardDateText}>03-05-2024</Text>
                                 </View>
                                 <>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
+                                    <View style={styles.headerTextView}>
+                                        <Text style={styles.headerText}>Shubham Halder</Text>
                                         <Image
                                             source={ArrowGratter}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                                            style={styles.iconStyle}
                                         />
                                     </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
+                                    {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
                                             <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
                                                 <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
                                             </View>
                                         </View>
-                                        <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            borderBottomColor: '#E3E3E3',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: 10,
-                                            marginTop: 5
-
-                                        }}
-                                    />
-                                </>
-                                <>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, marginTop: 5 }}>
-                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Shubham Halder</Text>
-                                        <Image
-                                            source={ArrowGratter}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                        />
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                                            <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#128807', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
-                                                <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
+                                        <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
+                                    </View> */}
+                                    <View style={styles.itemtimeView}>
+                                        <View style={styles.flexStyle}>
+                                            <Text style={styles.itemTimeText}>06:00 PM - 06:15 PM</Text>
+                                            <View style={styles.itemTagView}>
+                                                <Text style={styles.itemTagText}>New</Text>
                                             </View>
                                         </View>
-                                        <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
+                                        <Text style={styles.freeText}>Free</Text>
                                     </View>
                                     <View
-                                        style={{
-                                            borderBottomColor: '#E3E3E3',
-                                            borderBottomWidth: 1,
-                                            marginHorizontal: 10,
-                                            marginTop: 5
-
-                                        }}
+                                        style={styles.horizontalLine}
                                     />
                                 </>
+
                             </View>
                         </>
                         :
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
-                                <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Availability</Text>
+                                <Text style={styles.headerText}>Availability</Text>
                             </View>
-                            <View style={{ width: '99%', backgroundColor: '#FFF', marginHorizontal: 2, borderRadius: 20, marginTop: responsiveHeight(2), elevation: 5, padding: 15 }}>
+                            {/* Monday card */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabled ? '#FFF' : '#eeeeee', }]}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Image
@@ -208,39 +652,431 @@ const ScheduleScreen = ({ navigation }) => {
                                         style={styles.switchStyle}
                                     />
                                 </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <TouchableOpacity onPress={()=> showDatePicker()}>
-                                    <View style={{flexDirection:'row',justifyContent: 'space-between',alignItems:'center', borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, height: responsiveHeight(6), width: responsiveWidth(40),padding: 5 }}>
-                                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Start Time</Text>
-                                        <Image
-                                            source={timeIcon}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-                                        />
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRanges.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabled && deleteTimeRange(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
                                     </View>
-                                    </TouchableOpacity>
-                                    <View style={{flexDirection:'row',justifyContent: 'space-between',alignItems:'center', borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, height: responsiveHeight(6), width: responsiveWidth(40),padding: 5 }}>
-                                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>End Time</Text>
-                                        <Image
-                                            source={timeIcon}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabled && addNewTimeRange()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
 
-                                    <View style={styles.inActiveButtonInsideView}>
-                                        <Image
-                                            source={plus}
-                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-                                        />
-                                        <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
                                     </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRange() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
                                     mode="time"
                                     onConfirm={handleConfirm}
                                     onCancel={hideDatePicker}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Tuesday card */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledTuesday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Tuesday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledTuesday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchTuesday}
+                                        value={isEnabledTuesday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesTuesday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledTuesday && deleteTimeRangeTuesday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledTuesday && addNewTimeRangeTuesday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeTuesday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleTuesday}
+                                    mode="time"
+                                    onConfirm={handleConfirmTuesday}
+                                    onCancel={hideDatePickerTuesday}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Wednesday */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledWednesday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Wednesday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledWednesday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchWednesday}
+                                        value={isEnabledWednesday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesWednesday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledWednesday && deleteTimeRangeWednesday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledWednesday && addNewTimeRangeWednesday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeWednesday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleWednesday}
+                                    mode="time"
+                                    onConfirm={handleConfirmWednesday}
+                                    onCancel={hideDatePickerWednesday}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Thursday */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledThursday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Thursday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledThursday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchThursday}
+                                        value={isEnabledThursday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesThursday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledThursday && deleteTimeRangeThursday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledThursday && addNewTimeRangeThursday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeThursday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleThursday}
+                                    mode="time"
+                                    onConfirm={handleConfirmThursday}
+                                    onCancel={hideDatePickerThursday}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Friday */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledFriday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Friday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledFriday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchFriday}
+                                        value={isEnabledFriday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesFriday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledFriday && deleteTimeRangeFriday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledFriday && addNewTimeRangeFriday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeFriday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleFriday}
+                                    mode="time"
+                                    onConfirm={handleConfirmFriday}
+                                    onCancel={hideDatePickerFriday}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Saturday */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledSaturday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Saturday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledSaturday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchSaturday}
+                                        value={isEnabledSaturday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesSaturday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledSaturday && deleteTimeRangeSaturday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledSaturday && addNewTimeRangeSaturday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSaturday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleSaturday}
+                                    mode="time"
+                                    onConfirm={handleConfirmSaturday}
+                                    onCancel={hideDatePickerSaturday}
+                                    locale="en_GB"
+                                    is24Hour={false}
+                                />
+                            </View>
+                            {/* Sunday */}
+                            <View style={[styles.cardView, { backgroundColor: isEnabledSunday ? '#FFF' : '#eeeeee', }]}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: responsiveHeight(1) }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <Image
+                                            source={dateIcon}
+                                            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                        />
+                                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(1.7) }}>Sunday</Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: '#767577', true: '#000' }}
+                                        thumbColor={isEnabledSunday ? '#fff' : '#000'}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={toggleSwitchSunday}
+                                        value={isEnabledSunday}
+                                        style={styles.switchStyle}
+                                    />
+                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
+                                {timeRangesSunday.map((range, index) => (
+                                    <View key={index} style={styles.timeRangeContainer}>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, true)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, false)} style={styles.timePicker}>
+                                            <Text style={styles.timeText}>
+                                                {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
+                                            </Text>
+                                            <Image source={timeIcon} style={styles.icon} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => isEnabledSunday && deleteTimeRangeSunday(index)} style={styles.deleteButton}>
+                                            <Image source={deleteImg} style={styles.deleteIcon} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {/* </View> */}
+                                <TouchableOpacity onPress={() => isEnabledSunday && addNewTimeRangeSunday()} >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
+
+                                        <View style={styles.inActiveButtonInsideView}>
+                                            <Image
+                                                source={plus}
+                                                style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+                                            />
+                                            <Text style={styles.activeButtonInsideText}>Add New Time</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                                <View style={{ marginTop: responsiveHeight(2) }}>
+                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSunday() }} />
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleSunday}
+                                    mode="time"
+                                    onConfirm={handleConfirmSunday}
+                                    onCancel={hideDatePickerSunday}
                                     locale="en_GB"
                                     is24Hour={false}
                                 />
@@ -256,7 +1092,7 @@ const ScheduleScreen = ({ navigation }) => {
                     justifyContent: 'flex-end',
                 }}>
                 <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
-                    <Icon name="cross" size={30} color="#000" onPress={toggleModal} />
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
                 </View>
                 <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
                     <View style={{ padding: 20 }}>
@@ -317,7 +1153,7 @@ const styles = StyleSheet.create({
     activeButtonView: {
         backgroundColor: '#ECFCFA',
         height: responsiveHeight(5),
-        width: responsiveWidth(40),
+        width: responsiveWidth(45),
         borderRadius: 20,
         borderColor: '#87ADA8',
         borderWidth: 1,
@@ -332,7 +1168,7 @@ const styles = StyleSheet.create({
     inActiveButtonView: {
         backgroundColor: '#FFF',
         height: responsiveHeight(5),
-        width: responsiveWidth(40),
+        width: responsiveWidth(45),
         borderRadius: 20,
         borderColor: '#87ADA8',
         borderWidth: 1,
@@ -376,6 +1212,129 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
+    timePicker: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E3E3E3',
+        borderRadius: 15,
+        padding: 10,
+        width: responsiveWidth(35),
+        justifyContent: 'space-between'
+    },
+    icon: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain',
+    },
+    timeRangeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    timeText: {
+        marginRight: 10,
+        fontSize: responsiveFontSize(1.7),
+        color: '#746868'
+    },
+    deleteButton: {
+        // Additional styles may be required
+    },
+    deleteIcon: {
+        width: 24,
+        height: 24,
+    },
+    cardView: {
+        width: '99%',
+        marginHorizontal: 2,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        elevation: 5,
+        padding: 15
+    },
+    headerText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2)
+    },
+    iconStyle: {
+        height: 20,
+        width: 20,
+        resizeMode: 'contain',
+    },
+    upcomingCard: {
+        width: '99%',
+        backgroundColor: '#FFF',
+        marginHorizontal: 2,
+        borderRadius: 20,
+        marginTop: responsiveHeight(2),
+        elevation: 5
+    },
+    upcomingCardDate: {
+        flexDirection: 'row',
+        height: responsiveHeight(7),
+        backgroundColor: '#DEDEDE',
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+        alignItems: 'center',
+    },
+    upcomingCardDateText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2),
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginLeft: responsiveWidth(2)
+    },
+    headerTextView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginTop: 5
+    },
+    horizontalLine: {
+        borderBottomColor: '#E3E3E3',
+        borderBottomWidth: 1,
+        marginHorizontal: 10,
+        marginTop: 5
 
+    },
+    itemtimeView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    flexStyle: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    itemTimeText: {
+        color: '#969696',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
+    itemTagView: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        backgroundColor: '#FF9E45',
+        borderRadius: 15,
+        marginLeft: responsiveWidth(2)
+    },
+    itemTagText: {
+        color: '#FFF',
+        fontFamily: 'DMSans-Semibold',
+        fontSize: responsiveFontSize(1.5)
+    },
+    freeText: {
+        color: '#5C9ECF',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
 
 });

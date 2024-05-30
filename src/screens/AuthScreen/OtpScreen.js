@@ -22,6 +22,7 @@ import Toast from 'react-native-toast-message';
 
 const OtpScreen = ({ navigation, route }) => {
     const [otp, setOtp] = useState('');
+    const [comingOTP, setComingOTP] = useState(route?.params?.otp)
     const [errors, setError] = useState(true)
     const [errorText, setErrorText] = useState('Please enter OTP')
     const [isLoading, setIsLoading] = useState(false)
@@ -58,67 +59,66 @@ const OtpScreen = ({ navigation, route }) => {
 
     const goToNextPage = (code) => {
         setIsLoading(true)
-        //console.log(`Code is ${code}, you are good to go!`)
-        //navigation.navigate('PersonalInformation', { phoneno: 2454545435, usertoken: 'sdfwr32432423424' })
-        const option = {
-            "phone": route?.params?.phoneno,
-            "otp": code,
-            "code": route?.params?.counterycode,
-            "userId": route?.params?.userid,
-        }
-        axios.post(`${API_URL}/api/driver/validate-opt`, option)
-            .then(res => {
-                console.log(res.data)
-                if (res.data.response.status.code === 200) {
-                    setIsLoading(false)
-                    if (res.data.response.records.user.name != "") {
-                        login(res.data.response.records.token)
-                    } else {
-                        navigation.push('PersonalInformation', { phoneno: route?.params?.phoneno, countrycode: route?.params?.counterycode, usertoken: res.data?.response.records.token })
-                    }
-
-                } else {
-                    Alert.alert('Oops..', "Something went wrong", [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ]);
-                }
-            })
-            .catch(e => {
-                setIsLoading(false)
-                console.log(`user register error ${e}`)
-                //console.log(e.response.data?.response?.records?.message)
-                Alert.alert('Oops..', e.response.data?.response?.records?.message, [
-                    { text: 'OK', onPress: () => navigation.push('Login') },
-                ]);
+        // const option = {
+        //     "phone": route?.params?.phoneno,
+        //     "otp": code,
+        //     "code": route?.params?.counterycode,
+        //     "userId": route?.params?.userid,
+        // }
+        if (code == comingOTP) {
+            setIsLoading(false)
+            Toast.show({
+                type: 'success',
+                text1: 'Hello',
+                text2: "The OTP has been successfully matched.",
+                position: 'top',
+                topOffset: Platform.OS == 'ios' ? 55 : 20
             });
+            navigation.navigate('PasswordChange',{userId:route?.params?.userId})
+        } else {
+            console.log('not correct')
+            setIsLoading(false)
+            Alert.alert('Oops..', "The OTP does not match. Please enter the correct OTP.", [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+            setOtp('')
+        }
+
     }
 
     const resendOtp = () => {
         setIsLoading(true)
         const option = {
-            "code": route?.params?.counterycode,
-            "phone": route?.params?.phoneno,
+            "input": route?.params?.phoneno,
         }
-        console.log(option)
-        axios.post(`${API_URL}/api/driver/registration`, option)
+        axios.post(`${API_URL}/therapist/forgot-password`, option, {
+            headers: {
+                'Accept': 'application/json',
+                //'Content-Type': 'multipart/form-data',
+            },
+        })
             .then(res => {
-                console.log(JSON.stringify(res.data))
-                if (res.data.response.status.code === 200) {
-                    Alert.alert(res.data?.response.records.userData.activation_otp)
+                console.log(res.data)
+                if (res.data.response == true) {
                     setIsLoading(false)
                     Toast.show({
                         type: 'success',
                         text1: 'Hello',
-                        text2: "OTP Sent Successfully",
+                        text2: res.data.message,
                         position: 'top',
                         topOffset: Platform.OS == 'ios' ? 55 : 20
                     });
+                    setComingOTP(res.data.otp)
+                    setTimer(60 * 1)
+                    setOtp('')
                 } else {
+                    console.log('not okk')
+                    setIsLoading(false)
                     Alert.alert('Oops..', "Something went wrong", [
                         {
                             text: 'Cancel',
@@ -132,7 +132,8 @@ const OtpScreen = ({ navigation, route }) => {
             .catch(e => {
                 setIsLoading(false)
                 console.log(`user register error ${e}`)
-                Alert.alert('Oops..', e.response.data?.response.records.message, [
+                console.log(e.response)
+                Alert.alert('Oops..', e.response?.data?.message, [
                     {
                         text: 'Cancel',
                         onPress: () => console.log('Cancel Pressed'),
@@ -151,7 +152,7 @@ const OtpScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ paddingHorizontal: 20, paddingVertical: 10,marginTop: responsiveHeight(5) }}>
+            <View style={{ paddingHorizontal: 20, paddingVertical: 10, marginTop: responsiveHeight(5) }}>
                 <MaterialIcons name="arrow-back-ios-new" size={25} color="#000" onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.wrapper}>
@@ -161,11 +162,11 @@ const OtpScreen = ({ navigation, route }) => {
                 </Text>
                 <Text
                     style={styles.subheader}>
-                    We have sent a verification code to your email. Please verify the code.
+                    We have sent a verification code to your email or phone no. Please verify the code.
                 </Text>
                 <Text
                     style={styles.subheadernum}>
-                    {route?.params?.counterycode} - {route?.params?.phoneno}
+                    {route?.params?.phoneno}
                 </Text>
                 {/* <Text
                     style={styles.subheader}>
@@ -188,22 +189,22 @@ const OtpScreen = ({ navigation, route }) => {
                     />
                 </View>
                 {errors &&
-                    <Text style={{ fontSize: responsiveFontSize(1.5), color: 'red', marginBottom: 20, marginTop: -25, alignSelf: 'center',fontFamily:'DMSans-Medium' }}>{errorText}</Text>
+                    <Text style={{ fontSize: responsiveFontSize(1.5), color: 'red', marginBottom: 20, marginTop: -25, alignSelf: 'center', fontFamily: 'DMSans-Medium' }}>{errorText}</Text>
                 }
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Didn’t receive OTP?</Text>
                     <TouchableOpacity onPress={() => resendOtp()}>
                         <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7) }}>Resend OTP</Text>
                     </TouchableOpacity>
-                    <Text style={{color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7)}}>{formatTime(timer)}</Text>
+                    <Text style={{ color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>{formatTime(timer)}</Text>
                 </View>
 
             </View>
-            <View style={styles.buttonwrapper}>
+            {/* <View style={styles.buttonwrapper}>
                 <CustomButton label={"Verify Now"}
                 onPress={() => navigation.navigate('PasswordChange')} 
                 />
-            </View>
+            </View> */}
         </SafeAreaView>
     );
 };
@@ -247,7 +248,7 @@ const styles = StyleSheet.create({
     },
     buttonwrapper: {
         paddingHorizontal: 25,
-        bottom:15
+        bottom: 15
     },
     otpTextView: {
         width: '100%',
