@@ -34,6 +34,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import messaging from '@react-native-firebase/messaging';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import LinearGradient from 'react-native-linear-gradient';
+import Toast from 'react-native-toast-message';
 
 
 export default function HomeScreen({ navigation }) {
@@ -52,6 +53,9 @@ export default function HomeScreen({ navigation }) {
   const [todaysDate, setTodaysDate] = useState('')
   const [notificationStatus, setNotificationStatus] = useState(false)
 
+  const [sortData, setSortData] = useState([])
+  const [groupedSlots, setGroupedSlots] = useState([]);
+  const [savePatientDetails, setSavePatientDetails] = useState(null)
 
 
   const getFCMToken = async () => {
@@ -92,7 +96,9 @@ export default function HomeScreen({ navigation }) {
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     return date.toLocaleDateString('en-US', options);
   };
-  const toggleModal = () => {
+  const toggleModal = (data) => {
+    console.log(data, 'ooooooooooooooo')
+    setSavePatientDetails(data)
     setModalVisible(!isModalVisible);
   };
   const toggleCalendarModal = () => {
@@ -149,17 +155,145 @@ export default function HomeScreen({ navigation }) {
     toggleCalendarModal()
   }
 
+  const fetchUpcomingSlot = () => {
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+          //'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(res => {
+          console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+          if (res.data.response == true) {
+            const sortedData = res.data.data.sort((a, b) => {
+              const dateA = new Date(a.date);
+              const dateB = new Date(b.date);
+              if (dateA < dateB) return -1;
+              if (dateA > dateB) return 1;
+
+              const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+              const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+              return timeA - timeB;
+            });
+            console.log(sortedData, 'date wise sort data')
+            setSortData(sortedData[0])
+
+            // Group by date
+            const groupedData = sortedData.reduce((acc, slot) => {
+              const date = moment(slot.date).format('DD-MM-YYYY');
+              if (!acc[date]) {
+                acc[date] = [];
+              }
+              acc[date].push(slot);
+              return acc;
+            }, {});
+
+            console.log(groupedData, 'grouped data')
+            setGroupedSlots(groupedData);
+            setIsLoading(false);
+
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user register error ${e}`)
+          console.log(e.response)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  }
+  const formatISTTime = (time) => {
+    return moment(time, 'HH:mm:ss').format('hh:mm A');
+  };
+
+  const cancelBooking = (id) => {
+    console.log(JSON.stringify(id))
+    const option = {
+      "booked_slot_id": id
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/slot-cancel`, option, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+          //'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(res => {
+          console.log(JSON.stringify(res.data.data), 'cancel response')
+          if (res.data.response == true) {
+            setIsLoading(false);
+            Toast.show({
+              type: 'success',
+              text1: 'Hello',
+              text2: "Schedule cancel successfully",
+              position: 'top',
+              topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+            toggleModal()
+            fetchUpcomingSlot()
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user register error ${e}`)
+          console.log(e.response)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  }
+
   useEffect(() => {
     //fetchData();
+    fetchUpcomingSlot()
   }, [])
 
   useFocusEffect(
     React.useCallback(() => {
-      //fetchData()
+      fetchUpcomingSlot()
     }, [])
   )
 
-  if (status == 'loading') {
+  if (isLoading) {
     return (
       <Loader />
     )
@@ -182,8 +316,8 @@ export default function HomeScreen({ navigation }) {
                 source={userPhoto}
                 style={styles.userImg}
               />
-              <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3) }}>
-                <Text style={styles.userText}> Diptamoy Saha</Text>
+              <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
+                <Text style={styles.userText}> {sortData?.patient?.name}</Text>
                 <Text style={styles.userSubText}> Patient </Text>
               </View>
               <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen')}>
@@ -196,7 +330,7 @@ export default function HomeScreen({ navigation }) {
                   source={dateIcon}
                   style={styles.datetimeIcon}
                 />
-                <Text style={styles.dateTimeText}>Monday, 26 April</Text>
+                <Text style={styles.dateTimeText}>{moment(sortData?.date).format("ddd, DD MMM YYYY")}</Text>
               </View>
               <View style={styles.dividerLine} />
               <View style={styles.dateView}>
@@ -204,64 +338,49 @@ export default function HomeScreen({ navigation }) {
                   source={timeIcon}
                   style={styles.datetimeIcon}
                 />
-                <Text style={styles.dateTimeText}>09:00 PM</Text>
+                <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')}</Text>
               </View>
             </View>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
-            <TouchableOpacity onPress={() => toggleCalendarModal()}>
-              <Image
-                source={dateIcon}
-                style={styles.datetimeIcon}
-              />
-            </TouchableOpacity>
+            {/* <TouchableOpacity onPress={() => toggleCalendarModal()}> */}
+            <Image
+              source={dateIcon}
+              style={styles.datetimeIcon}
+            />
+            {/* </TouchableOpacity> */}
           </View>
-
-          <View style={styles.scheduleView}>
-            <View style={styles.headerView}>
-              <Text style={styles.headerText}>Today (02-05-2024)</Text>
+          {Object.keys(groupedSlots).map(date => (
+            <View style={styles.scheduleView}>
+              <View style={styles.headerView}>
+                <Text style={styles.headerText}>{date}</Text>
+              </View>
+              {groupedSlots[date].map(slot => (
+                <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` })}>
+                  <View key={slot.id}>
+                    <View style={styles.itemnameView}>
+                      <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
+                      <Image
+                        source={ArrowGratter}
+                        style={styles.iconstyle}
+                      />
+                    </View>
+                    <View style={styles.itemtimeView}>
+                      <View style={styles.flexStyle}>
+                        <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
+                        <View style={styles.itemTagView}>
+                          <Text style={styles.itemTagText}>New</Text>
+                        </View>
+                      </View>
+                      <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
+                    </View>
+                    <View style={styles.horizontalLine} />
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
-            <TouchableOpacity onPress={() => toggleModal()}>
-              <View style={styles.itemnameView}>
-                <Text style={styles.itemnameText}>Shubham Halder</Text>
-                <Image
-                  source={ArrowGratter}
-                  style={styles.iconstyle}
-                />
-              </View>
-              <View style={styles.itemtimeView}>
-                <View style={styles.flexStyle}>
-                  <Text style={styles.itemTimeText}>06:00 PM - 06:15 PM</Text>
-                  <View style={styles.itemTagView}>
-                    <Text style={styles.itemTagText}>New</Text>
-                  </View>
-                </View>
-                <Text style={styles.freeText}>Free</Text>
-              </View>
-              <View style={styles.horizontalLine} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => toggleModal()}>
-              <View style={styles.itemnameView}>
-                <Text style={styles.itemnameText}>Shubham Halder</Text>
-                <Image
-                  source={ArrowGratter}
-                  style={styles.iconstyle}
-                />
-              </View>
-              <View style={styles.itemtimeView}>
-                <View style={styles.flexStyle}>
-                  <Text style={styles.itemTimeText}>06:00 PM - 06:15 PM</Text>
-                  <View style={styles.itemTagView}>
-                    <Text style={styles.itemTagText}>New</Text>
-                  </View>
-                </View>
-                <Text style={styles.freeText}>Free</Text>
-              </View>
-              <View style={styles.horizontalLine} />
-            </TouchableOpacity>
-          </View>
-
+          ))}
         </View>
       </ScrollView>
       <Modal
@@ -294,8 +413,11 @@ export default function HomeScreen({ navigation }) {
               {isFocus ?
                 <View style={{ width: responsiveWidth(40), backgroundColor: '#fff', height: responsiveHeight(15), position: 'absolute', right: 0, top: 30, zIndex: 10, padding: 10, borderRadius: 15, justifyContent: 'center', elevation: 5 }}>
                   <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
+                    <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
+                      <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
+                    </TouchableOpacity>
                     <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
+
                   </View>
                 </View>
                 : <></>}
@@ -305,12 +427,12 @@ export default function HomeScreen({ navigation }) {
               <View style={{ padding: 15 }}>
                 <View style={styles.insidemodalTimedateView}>
 
-                  <Text style={styles.insidemodalTimeText}>03-04-2024</Text>
-                  <Text style={styles.insidemodalTimeText}>08:00 PM - 08:30 PM</Text>
+                  <Text style={styles.insidemodalTimeText}>{savePatientDetails?.date}</Text>
+                  <Text style={styles.insidemodalTimeText}>{savePatientDetails?.time}</Text>
                 </View>
                 <View style={styles.flexStyle}>
                   <View style={{ flexDirection: 'column' }}>
-                    <Text style={styles.insidemodalName}>Shubham Halder</Text>
+                    <Text style={styles.insidemodalName}>{savePatientDetails?.pname}</Text>
                     <View style={styles.insidemodalTagView}>
                       <Text style={styles.insidemodalTagtext}>New</Text>
                     </View>
@@ -527,7 +649,7 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(1.5)
   },
   joinButtonView: {
-    marginLeft: responsiveWidth(10),
+    marginLeft: responsiveWidth(1),
     backgroundColor: '#ECFCFA',
     borderColor: '#87ADA8',
     borderWidth: 1,
@@ -543,12 +665,12 @@ const styles = StyleSheet.create({
   },
   dateTimeView: {
     height: responsiveHeight(5),
-    width: responsiveWidth(80),
+    width: responsiveWidth(83),
     marginTop: responsiveHeight(2),
     borderColor: '#E3E3E3',
     borderWidth: 1,
     borderRadius: 20,
-    padding: 5,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between'
