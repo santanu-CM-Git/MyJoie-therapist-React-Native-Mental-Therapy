@@ -289,6 +289,7 @@ const ProfileScreen = ({ navigation, route }) => {
   )
 
   const submitForm = () => {
+    setIsLoading(true)
     console.log(selectedItemsType, " type off therapist")
     console.log(selectedItemsLanguage, "language")
     console.log(selectedItems, 'qualification')
@@ -304,20 +305,24 @@ const ProfileScreen = ({ navigation, route }) => {
     console.log(profilePic, 'profile pic')
 
     const formData = new FormData();
-    formData.append("name", firstname);
-    formData.append("email", email);
-    formData.append("mobile", phoneno);
-    formData.append("therapy_types", selectedItemsType);
-    formData.append("languages", selectedItemsLanguage);
-    formData.append("qualifications", selectedItems);
+    formData.append("therapy_types", JSON.stringify(selectedItemsType));
+    formData.append("languages", JSON.stringify(selectedItemsLanguage));
+    formData.append("qualifications", JSON.stringify(selectedItems));
+    formData.append("city", city);
+    formData.append("state", state);
     formData.append("experience", experienceValue);
+    formData.append("profile_pic", profilePic);
+    formData.append("bank_ac_no", accountno);
+    formData.append("cancel_cheque", pickedCancelCheque || '');
+
+    console.log(JSON.stringify(formData), 'formdata')
 
     AsyncStorage.getItem('userToken', (err, usertoken) => {
       axios.post(`${API_URL}/therapist/profile-update`, formData, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-          "Authorization": 'Bearer ' + usertoken,
+          "Authorization": `Bearer ${usertoken}`,
         },
       })
         .then(res => {
@@ -727,14 +732,18 @@ const ProfileScreen = ({ navigation, route }) => {
               Upload Supporting Documents
             </Text>
             <ScrollView contentContainerStyle={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: responsiveHeight(2), flexWrap: 'wrap', }}>
-              {alldocument.map((doc) => (
-                // <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA',marginBottom:10 }}>
-                <Image
-                  source={{ uri: doc.document_file }}
-                  style={{ height: responsiveHeight(18), width: responsiveWidth(40), resizeMode: 'contain', borderRadius: 10, marginBottom: 10 }}
-                />
-                // </View>
-              ))}
+              {alldocument ?
+                alldocument?.map((doc) => (
+                  // <View style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 10, borderStyle: 'dashed', backgroundColor: '#FAFAFA',marginBottom:10 }}>
+                  <Image
+                    source={{ uri: doc.document_file }}
+                    style={{ height: responsiveHeight(18), width: responsiveWidth(40), resizeMode: 'contain', borderRadius: 10, marginBottom: 10 }}
+                  />
+                  // </View>
+                ))
+                :
+                <Text>No documents uploaded yet</Text>
+              }
 
             </ScrollView>
 
