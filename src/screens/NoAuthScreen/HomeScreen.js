@@ -309,6 +309,7 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.earningAmountText}>₹ 5,00,000</Text>
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
+          {sortData?
           <View style={styles.upcomingView}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
@@ -341,7 +342,10 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')}</Text>
               </View>
             </View>
-          </View>
+          </View>:
+          <View style={styles.upcomingView}>
+            <Text style={{alignSelf:'center',fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2)}}>No upcoming appointment yet</Text>
+            </View>}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
             {/* <TouchableOpacity onPress={() => toggleCalendarModal()}> */}
@@ -351,7 +355,8 @@ export default function HomeScreen({ navigation }) {
             />
             {/* </TouchableOpacity> */}
           </View>
-          {Object.keys(groupedSlots).map(date => (
+          {sortData?
+          Object.keys(groupedSlots).map(date => (
             <View style={styles.scheduleView}>
               <View style={styles.headerView}>
                 <Text style={styles.headerText}>{date}</Text>
@@ -380,7 +385,12 @@ export default function HomeScreen({ navigation }) {
                 </TouchableOpacity>
               ))}
             </View>
-          ))}
+          ))
+          :
+          <View style={styles.upcomingView}>
+          <Text style={{alignSelf:'center',fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2)}}>No schedule so far</Text>
+          </View>
+        }
         </View>
       </ScrollView>
       <Modal

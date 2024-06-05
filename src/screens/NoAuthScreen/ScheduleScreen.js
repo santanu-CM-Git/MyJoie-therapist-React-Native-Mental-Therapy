@@ -23,7 +23,7 @@ const data = [
 const ScheduleScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false)
-
+    const [sortData, setSortData] = useState([])
     const [groupedSlots, setGroupedSlots] = useState([]);
     const [savePatientDetails, setSavePatientDetails] = useState(null)
 
@@ -954,7 +954,7 @@ const ScheduleScreen = ({ navigation }) => {
                             const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
                             return timeA - timeB;
                         });
-
+                        setSortData(sortedData)
                         // Group by date
                         const groupedData = sortedData.reduce((acc, slot) => {
                             const date = moment(slot.date).format('DD-MM-YYYY');
@@ -1040,39 +1040,45 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                                 {/* </TouchableOpacity> */}
                             </View>
-                            {Object.keys(groupedSlots).map(date => (
-                                <View style={styles.upcomingCard}>
-                                    <View style={styles.upcomingCardDate}>
-                                        <Text style={styles.upcomingCardDateText}>{date}</Text>
-                                    </View>
-                                    {groupedSlots[date].map(slot => (
-                                        <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` })}>
-                                            <View key={slot.id}>
-                                                <View style={styles.headerTextView}>
-                                                    <Text style={styles.headerText}>{slot.patient?.name}</Text>
-                                                    <Image
-                                                        source={ArrowGratter}
-                                                        style={styles.iconStyle}
+                            {sortData.length != '0' ?
+                                Object.keys(groupedSlots).map(date => (
+                                    <View style={styles.upcomingCard}>
+                                        <View style={styles.upcomingCardDate}>
+                                            <Text style={styles.upcomingCardDateText}>{date}</Text>
+                                        </View>
+                                        {groupedSlots[date].map(slot => (
+                                            <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` })}>
+                                                <View key={slot.id}>
+                                                    <View style={styles.headerTextView}>
+                                                        <Text style={styles.headerText}>{slot.patient?.name}</Text>
+                                                        <Image
+                                                            source={ArrowGratter}
+                                                            style={styles.iconStyle}
+                                                        />
+                                                    </View>
+
+                                                    <View style={styles.itemtimeView}>
+                                                        <View style={styles.flexStyle}>
+                                                            <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
+                                                            <View style={styles.itemTagView}>
+                                                                <Text style={styles.itemTagText}>New</Text>
+                                                            </View>
+                                                        </View>
+                                                        <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
+                                                    </View>
+                                                    <View
+                                                        style={styles.horizontalLine}
                                                     />
                                                 </View>
-
-                                                <View style={styles.itemtimeView}>
-                                                    <View style={styles.flexStyle}>
-                                                        <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
-                                                        <View style={styles.itemTagView}>
-                                                            <Text style={styles.itemTagText}>New</Text>
-                                                        </View>
-                                                    </View>
-                                                    <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
-                                                </View>
-                                                <View
-                                                    style={styles.horizontalLine}
-                                                />
-                                            </View>
-                                        </TouchableOpacity>
-                                    ))}
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+                                ))
+                                :
+                                <View style={[styles.upcomingCard, { padding: 20 }]}>
+                                    <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>No schedule so far</Text>
                                 </View>
-                            ))}
+                            }
                         </>
                         :
                         <>
@@ -1628,7 +1634,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </View>
                             </View>
-                          
+
                         </ScrollView>
 
                     </View>
@@ -1946,11 +1952,11 @@ const styles = StyleSheet.create({
         color: '#2D2D2D',
         fontSize: responsiveFontSize(2),
         fontFamily: 'DMSans-Bold'
-      },
-      flexCenter: {
+    },
+    flexCenter: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
-      },
+    },
 
 });
