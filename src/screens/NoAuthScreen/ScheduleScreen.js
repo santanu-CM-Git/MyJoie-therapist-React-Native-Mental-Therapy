@@ -571,14 +571,19 @@ const ScheduleScreen = ({ navigation }) => {
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
                         } else {
-                            Alert.alert('Hello', res.data.message, [
-                                {
-                                    text: 'Cancel',
-                                    onPress: () => console.log('Cancel Pressed'),
-                                    style: 'cancel',
-                                },
-                                { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
-                            ]);
+                            if(res.data.booking == 'yes'){
+                                Alert.alert('Hello', res.data.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
+                                ]);
+                            }else{
+                                timeEntryinRespectOfDay(day, time, status)
+                            }
+                            
                         }
                     } else {
                         console.log('not okk')
