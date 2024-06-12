@@ -326,20 +326,20 @@ export default function HomeScreen({ navigation }) {
               </TouchableOpacity>
             </View>
             <View style={styles.dateTimeView}>
-              <View style={styles.dateView}>
+              <View style={styles.dateView1}>
                 <Image
                   source={dateIcon}
                   style={styles.datetimeIcon}
                 />
                 <Text style={styles.dateTimeText}>{moment(sortData?.date).format("ddd, DD MMM YYYY")}</Text>
               </View>
-              <View style={styles.dividerLine} />
-              <View style={styles.dateView}>
+              {/* <View style={styles.dividerLine} /> */}
+              <View style={styles.dateView2}>
                 <Image
                   source={timeIcon}
                   style={styles.datetimeIcon}
                 />
-                <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')}</Text>
+                <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')} - {moment(sortData?.end_time, 'HH:mm:ss').format('hh:mm A')}</Text>
               </View>
             </View>
           </View>:
@@ -685,10 +685,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  dateView: {
+  dateView1: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: responsiveWidth(35)
+    width: responsiveWidth(30)
+  },
+  dateView2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: responsiveWidth(40)
   },
   datetimeIcon: {
     height: 20,
