@@ -660,8 +660,8 @@ const styles = StyleSheet.create({
   },
   joinButtonView: {
     marginLeft: responsiveWidth(1),
-    backgroundColor: '#ECFCFA',
-    borderColor: '#87ADA8',
+    backgroundColor: '#EEF8FF',
+    borderColor: '#417AA4',
     borderWidth: 1,
     padding: 10,
     borderRadius: 20,
@@ -770,7 +770,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   freeText: {
-    color: '#5C9ECF',
+    color: '#417AA4',
     fontFamily: 'DMSans-Medium',
     fontSize: responsiveFontSize(1.7)
   },

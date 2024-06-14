@@ -1664,11 +1664,11 @@ const styles = StyleSheet.create({
         //marginBottom: responsiveHeight(1)
     },
     activeButtonView: {
-        backgroundColor: '#ECFCFA',
+        backgroundColor: '#EEF8FF',
         height: responsiveHeight(5),
         width: responsiveWidth(45),
         borderRadius: 20,
-        borderColor: '#87ADA8',
+        borderColor: '#417AA4',
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center'
