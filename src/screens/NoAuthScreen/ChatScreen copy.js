@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView } from 'react-native'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView, PermissionsAndroid } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GreenTick, callIcon, chatImg, filesendImg, sendImg, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
+import { GreenTick, audiooffIcon, audioonIcon, callIcon, chatImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
 import { GiftedChat, InputToolbar, Bubble, Send } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as DocumentPicker from 'react-native-document-picker';
@@ -21,7 +21,14 @@ import RNFetchBlob from 'rn-fetch-blob'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
-import AgoraUIKit, { StreamFallbackOptions } from 'agora-rn-uikit';
+import AgoraUIKit, { StreamFallbackOptions, PropsInterface, VideoRenderMode, RenderModeType } from 'agora-rn-uikit';
+// console.log(RenderModeType.RenderModeFit,'kkkkkkkkkkk')
+
+import { ClientRoleType, createAgoraRtcEngine, ChannelProfileType } from 'react-native-agora';
+const appId = '975e09acde854ac38b3304da072c111e';
+const channelName = 'testvoice';
+const token = '123456789';
+const uid = Math.random().toString(36).substr(2, 10);
 
 const ChatScreen = ({ navigation }) => {
 
@@ -301,6 +308,179 @@ const ChatScreen = ({ navigation }) => {
   );
 
 
+  // audio call 
+  const agoraEngineRef = useRef(); // Agora engine instance
+  const [isJoined, setIsJoined] = useState(false); // Indicates if the local user has joined the channel
+  const [remoteUid, setRemoteUid] = useState(0); // Uid of the remote user
+  const [message, setMessage] = useState(''); // Message to the user
+  const [micOn, setMicOn] = useState(true); // Microphone state
+  const [speakerOn, setSpeakerOn] = useState(false); // Loudspeaker state
+
+  function showMessage(msg) {
+    setMessage(msg);
+  }
+
+  const getPermission = async () => {
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    // Initialize Agora engine when the app starts
+    setupVoiceSDKEngine();
+  }, []);
+
+  const setupVoiceSDKEngine = async () => {
+    try {
+      // use the helper function to get permissions
+      if (Platform.OS === 'android') await getPermission();
+      agoraEngineRef.current = createAgoraRtcEngine();
+      const agoraEngine = agoraEngineRef.current;
+      agoraEngine.registerEventHandler({
+        onJoinChannelSuccess: () => {
+          showMessage('Successfully joined the channel ' + channelName);
+          setIsJoined(true);
+        },
+        onUserJoined: (_connection, Uid) => {
+          showMessage('Remote user joined with uid ' + Uid);
+          setRemoteUid(Uid);
+        },
+        onUserOffline: (_connection, Uid) => {
+          showMessage('Remote user left the channel. uid: ' + Uid);
+          setRemoteUid(0);
+        },
+      });
+      agoraEngine.initialize({
+        appId: appId,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const toggleMic = () => {
+    try {
+      const agoraEngine = agoraEngineRef.current;
+      if (micOn) {
+        agoraEngine?.muteLocalAudioStream(true);
+        showMessage('Microphone muted');
+      } else {
+        agoraEngine?.muteLocalAudioStream(false);
+        showMessage('Microphone unmuted');
+      }
+      setMicOn(!micOn);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const toggleSpeaker = () => {
+    try {
+      const agoraEngine = agoraEngineRef.current;
+      if (speakerOn) {
+        agoraEngine?.setEnableSpeakerphone(false);
+        showMessage('Speaker disabled');
+      } else {
+        agoraEngine?.setEnableSpeakerphone(true);
+        showMessage('Speaker enabled');
+      }
+      setSpeakerOn(!speakerOn);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const join = async () => {
+    console.log('join')
+    console.log(isJoined, 'isjoind status')
+    if (isJoined) {
+      console.log('already joined')
+      return;
+    }
+    try {
+      agoraEngineRef.current?.setChannelProfile(
+        ChannelProfileType.ChannelProfileCommunication
+      );
+      agoraEngineRef.current?.joinChannel(token, channelName, uid, {
+        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      });
+      setIsJoined(true);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const leave = () => {
+    try {
+      agoraEngineRef.current?.leaveChannel();
+      setRemoteUid(0);
+      setIsJoined(false);
+      showMessage('You left the channel');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const customPropsStyle = {
+    localBtnStyles: {
+      endCall: {
+        height: 40,
+        width: 40,
+        backgroundColor: '#e43',
+        borderWidth: 0,
+        marginLeft:5
+      },
+      switchCamera: {
+        height: 40,
+        width: 40,
+        backgroundColor: '#8D9095',
+        borderWidth: 0,
+      },
+      muteLocalAudio: {
+        height: 40,
+        width: 40,
+        backgroundColor: '#8D9095',
+        borderWidth: 0
+      },
+      muteLocalVideo: {
+        height: 40,
+        width: 40,
+        backgroundColor: '#8D9095',
+        borderWidth: 0
+      },
+    },
+    maxViewStyles: {
+      height: '100%',
+      width: '130%',
+      alignSelf: 'center',
+      // marginRight:-20
+    },
+    UIKitContainer: {
+      //flex: 1,
+      height: '50%', width: '100%'
+    },
+    localBtnContainer: {
+      backgroundColor: 'rgba(52, 52, 52, 0.8)',
+      height: responsiveHeight(10),
+      //width: responsiveWidth(80),
+      borderRadius: 50,
+      alignItems: 'center',
+    },
+    // localBtnContainer: {
+    //   backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    //   bottom: 0,
+    //   paddingVertical: 10,
+      
+    //   height: 80,
+    // },
+    theme: '#ffffffee',
+    iconSize: 25,
+   
+  }
+
+ 
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
@@ -415,56 +595,82 @@ const ChatScreen = ({ navigation }) => {
           //user={user}
           />
           : activeTab == 'audio' ?
-            <Text>audio call</Text>
+            <>
+              {/* <View style={styles.btnContainer}>
+                <Text onPress={join} style={styles.button}>
+                  Join
+                </Text>
+                <Text onPress={leave} style={styles.button}>
+                  Leave
+                </Text>
+                <Text onPress={toggleMic} style={styles.button}>
+                  {micOn ? 'Mute Mic' : 'Unmute Mic'}
+                </Text>
+                <Text onPress={toggleSpeaker} style={styles.button}>
+                  {speakerOn ? 'Disable Speaker' : 'Enable Speaker'}
+                </Text>
+              </View>
+              <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContainer}
+              >
+                {isJoined ? (
+                  <Text style={{ color: '#000' }}>Local user uid: {uid}</Text>
+                ) : (
+                  <Text style={{ color: '#000' }}>Join a channel</Text>
+                )}
+                {isJoined && remoteUid !== 0 ? (
+                  <Text style={{ color: '#000' }}>Remote user uid: {remoteUid}</Text>
+                ) : (
+                  <Text style={{ color: '#000' }}>Waiting for a remote user to join</Text>
+                )}
+                <Text>{message}</Text>
+              </ScrollView> */}
+              <ImageBackground source={userPhoto} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
+                <Image
+                  source={userPhoto}
+                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                />
+                <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>Jennifer Kourtney</Text>
+                <View style={{ backgroundColor: 'rgba(52, 52, 52, 0.8)', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                  {micOn ?
+                    <TouchableOpacity onPress={() => toggleMic()}>
+                      <Image
+                        source={audiooffIcon}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </TouchableOpacity> :
+                    <TouchableOpacity onPress={() => toggleMic()}>
+                      <Image
+                        source={audioonIcon}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </TouchableOpacity>}
+                  {speakerOn ?
+                    <TouchableOpacity onPress={() => toggleSpeaker()}>
+                      <Image
+                        source={speakeroffIcon}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </TouchableOpacity> :
+                    <TouchableOpacity onPress={() => toggleSpeaker()}>
+                      <Image
+                        source={speakeronIcon}
+                        style={{ height: 50, width: 50 }}
+                      />
+                    </TouchableOpacity>}
+                </View>
+              </ImageBackground>
+            </>
+
             :
             <>
               {videoCall ? (
-                <SafeAreaView style={{ flex: 1,backgroundColor: '#fff' }}>
+                <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks} styleProps={{
-                    localBtnStyles: {
-                      endCall: {
-                        height: 40,
-                        width:40,
-                        backgroundColor: '#e43',
-                        borderWidth: 0,
-                      },
-                      switchCamera: {
-                        height: 40,
-                        width:40,
-                        backgroundColor: '#8D9095',
-                        borderWidth: 0,
-                      },
-                      muteLocalAudio: {
-                        height: 40,
-                        width:40,
-                        backgroundColor: '#8D9095',
-                        borderWidth: 0
-                      },
-                      muteLocalVideo: {
-                        height: 40,
-                        width:40,
-                        backgroundColor: '#8D9095',
-                        borderWidth: 0
-                      },
-                    },
-                    maxViewStyles: {
-                      height: '100%',
-                      width: '120%',
-                      alignSelf: 'center',
-                      // marginRight:-20
-                    },
-                    UIKitContainer: {
-                      flex:1,
-                    },
-                    localBtnContainer:{
-                      backgroundColor: 'rgba(52, 52, 52, 0.8)',
-                      height: responsiveHeight(10),
-                      //width: responsiveWidth(80),
-                      borderRadius:50,
-                      alignItems:'center',
-                    },
-                  }} />
+                  <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks} 
+                   styleProps={customPropsStyle} 
+                  />
                 </SafeAreaView>
               ) : (
                 <Text onPress={() => {
