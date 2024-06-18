@@ -178,6 +178,7 @@ export default function HomeScreen({ navigation }) {
               return timeA - timeB;
             });
             console.log(sortedData, 'date wise sort data')
+            console.log(sortedData[0], 'first booking data')
             setSortData(sortedData[0])
 
             // Group by date
@@ -321,7 +322,7 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.userText}> {sortData?.patient?.name}</Text>
                 <Text style={styles.userSubText}> Patient </Text>
               </View>
-              <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen')}>
+              <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen',{details: sortData})}>
                 <Text style={styles.joinButtonText}>Join Now</Text>
               </TouchableOpacity>
             </View>
