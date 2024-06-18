@@ -56,6 +56,7 @@ export default function HomeScreen({ navigation }) {
   const [sortData, setSortData] = useState([])
   const [groupedSlots, setGroupedSlots] = useState([]);
   const [savePatientDetails, setSavePatientDetails] = useState(null)
+  const [modalDetails, setModalDetails] = useState(null)
 
 
   const getFCMToken = async () => {
@@ -96,8 +97,10 @@ export default function HomeScreen({ navigation }) {
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     return date.toLocaleDateString('en-US', options);
   };
-  const toggleModal = (data) => {
+  const toggleModal = (data, item) => {
     console.log(data, 'ooooooooooooooo')
+    console.log(item, 'itemmmmmmmmmmmmmmmm')
+    setModalDetails(item)
     setSavePatientDetails(data)
     setModalVisible(!isModalVisible);
   };
@@ -310,42 +313,42 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.earningAmountText}>₹ 5,00,000</Text>
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
-          {sortData?
-          <View style={styles.upcomingView}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {sortData ?
+            <View style={styles.upcomingView}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-              <Image
-                source={userPhoto}
-                style={styles.userImg}
-              />
-              <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
-                <Text style={styles.userText}> {sortData?.patient?.name}</Text>
-                <Text style={styles.userSubText}> Patient </Text>
-              </View>
-              <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen',{details: sortData})}>
-                <Text style={styles.joinButtonText}>Join Now</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.dateTimeView}>
-              <View style={styles.dateView1}>
                 <Image
-                  source={dateIcon}
-                  style={styles.datetimeIcon}
+                  source={userPhoto}
+                  style={styles.userImg}
                 />
-                <Text style={styles.dateTimeText}>{moment(sortData?.date).format("ddd, DD MMM YYYY")}</Text>
+                <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
+                  <Text style={styles.userText}> {sortData?.patient?.name}</Text>
+                  <Text style={styles.userSubText}> Patient </Text>
+                </View>
+                <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen', { details: sortData })}>
+                  <Text style={styles.joinButtonText}>Join Now</Text>
+                </TouchableOpacity>
               </View>
-              {/* <View style={styles.dividerLine} /> */}
-              <View style={styles.dateView2}>
-                <Image
-                  source={timeIcon}
-                  style={styles.datetimeIcon}
-                />
-                <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')} - {moment(sortData?.end_time, 'HH:mm:ss').format('hh:mm A')}</Text>
+              <View style={styles.dateTimeView}>
+                <View style={styles.dateView1}>
+                  <Image
+                    source={dateIcon}
+                    style={styles.datetimeIcon}
+                  />
+                  <Text style={styles.dateTimeText}>{moment(sortData?.date).format("ddd, DD MMM YYYY")}</Text>
+                </View>
+                {/* <View style={styles.dividerLine} /> */}
+                <View style={styles.dateView2}>
+                  <Image
+                    source={timeIcon}
+                    style={styles.datetimeIcon}
+                  />
+                  <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')} - {moment(sortData?.end_time, 'HH:mm:ss').format('hh:mm A')}</Text>
+                </View>
               </View>
-            </View>
-          </View>:
-          <View style={styles.upcomingView}>
-            <Text style={{alignSelf:'center',fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2)}}>No upcoming appointment yet</Text>
+            </View> :
+            <View style={styles.upcomingView}>
+              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>No upcoming appointment yet</Text>
             </View>}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
@@ -356,42 +359,42 @@ export default function HomeScreen({ navigation }) {
             />
             {/* </TouchableOpacity> */}
           </View>
-          {sortData?
-          Object.keys(groupedSlots).map(date => (
-            <View style={styles.scheduleView}>
-              <View style={styles.headerView}>
-                <Text style={styles.headerText}>{date}</Text>
-              </View>
-              {groupedSlots[date].map(slot => (
-                <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` })}>
-                  <View key={slot.id}>
-                    <View style={styles.itemnameView}>
-                      <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
-                      <Image
-                        source={ArrowGratter}
-                        style={styles.iconstyle}
-                      />
-                    </View>
-                    <View style={styles.itemtimeView}>
-                      <View style={styles.flexStyle}>
-                        <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
-                        <View style={styles.itemTagView}>
-                          <Text style={styles.itemTagText}>New</Text>
-                        </View>
+          {sortData ?
+            Object.keys(groupedSlots).map(date => (
+              <View style={styles.scheduleView}>
+                <View style={styles.headerView}>
+                  <Text style={styles.headerText}>{date}</Text>
+                </View>
+                {groupedSlots[date].map(slot => (
+                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                    <View key={slot.id}>
+                      <View style={styles.itemnameView}>
+                        <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
+                        <Image
+                          source={ArrowGratter}
+                          style={styles.iconstyle}
+                        />
                       </View>
-                      <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
+                      <View style={styles.itemtimeView}>
+                        <View style={styles.flexStyle}>
+                          <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
+                          <View style={styles.itemTagView}>
+                            <Text style={styles.itemTagText}>New</Text>
+                          </View>
+                        </View>
+                        <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
+                      </View>
+                      <View style={styles.horizontalLine} />
                     </View>
-                    <View style={styles.horizontalLine} />
-                  </View>
-                </TouchableOpacity>
-              ))}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ))
+            :
+            <View style={styles.upcomingView}>
+              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>No schedule so far</Text>
             </View>
-          ))
-          :
-          <View style={styles.upcomingView}>
-          <Text style={{alignSelf:'center',fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2)}}>No schedule so far</Text>
-          </View>
-        }
+          }
         </View>
       </ScrollView>
       <Modal
@@ -448,9 +451,11 @@ export default function HomeScreen({ navigation }) {
                       <Text style={styles.insidemodalTagtext}>New</Text>
                     </View>
                   </View>
-                  <View style={styles.inActiveButtonInsideView}>
-                    <Text style={styles.activeButtonInsideText}>Join Now</Text>
-                  </View>
+                  <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
+                    <View style={styles.inActiveButtonInsideView}>
+                      <Text style={styles.activeButtonInsideText}>Join Now</Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
 
               </View>
@@ -594,11 +599,11 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(1.7)
   },
   inActiveButtonInsideView: {
-    backgroundColor: '#ECFCFA',
+    backgroundColor: '#EEF8FF',
     height: responsiveHeight(5),
     width: responsiveWidth(35),
     borderRadius: 15,
-    borderColor: '#87ADA8',
+    borderColor: '#417AA4',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',

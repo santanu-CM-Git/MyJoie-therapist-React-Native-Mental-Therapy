@@ -201,7 +201,7 @@ const ChatScreen = ({ navigation, route }) => {
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: '#ECFCFA',
+            backgroundColor: '#EEF8FF',
           },
         }}
         textStyle={{
@@ -531,7 +531,7 @@ const ChatScreen = ({ navigation, route }) => {
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
       <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Ionicons name="chevron-back" size={25} color="#000" />
+          <Ionicons name="chevron-back" size={25} color="#000"  onPress={() => navigation.goBack()}/>
           <View style={{ flexDirection: 'column', marginLeft: 10 }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>{route?.params?.details?.patient?.name}</Text>
             <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Patient</Text>

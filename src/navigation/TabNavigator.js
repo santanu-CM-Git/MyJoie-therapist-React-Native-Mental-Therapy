@@ -240,7 +240,11 @@ const TabNavigator = () => {
 const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
   console.log(routeName)
-  return routeName === 'ChatScreen' ? 'none' : 'flex';
+  if (routeName == 'ChatScreen') {
+    return 'none';
+  } else {
+    return 'flex';
+  }
 };
 
 export default TabNavigator;

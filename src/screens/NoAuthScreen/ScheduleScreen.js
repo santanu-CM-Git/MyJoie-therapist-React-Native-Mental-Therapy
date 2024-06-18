@@ -1,9 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button, Pressable,TouchableOpacity } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { ArrowGratter, GreenTick, dateIcon, deleteImg, dotIcon, plus, timeIcon } from '../../utils/Images'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
@@ -26,6 +25,7 @@ const ScheduleScreen = ({ navigation }) => {
     const [sortData, setSortData] = useState([])
     const [groupedSlots, setGroupedSlots] = useState([]);
     const [savePatientDetails, setSavePatientDetails] = useState(null)
+    const [modalDetails, setModalDetails] = useState(null)
 
     const [activeTab, setActiveTab] = useState('Calender')
     // Monday
@@ -540,8 +540,10 @@ const ScheduleScreen = ({ navigation }) => {
         toggleModal()
     }
 
-    const toggleModal = (data) => {
-        console.log(data, 'ooooooooooooooo')
+    const toggleModal = (data, item) => {
+        //console.log(data, 'ooooooooooooooo')
+        //console.log(item, 'itemmmmmmmmmmmmmmmm')
+        setModalDetails(item)
         setSavePatientDetails(data)
         setModalVisible(!isModalVisible);
     };
@@ -571,7 +573,7 @@ const ScheduleScreen = ({ navigation }) => {
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
                         } else {
-                            if(res.data.booking == 'yes'){
+                            if (res.data.booking == 'yes') {
                                 Alert.alert('Hello', res.data.message, [
                                     {
                                         text: 'Cancel',
@@ -580,10 +582,10 @@ const ScheduleScreen = ({ navigation }) => {
                                     },
                                     { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
                                 ]);
-                            }else{
+                            } else {
                                 timeEntryinRespectOfDay(day, time, status)
                             }
-                            
+
                         }
                     } else {
                         console.log('not okk')
@@ -1007,6 +1009,62 @@ const ScheduleScreen = ({ navigation }) => {
         fetchAvailability()
     }, [])
 
+    const cancelBooking = (id) => {
+        console.log(JSON.stringify(id))
+        const option = {
+            "booked_slot_id": id
+        }
+        console.log(option)
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/slot-cancel`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    "Authorization": 'Bearer ' + usertoken,
+                    //'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(res => {
+                    console.log(JSON.stringify(res.data.data), 'cancel response')
+                    if (res.data.response == true) {
+                        setIsLoading(false);
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Hello',
+                            text2: "Schedule cancel successfully",
+                            position: 'top',
+                            topOffset: Platform.OS == 'ios' ? 55 : 20
+                        });
+                        toggleModal()
+                        fetchUpcomingSlot()
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+
     const formatISTTime = (time) => {
         return moment(time, 'HH:mm:ss').format('hh:mm A');
     };
@@ -1045,15 +1103,15 @@ const ScheduleScreen = ({ navigation }) => {
                                 />
                                 {/* </TouchableOpacity> */}
                             </View>
-                            {sortData.length != '0' ?
+                            {sortData.length !== 0 ?
                                 Object.keys(groupedSlots).map(date => (
                                     <View style={styles.upcomingCard}>
                                         <View style={styles.upcomingCardDate}>
                                             <Text style={styles.upcomingCardDateText}>{date}</Text>
                                         </View>
                                         {groupedSlots[date].map(slot => (
-                                            <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` })}>
-                                                <View key={slot.id}>
+                                            <Pressable onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                                                <View >
                                                     <View style={styles.headerTextView}>
                                                         <Text style={styles.headerText}>{slot.patient?.name}</Text>
                                                         <Image
@@ -1075,7 +1133,7 @@ const ScheduleScreen = ({ navigation }) => {
                                                         style={styles.horizontalLine}
                                                     />
                                                 </View>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ))}
                                     </View>
                                 ))
@@ -1557,10 +1615,9 @@ const ScheduleScreen = ({ navigation }) => {
                     <View style={{ padding: 20 }}>
                         <View style={styles.flexStyle}>
                             <Text style={styles.modalHeaderText}>Patient Details</Text>
-                            <TouchableOpacity onPress={(e) => {
+                            <Pressable onPress={(e) => {
                                 e.stopPropagation();
                                 setIsFocus(!isFocus)
-                                console.log('kkkkkk')
                             }}>
                                 {!isFocus ?
                                     <Image
@@ -1569,13 +1626,13 @@ const ScheduleScreen = ({ navigation }) => {
                                     /> :
                                     <Icon name="cross" size={25} color="#B0B0B0" onPress={() => setIsFocus(!isFocus)} />
                                 }
-                            </TouchableOpacity>
+                            </Pressable>
                             {isFocus ?
                                 <View style={{ width: responsiveWidth(40), backgroundColor: '#fff', height: responsiveHeight(15), position: 'absolute', right: 0, top: 30, zIndex: 10, padding: 10, borderRadius: 15, justifyContent: 'center', elevation: 5 }}>
                                     <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-                                        <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
+                                        <Pressable onPress={() => cancelBooking(savePatientDetails?.id)}>
                                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                         <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
 
                                     </View>
@@ -1597,9 +1654,11 @@ const ScheduleScreen = ({ navigation }) => {
                                             <Text style={styles.insidemodalTagtext}>New</Text>
                                         </View>
                                     </View>
-                                    <View style={styles.inActiveButtonInsideView2}>
-                                        <Text style={styles.activeButtonInsideText}>Join Now</Text>
-                                    </View>
+                                    <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
+                                        <View style={styles.inActiveButtonInsideView2}>
+                                            <Text style={styles.activeButtonInsideText}>Join Now</Text>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
 
                             </View>
@@ -1942,11 +2001,11 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     inActiveButtonInsideView2: {
-        backgroundColor: '#ECFCFA',
+        backgroundColor: '#EEF8FF',
         height: responsiveHeight(5),
         width: responsiveWidth(35),
         borderRadius: 15,
-        borderColor: '#87ADA8',
+        borderColor: '#417AA4',
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center',
