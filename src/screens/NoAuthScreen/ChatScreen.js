@@ -42,6 +42,7 @@ const ChatScreen = ({ navigation, route }) => {
   const rtcCallbacks = {
     EndCall: () => {
       setVideoCall(false);
+      setActiveTab('chat')
     }
   };
 
@@ -247,35 +248,35 @@ const ChatScreen = ({ navigation, route }) => {
     //     },
     //   },
     // ])
-    const docid  = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
-        const messageRef = firestore().collection('chatrooms')
-        .doc(docid)
-        .collection('messages')
-        .orderBy('createdAt',"desc")
+    const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    const messageRef = firestore().collection('chatrooms')
+      .doc(docid)
+      .collection('messages')
+      .orderBy('createdAt', "desc")
 
-      const unSubscribe =  messageRef.onSnapshot((querySnap)=>{
-            const allmsg =   querySnap.docs.map(docSanp=>{
-             const data = docSanp.data()
-             if(data.createdAt){
-                 return {
-                    ...docSanp.data(),
-                    createdAt:docSanp.data().createdAt.toDate()
-                }
-             }else {
-                return {
-                    ...docSanp.data(),
-                    createdAt:new Date()
-                }
-             }
-                
-            })
-            setMessages(allmsg)
-        })
-
-
-        return ()=>{
-          unSubscribe()
+    const unSubscribe = messageRef.onSnapshot((querySnap) => {
+      const allmsg = querySnap.docs.map(docSanp => {
+        const data = docSanp.data()
+        if (data.createdAt) {
+          return {
+            ...docSanp.data(),
+            createdAt: docSanp.data().createdAt.toDate()
+          }
+        } else {
+          return {
+            ...docSanp.data(),
+            createdAt: new Date()
+          }
         }
+
+      })
+      setMessages(allmsg)
+    })
+
+
+    return () => {
+      unSubscribe()
+    }
   }, [])
 
   // const onSend = useCallback((messages = []) => {
@@ -468,6 +469,23 @@ const ChatScreen = ({ navigation, route }) => {
       console.log(e);
     }
   };
+
+  const goingToactiveTab = (name) => {
+
+    if (name == 'audio') {
+      join()
+      setActiveTab('audio')
+    } else if (name == 'video') {
+      setActiveTab('video')
+      leave()
+    } else if (name == 'chat') {
+      setActiveTab('chat')
+      leave()
+    }
+
+
+  }
+
   const customPropsStyle = {
     localBtnStyles: {
       endCall: {
@@ -475,7 +493,7 @@ const ChatScreen = ({ navigation, route }) => {
         width: 40,
         backgroundColor: '#e43',
         borderWidth: 0,
-        marginLeft: 5
+        marginLeft: 5,
       },
       switchCamera: {
         height: 40,
@@ -487,51 +505,58 @@ const ChatScreen = ({ navigation, route }) => {
         height: 40,
         width: 40,
         backgroundColor: '#8D9095',
-        borderWidth: 0
+        borderWidth: 0,
       },
       muteLocalVideo: {
         height: 40,
         width: 40,
         backgroundColor: '#8D9095',
-        borderWidth: 0
+        borderWidth: 0,
       },
     },
     maxViewStyles: {
-      height: '100%',
-      width: '130%',
-      alignSelf: 'center',
-      // marginRight:-20
+      flex: 1,
+      alignSelf: 'stretch',
     },
     UIKitContainer: {
-      //flex: 1,
-      height: '50%', width: '100%'
+      flex: 1,
     },
     localBtnContainer: {
       backgroundColor: 'rgba(52, 52, 52, 0.8)',
       height: responsiveHeight(10),
-      //width: responsiveWidth(80),
       borderRadius: 50,
       alignItems: 'center',
+      position: 'absolute',
+      bottom: 5
     },
-    // localBtnContainer: {
-    //   backgroundColor: 'rgba(52, 52, 52, 0.8)',
-    //   bottom: 0,
-    //   paddingVertical: 10,
-
-    //   height: 80,
-    // },
     theme: '#ffffffee',
     iconSize: 25,
-
-  }
-
+    VideoRenderMode: RenderModeType.RenderModeFit,
+    remoteVideo: {
+      width: '100%',
+      height: '100%',
+      aspectRatio: 9 / 16,
+    },
+  };
+  const agoraConfig = {
+    appId: connectionData.appId,
+    channelProfile: 1, // Live broadcasting profile
+    videoEncoderConfig: {
+      width: 720,
+      height: 1280, // Portrait dimensions
+      bitrate: 1130,
+      frameRate: 15,
+      orientationMode: 'fixedPortrait',  // Force portrait mode
+    },
+    // other configurations
+  };
 
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
       <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Ionicons name="chevron-back" size={25} color="#000"  onPress={() => navigation.goBack()}/>
+          <Ionicons name="chevron-back" size={25} color="#000" onPress={() => navigation.goBack()} />
           <View style={{ flexDirection: 'column', marginLeft: 10 }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>{route?.params?.details?.patient?.name}</Text>
             <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Patient</Text>
@@ -547,7 +572,7 @@ const ChatScreen = ({ navigation, route }) => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
         {activeTab == 'chat' ?
           <>
-            <TouchableOpacity onPress={() => setActiveTab('audio')}>
+            <TouchableOpacity onPress={() => goingToactiveTab('audio')}>
               <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <Image
                   source={callIcon}
@@ -556,7 +581,7 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Audio Call</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setActiveTab('video')}>
+            <TouchableOpacity onPress={() => goingToactiveTab('video')}>
               <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <Image
                   source={videoIcon}
@@ -568,7 +593,7 @@ const ChatScreen = ({ navigation, route }) => {
           </>
           : activeTab == 'audio' ?
             <>
-              <TouchableOpacity onPress={() => setActiveTab('chat')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('chat')}>
                 <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                   <Image
                     source={chatImg}
@@ -577,7 +602,7 @@ const ChatScreen = ({ navigation, route }) => {
                   <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Chat</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab('video')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('video')}>
                 <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                   <Image
                     source={videoIcon}
@@ -589,7 +614,7 @@ const ChatScreen = ({ navigation, route }) => {
             </>
             :
             <>
-              <TouchableOpacity onPress={() => setActiveTab('chat')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('chat')}>
                 <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                   <Image
                     source={chatImg}
@@ -598,7 +623,7 @@ const ChatScreen = ({ navigation, route }) => {
                   <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Switch to Chat</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setActiveTab('audio')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('audio')}>
                 <View style={{ width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                   <Image
                     source={callIcon}
@@ -635,23 +660,23 @@ const ChatScreen = ({ navigation, route }) => {
             style={styles.messageContainer}
             user={{
               _id: therapistId,
-              avatar: {uri:therapistProfilePic},
+              avatar: { uri: therapistProfilePic },
             }}
           //user={user}
           />
           : activeTab == 'audio' ?
             <>
-              {/* <View style={styles.btnContainer}>
-                <Text onPress={join} style={styles.button}>
+              <View style={styles.btnContainer}>
+                <Text onPress={join} style={{ color: '#000' }}>
                   Join
                 </Text>
-                <Text onPress={leave} style={styles.button}>
+                <Text onPress={leave} style={{ color: '#000' }}>
                   Leave
                 </Text>
-                <Text onPress={toggleMic} style={styles.button}>
+                <Text onPress={toggleMic} style={{ color: '#000' }}>
                   {micOn ? 'Mute Mic' : 'Unmute Mic'}
                 </Text>
-                <Text onPress={toggleSpeaker} style={styles.button}>
+                <Text onPress={toggleSpeaker} style={{ color: '#000' }}>
                   {speakerOn ? 'Disable Speaker' : 'Enable Speaker'}
                 </Text>
               </View>
@@ -669,14 +694,14 @@ const ChatScreen = ({ navigation, route }) => {
                 ) : (
                   <Text style={{ color: '#000' }}>Waiting for a remote user to join</Text>
                 )}
-                <Text>{message}</Text>
-              </ScrollView> */}
-              <ImageBackground source={userPhoto} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: '#000' }}>{message}</Text>
+              </ScrollView>
+              {/* <ImageBackground source={{ uri: route?.params?.details?.patient?.profile_pic }} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
                 <Image
-                  source={userPhoto}
+                  source={{ uri: route?.params?.details?.patient?.profile_pic }}
                   style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
                 />
-                <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>Jennifer Kourtney</Text>
+                <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>{route?.params?.details?.patient?.name}</Text>
                 <View style={{ backgroundColor: 'rgba(52, 52, 52, 0.8)', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
                   {micOn ?
                     <TouchableOpacity onPress={() => toggleMic()}>
@@ -705,7 +730,7 @@ const ChatScreen = ({ navigation, route }) => {
                       />
                     </TouchableOpacity>}
                 </View>
-              </ImageBackground>
+              </ImageBackground> */}
             </>
 
             :
@@ -713,9 +738,11 @@ const ChatScreen = ({ navigation, route }) => {
               {videoCall ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks}
-                    styleProps={customPropsStyle}
-                  />
+                  <View style={{ height: responsiveHeight(75), }}>
+                    <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks}
+                      styleProps={customPropsStyle} agoraConfig={agoraConfig}
+                    />
+                  </View>
                 </SafeAreaView>
               ) : (
                 <Text onPress={() => {
