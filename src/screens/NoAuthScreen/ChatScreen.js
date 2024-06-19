@@ -454,6 +454,7 @@ const ChatScreen = ({ navigation, route }) => {
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
       setIsJoined(true);
+      
     } catch (e) {
       console.log(e);
     }
@@ -685,7 +686,11 @@ const ChatScreen = ({ navigation, route }) => {
                 contentContainerStyle={styles.scrollContainer}
               >
                 {isJoined ? (
+                  <>
                   <Text style={{ color: '#000' }}>Local user uid: {uid}</Text>
+                  <Text style={{ color: '#000' }}>Remote user uid: {remoteUid}</Text>
+                  </>
+                  
                 ) : (
                   <Text style={{ color: '#000' }}>Join a channel</Text>
                 )}
@@ -743,6 +748,7 @@ const ChatScreen = ({ navigation, route }) => {
                       styleProps={customPropsStyle} agoraConfig={agoraConfig}
                     />
                   </View>
+                
                 </SafeAreaView>
               ) : (
                 <Text onPress={() => {
