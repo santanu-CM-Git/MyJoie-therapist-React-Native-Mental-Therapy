@@ -28,7 +28,7 @@ import AgoraUIKit, { StreamFallbackOptions, PropsInterface, VideoRenderMode, Ren
 import { ClientRoleType, createAgoraRtcEngine, ChannelProfileType } from 'react-native-agora';
 const appId = '975e09acde854ac38b3304da072c111e';
 const channelName = 'testvoice';
-const token = '123456789';
+const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
 const uid = Math.random().toString(36).substr(2, 10);
 
 const ChatScreen = ({ navigation, route }) => {
@@ -36,8 +36,9 @@ const ChatScreen = ({ navigation, route }) => {
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
     appId: '975e09acde854ac38b3304da072c111e',
+    //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
     channel: 'test',
-
+    token: '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==',
   };
   const rtcCallbacks = {
     EndCall: () => {
