@@ -76,3 +76,5 @@ export const audiooffIcon = require("../assets/images/audiooff.png");
 export const speakeroffIcon = require("../assets/images/speakeroff.png");
 export const availabilityBlackImg = require("../assets/images/availability-black.png");
 export const earningBlackImg = require("../assets/images/earning-black.png");
+export const audioBgImg = require("../assets/images/audio-bg.png");
+export const defaultUserImg = require("../assets/images/default-user.png");

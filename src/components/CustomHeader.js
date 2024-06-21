@@ -21,6 +21,7 @@ import axios from 'axios';
 import { API_URL } from '@env'
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import Logo from '../../src/assets/images/misc/logo.svg';
 
 export default function CustomHeader({
     onPress,
@@ -54,7 +55,7 @@ export default function CustomHeader({
     }
 
     useEffect(() => {
-       // fetchProfileDetails()
+        // fetchProfileDetails()
     }, [])
     useFocusEffect(
         React.useCallback(() => {
@@ -70,7 +71,7 @@ export default function CustomHeader({
                         style={styles.headerView}
                     >
                         <View style={styles.firstSection}>
-                            <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{ width: 44, height: 44, borderRadius: 44 / 2, borderColor: '#8C8C8C', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{ width: 44, height: 44, borderRadius: 44 / 2, justifyContent: 'center', alignItems: 'center' }}>
                                 {/* {userInfo?.photo ?
                                     <Image
                                         source={{ uri: userInfo?.photo }}
@@ -82,9 +83,14 @@ export default function CustomHeader({
                                 />
                                 {/* } */}
                             </TouchableOpacity>
-                            <Image
+                            {/* <Image
                                 source={require('../assets/images/icon.png')}
-                                style={{ height: responsiveHeight(5), width: responsiveWidth(35), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
+                                style={{ height: responsiveHeight(3.5), width: responsiveWidth(25), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
+                            /> */}
+                            <Logo
+                                width={responsiveWidth(25)}
+                                height={responsiveHeight(3.5)}
+                            //style={{transform: [{rotate: '-15deg'}]}}
                             />
                         </View>
                         {/* <View style={{ flexDirection: 'row' }}>
@@ -99,7 +105,7 @@ export default function CustomHeader({
                             </TouchableOpacity>
                         </View> */}
                         <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
-                            <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold',marginRight: responsiveWidth(3) }}>Current Availability</Text>
+                            <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold', marginRight: responsiveWidth(3) }}>Current Availability</Text>
                             <Switch
                                 trackColor={{ false: '#767577', true: '#000' }}
                                 thumbColor={isEnabled ? '#fff' : '#000'}
@@ -206,7 +212,7 @@ const styles = StyleSheet.create({
     headerBottomMargin: {
         borderBottomColor: '#FFFFFF',
         borderBottomWidth: StyleSheet.hairlineWidth,
-        elevation:2
+        elevation: 2
     },
     imageStyle: {
         height: 40,
@@ -216,5 +222,5 @@ const styles = StyleSheet.create({
     },
     switchStyle: {
         transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }]  // Adjust scale values as needed
-      }
+    }
 })

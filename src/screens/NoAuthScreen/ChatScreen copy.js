@@ -3,8 +3,8 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Imag
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GreenTick, audiooffIcon, audioonIcon, callIcon, chatImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
-import { GiftedChat, InputToolbar, Bubble, Send } from 'react-native-gifted-chat'
+import { GreenTick, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
+import { GiftedChat, InputToolbar, Bubble, Send, Composer } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as DocumentPicker from 'react-native-document-picker';
 import InChatFileTransfer from '../../components/InChatFileTransfer';
@@ -24,20 +24,26 @@ import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
 import AgoraUIKit, { StreamFallbackOptions, PropsInterface, VideoRenderMode, RenderModeType } from 'agora-rn-uikit';
 // console.log(RenderModeType.RenderModeFit,'kkkkkkkkkkk')
-
-import { ClientRoleType, createAgoraRtcEngine, ChannelProfileType } from 'react-native-agora';
+import {
+  ClientRoleType,
+  createAgoraRtcEngine,
+  IRtcEngine,
+  ChannelProfileType,
+} from 'react-native-agora';
+// Define basic information
 const appId = '975e09acde854ac38b3304da072c111e';
-const channelName = 'testvoice';
-const token = '123456789';
-const uid = Math.random().toString(36).substr(2, 10);
+const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
+const channelName = 'test';
+const uid = 0; // Local user UID, no need to modify
 
 const ChatScreen = ({ navigation, route }) => {
 
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
     appId: '975e09acde854ac38b3304da072c111e',
+    //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
     channel: 'test',
-
+    token: '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==',
   };
   const rtcCallbacks = {
     EndCall: () => {
@@ -146,6 +152,16 @@ const ChatScreen = ({ navigation, route }) => {
           borderRadius: 30,
           borderTopColor: "transparent",
 
+        }}
+      />
+    );
+  };
+  const customRenderComposer = props => {
+    return (
+      <Composer
+        {...props}
+        textInputStyle={{
+          color: '#000', // Change this to your desired text color
         }}
       />
     );
@@ -355,10 +371,10 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   // audio call 
-  const agoraEngineRef = useRef(); // Agora engine instance
-  const [isJoined, setIsJoined] = useState(false); // Indicates if the local user has joined the channel
-  const [remoteUid, setRemoteUid] = useState(0); // Uid of the remote user
-  const [message, setMessage] = useState(''); // Message to the user
+  const agoraEngineRef = useRef(<IRtcEngine></IRtcEngine>); // IRtcEngine instance
+  const [isJoined, setIsJoined] = useState(false); // Whether the local user has joined the channel
+  const [remoteUid, setRemoteUid] = useState(0); // Remote user UID
+  const [message, setMessage] = useState(''); // User prompt message
   const [micOn, setMicOn] = useState(true); // Microphone state
   const [speakerOn, setSpeakerOn] = useState(false); // Loudspeaker state
 
@@ -375,30 +391,34 @@ const ChatScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    // Initialize Agora engine when the app starts
-    setupVoiceSDKEngine();
-  }, []);
+    setupVideoSDKEngine();
+  });
 
-  const setupVoiceSDKEngine = async () => {
+  const setupVideoSDKEngine = async () => {
     try {
-      // use the helper function to get permissions
-      if (Platform.OS === 'android') await getPermission();
+      // Create RtcEngine after checking and obtaining device permissions
+      if (Platform.OS === 'android') {
+        await getPermission();
+      }
       agoraEngineRef.current = createAgoraRtcEngine();
       const agoraEngine = agoraEngineRef.current;
+
+      // Register event callbacks
       agoraEngine.registerEventHandler({
         onJoinChannelSuccess: () => {
-          showMessage('Successfully joined the channel ' + channelName);
+          showMessage('Successfully joined the channel: ' + channelName);
           setIsJoined(true);
         },
         onUserJoined: (_connection, Uid) => {
-          showMessage('Remote user joined with uid ' + Uid);
+          showMessage('Remote user ' + Uid + ' has joined');
           setRemoteUid(Uid);
         },
         onUserOffline: (_connection, Uid) => {
-          showMessage('Remote user left the channel. uid: ' + Uid);
+          showMessage('Remote user ' + Uid + ' has left the channel');
           setRemoteUid(0);
         },
       });
+      // Initialize the engine
       agoraEngine.initialize({
         appId: appId,
       });
@@ -439,32 +459,33 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  // Define the join method called after clicking the join channel button
   const join = async () => {
-    console.log('join')
-    console.log(isJoined, 'isjoind status')
     if (isJoined) {
-      console.log('already joined')
       return;
     }
     try {
+      // Set the channel profile type to communication after joining the channel
       agoraEngineRef.current?.setChannelProfile(
-        ChannelProfileType.ChannelProfileCommunication
+        ChannelProfileType.ChannelProfileCommunication,
       );
+      // Call the joinChannel method to join the channel
       agoraEngineRef.current?.joinChannel(token, channelName, uid, {
+        // Set the user role to broadcaster
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
-      setIsJoined(true);
     } catch (e) {
       console.log(e);
     }
   };
-
+  // Define the leave method called after clicking the leave channel button
   const leave = () => {
     try {
+      // Call the leaveChannel method to leave the channel
       agoraEngineRef.current?.leaveChannel();
       setRemoteUid(0);
       setIsJoined(false);
-      showMessage('You left the channel');
+      showMessage('Left the channel');
     } catch (e) {
       console.log(e);
     }
@@ -649,6 +670,7 @@ const ChatScreen = ({ navigation, route }) => {
           <GiftedChat
             messages={messages}
             renderInputToolbar={props => customtInputToolbar(props)}
+            renderComposer={customRenderComposer}
             renderBubble={renderBubble}
             isTyping
             alwaysShowSend
@@ -660,13 +682,13 @@ const ChatScreen = ({ navigation, route }) => {
             style={styles.messageContainer}
             user={{
               _id: therapistId,
-              avatar: { uri: therapistProfilePic },
+              //avatar: { uri: therapistProfilePic },
             }}
           //user={user}
           />
           : activeTab == 'audio' ?
             <>
-              <View style={styles.btnContainer}>
+              {/* <View style={styles.btnContainer}>
                 <Text onPress={join} style={{ color: '#000' }}>
                   Join
                 </Text>
@@ -682,25 +704,29 @@ const ChatScreen = ({ navigation, route }) => {
               </View>
               <ScrollView
                 style={styles.scroll}
-                contentContainerStyle={styles.scrollContainer}
-              >
+                contentContainerStyle={styles.scrollContainer}>
                 {isJoined ? (
-                  <Text style={{ color: '#000' }}>Local user uid: {uid}</Text>
+                  <Text style={{color:'#000'}}>Local user UID: {uid}</Text>
                 ) : (
-                  <Text style={{ color: '#000' }}>Join a channel</Text>
+                  <Text style={{color:'#000'}}>Join a channel</Text>
                 )}
                 {isJoined && remoteUid !== 0 ? (
-                  <Text style={{ color: '#000' }}>Remote user uid: {remoteUid}</Text>
+                  <Text style={{color:'#000'}}>Remote user UID: {remoteUid}</Text>
                 ) : (
-                  <Text style={{ color: '#000' }}>Waiting for a remote user to join</Text>
+                  <Text style={{color:'#000'}}>Waiting for remote users to join</Text>
                 )}
-                <Text style={{ color: '#000' }}>{message}</Text>
-              </ScrollView>
-              {/* <ImageBackground source={{ uri: route?.params?.details?.patient?.profile_pic }} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{color:'#000'}}>{message}</Text>
+              </ScrollView> */}
+              <ImageBackground source={audioBgImg} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
+                {route?.params?.details?.patient?.profile_pic?
                 <Image
                   source={{ uri: route?.params?.details?.patient?.profile_pic }}
                   style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
-                />
+                />:
+                <Image
+                  source={defaultUserImg}
+                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                />}
                 <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>{route?.params?.details?.patient?.name}</Text>
                 <View style={{ backgroundColor: 'rgba(52, 52, 52, 0.8)', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
                   {micOn ?
@@ -730,7 +756,7 @@ const ChatScreen = ({ navigation, route }) => {
                       />
                     </TouchableOpacity>}
                 </View>
-              </ImageBackground> */}
+              </ImageBackground>
             </>
 
             :
@@ -743,6 +769,7 @@ const ChatScreen = ({ navigation, route }) => {
                       styleProps={customPropsStyle} agoraConfig={agoraConfig}
                     />
                   </View>
+
                 </SafeAreaView>
               ) : (
                 <Text onPress={() => {
