@@ -553,6 +553,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
+        setIsLoading(true)
         console.log(day, 'llllllllll')
         const option = {
             "day": day,
