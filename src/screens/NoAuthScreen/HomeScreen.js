@@ -32,7 +32,6 @@ import { API_URL } from '@env'
 import { useFocusEffect } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import messaging from '@react-native-firebase/messaging';
-import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 
