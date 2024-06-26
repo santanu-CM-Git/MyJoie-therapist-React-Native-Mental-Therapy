@@ -572,6 +572,8 @@ const ChatScreen = ({ navigation, route }) => {
     // other configurations
   };
 
+  
+
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
@@ -718,15 +720,15 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={{color:'#000'}}>{message}</Text>
               </ScrollView> */}
               <ImageBackground source={audioBgImg} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
-                {route?.params?.details?.patient?.profile_pic?
-                <Image
-                  source={{ uri: route?.params?.details?.patient?.profile_pic }}
-                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
-                />:
-                <Image
-                  source={defaultUserImg}
-                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
-                />}
+                {route?.params?.details?.patient?.profile_pic ?
+                  <Image
+                    source={{ uri: route?.params?.details?.patient?.profile_pic }}
+                    style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                  /> :
+                  <Image
+                    source={defaultUserImg}
+                    style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                  />}
                 <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>{route?.params?.details?.patient?.name}</Text>
                 <View style={{ backgroundColor: 'rgba(52, 52, 52, 0.8)', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
                   {micOn ?
@@ -795,71 +797,37 @@ const ChatScreen = ({ navigation, route }) => {
         <View style={{ height: '50%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
           <View style={{ padding: 20 }}>
             <ScrollView horizontal={true}>
-              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
+              <View style={styles.sessionHistoryView}>
                 <View style={{ padding: 15 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={styles.sessionHistoryInfo}>
+                    <Text style={styles.sessionHistoryInfoName}>Rohit Sharma</Text>
+                    <View style={styles.sessionHistoryImgView}>
                       <Image
                         source={GreenTick}
-                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                        style={styles.sessionHistoryImg}
                       />
-                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
+                      <Text style={styles.sessionHistoryStatus}>Completed</Text>
                     </View>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
+                  <View style={styles.sessionHistorySection1}>
+                    <Text style={styles.sessionHistorySection1Header}>Order ID :</Text>
+                    <Text style={styles.sessionHistorySection1Value}>1923659</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
+                  <View style={styles.sessionHistorySection1}>
+                    <Text style={styles.sessionHistorySection1Header}>Date :</Text>
+                    <Text style={styles.sessionHistorySection1Value}>24-02-2024, 09:30 PM</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
+                  <View style={styles.sessionHistorySection1}>
+                    <Text style={styles.sessionHistorySection1Header}>Appointment Time :</Text>
+                    <Text style={styles.sessionHistorySection1Value}>60 Min</Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
-                <View style={{ padding: 15 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Image
-                        source={GreenTick}
-                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                      />
-                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
+                  <View style={styles.sessionHistorySection1}>
+                    <Text style={styles.sessionHistorySection1Header}>Rate :</Text>
+                    <Text style={styles.sessionHistorySection1Value}>Rs 1100 for 30 Min</Text>
                   </View>
                   <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
+                    <Text style={styles.sessionHistorySection1Header}>Session Summary :</Text>
+                    <Text style={[styles.sessionHistorySection1Value,{marginTop:5}]}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
                   </View>
                 </View>
               </View>
@@ -964,5 +932,56 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Adjust the radius as needed
     overflow: 'hidden', // Ensure child components respect the borderRadius
   },
+  //modal
+  sessionHistoryView: {
+    width: responsiveWidth(89),
+    borderRadius: 15,
+    borderColor: '#E3E3E3',
+    borderWidth: 1,
+    marginTop: responsiveHeight(2),
+    marginRight: 5
+  },
+  sessionHistoryInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  sessionHistoryInfoName: {
+    color: '#2D2D2D',
+    fontSize: responsiveFontSize(2),
+    fontFamily: 'DMSans-Bold'
+  },
+  sessionHistoryImgView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  sessionHistoryImg: {
+    height: 20,
+    width: 20,
+    resizeMode: 'contain'
+  },
+  sessionHistoryStatus: {
+    color: '#444343',
+    fontSize: responsiveFontSize(1.7),
+    fontFamily: 'DMSans-SemiBold',
+    marginLeft: responsiveWidth(1)
+  },
+  sessionHistorySection1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: responsiveHeight(1.5)
+  },
+  sessionHistorySection1Header: {
+    color: '#444343',
+    fontFamily: 'DMSans-Medium',
+    fontSize: responsiveFontSize(1.7),
+    marginRight: responsiveWidth(2)
+  },
+  sessionHistorySection1Value: {
+    color: '#746868',
+    fontFamily: 'DMSans-Medium',
+    fontSize: responsiveFontSize(1.7)
+  }
 
 });

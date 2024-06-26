@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView, PermissionsAndroid } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -12,6 +12,8 @@ import InChatViewFile from '../../components/InChatViewFile';
 // import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 // import { getDatabase, ref, onValue, push } from '@react-native-firebase/database';
 // import * as firebase from "firebase/app"
+import { API_URL } from '@env'
+import moment from 'moment-timezone';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
@@ -30,6 +32,8 @@ import {
   IRtcEngine,
   ChannelProfileType,
 } from 'react-native-agora';
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 // Define basic information
 const appId = '975e09acde854ac38b3304da072c111e';
 const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
@@ -52,6 +56,7 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
   const [messages, setMessages] = useState([])
   const [therapistId, setTherapistId] = useState(route?.params?.details?.therapist?.id)
   const [therapistProfilePic, setTherapistProfilePic] = useState(route?.params?.details?.therapist?.profile_pic)
@@ -572,6 +577,85 @@ const ChatScreen = ({ navigation, route }) => {
     // other configurations
   };
 
+  const fetchSessionHistory = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        //setIsLoading(false);
+        return;
+      }
+      const option = {
+        "patient_id": patientId
+      }
+      const response = await axios.post(`${API_URL}/therapist/patient-previous-session-check`, option, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${userToken}`,
+        },
+      });
+
+      const { data } = response.data;
+      console.log(JSON.stringify(data), 'fetch session history');
+      setTherapistSessionHistory(data)
+
+    } catch (error) {
+      console.log(`Fetch upcoming slot error: ${error}`);
+      Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    } finally {
+      //setIsLoading(false);
+    }
+  }
+
+  const renderSessionHistory = ({ item }) => (
+    <View style={styles.sessionHistoryView}>
+      <View style={{ padding: 15 }}>
+        <View style={styles.sessionHistoryInfo}>
+          <Text style={styles.sessionHistoryInfoName}>{item?.patient?.name}</Text>
+          <View style={styles.sessionHistoryImgView}>
+            <Image
+              source={GreenTick}
+              style={styles.sessionHistoryImg}
+            />
+            <Text style={styles.sessionHistoryStatus}>Completed</Text>
+          </View>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Order ID :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{item?.order_id}</Text>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Date :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{moment(item?.date).format('ddd, D MMMM')}, {moment(item?.start_time, 'HH:mm:ss').format('h:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('h:mm A')}</Text>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Appointment Time :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{moment(item?.end_time, 'HH:mm:ss').diff(moment(item?.start_time, 'HH:mm:ss'), 'minutes')} Min</Text>
+        </View>
+        {/* <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Rate :</Text>
+          <Text style={styles.sessionHistorySection1Value}>Rs {item?.therapist_details?.rate} for 30 Min</Text>
+        </View> */}
+        <View style={{ marginTop: responsiveHeight(1.5) }}>
+          <Text style={styles.sessionHistorySection1Header}>Session Summary :</Text>
+          <Text style={[styles.sessionHistorySection1Value, { marginTop: 5 }]}>{item?.prescription_content}</Text>
+        </View>
+      </View>
+    </View>
+
+  )
+
+  useEffect(() => {
+    fetchSessionHistory()
+  }, [])
+
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
@@ -718,15 +802,15 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={{color:'#000'}}>{message}</Text>
               </ScrollView> */}
               <ImageBackground source={audioBgImg} blurRadius={10} style={{ width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' }}>
-                {route?.params?.details?.patient?.profile_pic?
-                <Image
-                  source={{ uri: route?.params?.details?.patient?.profile_pic }}
-                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
-                />:
-                <Image
-                  source={defaultUserImg}
-                  style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
-                />}
+                {route?.params?.details?.patient?.profile_pic ?
+                  <Image
+                    source={{ uri: route?.params?.details?.patient?.profile_pic }}
+                    style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                  /> :
+                  <Image
+                    source={defaultUserImg}
+                    style={{ height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) }}
+                  />}
                 <Text style={{ color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) }}>{route?.params?.details?.patient?.name}</Text>
                 <View style={{ backgroundColor: 'rgba(52, 52, 52, 0.8)', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
                   {micOn ?
@@ -792,78 +876,21 @@ const ChatScreen = ({ navigation, route }) => {
           <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
         </View>
         {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
-        <View style={{ height: '50%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
-          <View style={{ padding: 20 }}>
-            <ScrollView horizontal={true}>
-              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
-                <View style={{ padding: 15 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Image
-                        source={GreenTick}
-                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                      />
-                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={{ width: responsiveWidth(89), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2), marginRight: 5 }}>
-                <View style={{ padding: 15 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text style={{ color: '#2D2D2D', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Rohit Sharma</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                      <Image
-                        source={GreenTick}
-                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                      />
-                      <Text style={{ color: '#444343', fontSize: responsiveFontSize(1.7), fontFamily: 'DMSans-SemiBold', marginLeft: responsiveWidth(1) }}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Order ID :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>1923659</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Date :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Appointment Time :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>60 Min</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Rate :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(2) }}>Session Summary :</Text>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
+        <View style={{ height: '52%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+          <View style={{ paddingVertical: 10 }}>
+            <FlatList
+              data={therapistSessionHistory}
+              renderItem={renderSessionHistory}
+              keyExtractor={(item) => item.id.toString()}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              initialNumToRender={10}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              getItemLayout={(therapistSessionHistory, index) => (
+                { length: 50, offset: 50 * index, index }
+              )}
+            />
 
           </View>
         </View>
@@ -964,5 +991,56 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Adjust the radius as needed
     overflow: 'hidden', // Ensure child components respect the borderRadius
   },
+  //modal
+  sessionHistoryView: {
+    width: responsiveWidth(92),
+    borderRadius: 15,
+    borderColor: '#E3E3E3',
+    borderWidth: 1,
+    marginTop: responsiveHeight(2),
+    marginHorizontal: responsiveWidth(4)
+  },
+  sessionHistoryInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  sessionHistoryInfoName: {
+    color: '#2D2D2D',
+    fontSize: responsiveFontSize(2),
+    fontFamily: 'DMSans-Bold'
+  },
+  sessionHistoryImgView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  sessionHistoryImg: {
+    height: 20,
+    width: 20,
+    resizeMode: 'contain'
+  },
+  sessionHistoryStatus: {
+    color: '#444343',
+    fontSize: responsiveFontSize(1.7),
+    fontFamily: 'DMSans-SemiBold',
+    marginLeft: responsiveWidth(1)
+  },
+  sessionHistorySection1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: responsiveHeight(1.5)
+  },
+  sessionHistorySection1Header: {
+    color: '#444343',
+    fontFamily: 'DMSans-Medium',
+    fontSize: responsiveFontSize(1.7),
+    marginRight: responsiveWidth(2)
+  },
+  sessionHistorySection1Value: {
+    color: '#746868',
+    fontFamily: 'DMSans-Medium',
+    fontSize: responsiveFontSize(1.7)
+  }
 
 });
