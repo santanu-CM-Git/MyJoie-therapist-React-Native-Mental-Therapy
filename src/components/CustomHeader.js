@@ -34,15 +34,75 @@ export default function CustomHeader({
     const navigation = useNavigation();
     const [userInfo, setuserInfo] = useState([])
     const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-   
 
+    const toggleSwitch = async () => {
+        const newStatus = !isEnabled;
+    
+        // Optimistically update the switch UI
+        setIsEnabled(newStatus);
+    
+        const status = newStatus ? 'on' : 'off';
+    
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (!userToken) {
+                console.log('No user token found');
+                return;
+            }
+            const option = { status };
+            console.log(userToken, 'usertoken');
+            console.log(option);
+            const response = await axios.post(`${API_URL}/therapist/instant-connect`, option, {
+                headers: {
+                    "Authorization": `Bearer ${userToken}`,
+                    "Content-Type": 'application/json'
+                }
+            });
+    
+            if (response.data.response !== true) {
+                // If the response is not successful, revert the switch state
+                setIsEnabled(prevState => !prevState);
+            }
+        } catch (error) {
+            console.log(`Profile error: ${error}`);
+            // Revert the switch state in case of an error
+            setIsEnabled(prevState => !prevState);
+        }
+    };
+
+    const fetchProfileDetails = async () => {
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (!userToken) {
+                console.log('No user token found');
+                return;
+            }
+            console.log(userToken, 'usertoken');
+            const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
+                headers: {
+                    "Authorization": `Bearer ${userToken}`,
+                    "Content-Type": 'application/json'
+                }
+            });
+            const userInfo = response.data.data;
+            console.log(userInfo, 'user data from header');
+            setuserInfo(userInfo);
+            if (userInfo.instant_availability === 'off') {
+                setIsEnabled(false)
+            } else if (userInfo.instant_availability === 'on') {
+                setIsEnabled(true)
+            }
+
+        } catch (error) {
+            console.log(`Profile error ${error}`);
+        }
+    };
     useEffect(() => {
-       
+        fetchProfileDetails()
     }, [])
     useFocusEffect(
         React.useCallback(() => {
-           
+            fetchProfileDetails()
         }, [])
     )
     return (
@@ -76,17 +136,6 @@ export default function CustomHeader({
                             //style={{transform: [{rotate: '-15deg'}]}}
                             />
                         </View>
-                        {/* <View style={{ flexDirection: 'row' }}>
-                            <TouchableOpacity onPress={onPress}>
-                                <Ionicons name="search-outline" size={28} color="#F4F4F4" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={onPress}>
-                                <Ionicons name="notifications-outline" size={28} color="#F4F4F4" />
-                                <View style={styles.notificationdotView}>
-                                    <Text style={styles.notificationdot}>{'\u2B24'}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View> */}
                         <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
                             <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold', marginRight: responsiveWidth(3) }}>Current Availability</Text>
                             <Switch

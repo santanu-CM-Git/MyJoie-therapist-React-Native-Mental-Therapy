@@ -15,7 +15,7 @@ import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimen
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { AuthContext } from '../context/AuthContext';
-import { useFocusEffect,useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { API_URL } from '@env'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from 'axios';
@@ -28,25 +28,28 @@ const CustomDrawer = props => {
   const [userInfo, setuserInfo] = useState([])
   const navigation = useNavigation();
 
-  const fetchProfileDetails = () => {
-    AsyncStorage.getItem('userToken', (err, usertoken) => {
-      console.log(usertoken,'usertoken')
-      axios.post(`${API_URL}/therapist/profile`,{}, {
+  const fetchProfileDetails = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        return;
+      }
+      console.log(userToken, 'usertoken');
+      const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
         headers: {
-          "Authorization": `Bearer ${usertoken}`,
+          "Authorization": `Bearer ${userToken}`,
           "Content-Type": 'application/json'
-        },
-      })
-        .then(res => {
-          let userInfo = res.data.data;
-          console.log(userInfo, 'user data from contact informmation')
-          setuserInfo(userInfo)
-        })
-        .catch(e => {
-          console.log(`Profile error ${e}`)
-        });
-    });
-  }
+        }
+      });
+      const userInfo = response.data.data;
+      console.log(userInfo, 'user data from Drawer');
+      setuserInfo(userInfo);
+
+    } catch (error) {
+      console.log(`Profile error ${error}`);
+    }
+  };
   useFocusEffect(
     React.useCallback(() => {
       fetchProfileDetails()
@@ -57,7 +60,7 @@ const CustomDrawer = props => {
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={{ backgroundColor: '#FFF' }}>
-        <View style={{ backgroundColor: '#FFF', height: responsiveHeight(20),marginLeft:responsiveWidth(5), justifyContent: 'center' }}>
+        <View style={{ backgroundColor: '#FFF', height: responsiveHeight(20), marginLeft: responsiveWidth(5), justifyContent: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {userInfo?.profilePic ?
               <Image
@@ -80,15 +83,15 @@ const CustomDrawer = props => {
                 }}>
                 {userInfo.name}
               </Text>
-              <TouchableOpacity onPress={()=> navigation.navigate('ProfileScreen')}>
-              <Text
-                style={{
-                  color: '#949494',
-                  fontFamily: 'Roboto-Regular',
-                  marginRight: 5,
-                }}>
-                Update Profile
-              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+                <Text
+                  style={{
+                    color: '#949494',
+                    fontFamily: 'Roboto-Regular',
+                    marginRight: 5,
+                  }}>
+                  Update Profile
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

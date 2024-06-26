@@ -172,106 +172,161 @@ const ProfileScreen = ({ navigation, route }) => {
     setCancelCheque(null)
   }
 
-  const fetchUserData = () => {
-    AsyncStorage.getItem('userToken', (err, usertoken) => {
-      console.log(usertoken, 'usertoken')
-      axios.post(`${API_URL}/therapist/profile`, {}, {
+  // const fetchUserData = () => {
+  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
+  //     console.log(usertoken, 'usertoken')
+  //     axios.post(`${API_URL}/therapist/profile`, {}, {
+  //       headers: {
+  //         "Authorization": `Bearer ${usertoken}`,
+  //         "Content-Type": 'application/json'
+  //       },
+  //     })
+  //       .then(res => {
+  //         let userInfo = res.data.data;
+  //         console.log(userInfo, 'user data from profile api ')
+  //         setFirstname(userInfo?.name)
+  //         setEmail(userInfo?.email)
+  //         setPhoneno(userInfo?.mobile)
+  //         setdob(userInfo?.dob)
+  //         setGender(userInfo?.gender)
+  //         setPanno(userInfo?.therapist_details1?.pan_no)
+  //         setAadhar(userInfo?.therapist_details1?.addhar_no)
+  //         const type_therapis = userInfo?.therapist_type;
+  //         const therapyTypeIds = type_therapis.map(item => item.therapy_type_id);
+  //         console.log(therapyTypeIds)
+  //         setSelectedItemsType(therapyTypeIds)
+  //         const language = userInfo?.therapist_languages;
+  //         const languageIds = language.map(item => item.language_id);
+  //         console.log(languageIds)
+  //         setSelectedItemsLanguage(languageIds)
+  //         const qualification = userInfo?.therapist_qualification;
+  //         const qualificationIds = qualification.map(item => item.qualification_id);
+  //         console.log(qualificationIds)
+  //         setSelectedItems(qualificationIds)
+  //         setCity(userInfo?.city)
+  //         setState(userInfo?.state)
+  //         setAccountno(userInfo?.therapist_details1?.bank_ac_no)
+  //         const experience = userInfo?.therapist_details1?.experience;
+  //         const parts = experience.toString().split('.');
+  //         if (experience) {
+  //           setYearValue(parts[0])
+  //           setMonthValue(parts[1])
+  //         } else {
+  //           setYearValue(null)
+  //           setMonthValue(null)
+  //         }
+  //         setAllDocument(userInfo?.therapist_documents)
+  //         setPickedDocument(userInfo?.profile_pic)
+  //         setIsLoading(false)
+  //       })
+  //       .catch(e => {
+  //         console.log(`Profile error ${e}`)
+  //         setIsLoading(false)
+  //       });
+  //   });
+  // }
+  const fetchUserData = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log(userToken, 'usertoken');
+
+      const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
         headers: {
-          "Authorization": `Bearer ${usertoken}`,
+          "Authorization": `Bearer ${userToken}`,
+          "Content-Type": 'application/json'
+        }
+      });
+
+      const userInfo = response.data.data;
+      console.log(userInfo, 'user data from profile api ');
+
+      setFirstname(userInfo?.name || '');
+      setEmail(userInfo?.email || '');
+      setPhoneno(userInfo?.mobile || '');
+      setdob(userInfo?.dob || '');
+      setGender(userInfo?.gender || '');
+      setPanno(userInfo?.therapist_details1?.pan_no || '');
+      setAadhar(userInfo?.therapist_details1?.addhar_no || '');
+
+      const therapyTypeIds = userInfo?.therapist_type.map(item => item.therapy_type_id) || [];
+      setSelectedItemsType(therapyTypeIds);
+
+      const languageIds = userInfo?.therapist_languages.map(item => item.language_id) || [];
+      setSelectedItemsLanguage(languageIds);
+
+      const qualificationIds = userInfo?.therapist_qualification.map(item => item.qualification_id) || [];
+      setSelectedItems(qualificationIds);
+
+      setCity(userInfo?.city || '');
+      setState(userInfo?.state || '');
+      setAccountno(userInfo?.therapist_details1?.bank_ac_no || '');
+
+      const experience = userInfo?.therapist_details1?.experience;
+      const parts = experience.toString().split('.');
+      if (experience) {
+        setYearValue(parts[0])
+        setMonthValue(parts[1])
+      } else {
+        setYearValue(null)
+        setMonthValue(null)
+      }
+
+      setAllDocument(userInfo?.therapist_documents || []);
+      setPickedDocument(userInfo?.profile_pic || null);
+
+      setIsLoading(false);
+
+    } catch (error) {
+      console.log(`Profile error: ${error}`);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchLanguage = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/languages`, {
+        headers: {
           "Content-Type": 'application/json'
         },
-      })
-        .then(res => {
-          let userInfo = res.data.data;
-          console.log(userInfo, 'user data from profile api ')
-          setFirstname(userInfo?.name)
-          setEmail(userInfo?.email)
-          setPhoneno(userInfo?.mobile)
-          setdob(userInfo?.dob)
-          setGender(userInfo?.gender)
-          setPanno(userInfo?.therapist_details1?.pan_no)
-          setAadhar(userInfo?.therapist_details1?.addhar_no)
-          const type_therapis = userInfo?.therapist_type;
-          const therapyTypeIds = type_therapis.map(item => item.therapy_type_id);
-          console.log(therapyTypeIds)
-          setSelectedItemsType(therapyTypeIds)
-          const language = userInfo?.therapist_languages;
-          const languageIds = language.map(item => item.language_id);
-          console.log(languageIds)
-          setSelectedItemsLanguage(languageIds)
-          const qualification = userInfo?.therapist_qualification;
-          const qualificationIds = qualification.map(item => item.qualification_id);
-          console.log(qualificationIds)
-          setSelectedItems(qualificationIds)
-          setCity(userInfo?.city)
-          setState(userInfo?.state)
-          setAccountno(userInfo?.therapist_details1?.bank_ac_no)
-          const experience = userInfo?.therapist_details1?.experience;
-          const parts = experience.toString().split('.');
-          if (experience) {
-            setYearValue(parts[0])
-            setMonthValue(parts[1])
-          } else {
-            setYearValue(null)
-            setMonthValue(null)
-          }
-          setAllDocument(userInfo?.therapist_documents)
-          setPickedDocument(userInfo?.profile_pic)
-          setIsLoading(false)
-        })
-        .catch(e => {
-          console.log(`Profile error ${e}`)
-          setIsLoading(false)
-        });
-    });
-  }
-
-  const fetchLanguage = () => {
-    axios.get(`${API_URL}/languages`, {
-      headers: {
-        "Content-Type": 'application/json'
-      },
-    })
-      .then(res => {
-        let languageInfo = res.data.data;
-        //console.log(languageInfo, 'bbbbbbb')
-        setqualificationitemsLanguage(languageInfo)
-        //setIsLoading(false);
-      })
-      .catch(e => {
-        console.log(`Language fetch error ${e}`)
       });
-  }
-  const fetchQualification = () => {
-    axios.get(`${API_URL}/qualifications`, {
-      headers: {
-        "Content-Type": 'application/json'
-      },
-    })
-      .then(res => {
-        let qualificationInfo = res.data.data;
-        setqualificationitems(qualificationInfo)
-        //setIsLoading(false);
-      })
-      .catch(e => {
-        console.log(`qualification fetch error ${e}`)
+      const languageInfo = response.data.data;
+      setqualificationitemsLanguage(languageInfo);
+    } catch (error) {
+      console.log(`Language fetch error: ${error}`);
+    }
+  };
+  const fetchQualification = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/qualifications`, {
+        headers: {
+          "Content-Type": 'application/json'
+        },
       });
-  }
-  const fetchTherapyType = () => {
-    axios.get(`${API_URL}/therapy-type`, {
-      headers: {
-        "Content-Type": 'application/json'
-      },
-    })
-      .then(res => {
-        let therapyTypeInfo = res.data.data;
-        setitemsType(therapyTypeInfo)
-        //setIsLoading(false);
-      })
-      .catch(e => {
-        console.log(`therapytype fetch error ${e}`)
+      const qualificationInfo = response.data.data;
+      setqualificationitems(qualificationInfo);
+    } catch (error) {
+      console.log(`Qualification fetch error: ${error}`);
+    }
+  };
+  const fetchTherapyType = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/therapy-type`, {
+        headers: {
+          "Content-Type": 'application/json'
+        },
       });
-  }
+      const therapyTypeInfo = response.data.data;
+      setitemsType(therapyTypeInfo);
+    } catch (error) {
+      console.log(`Therapy type fetch error: ${error}`);
+    }
+  };
 
   useEffect(() => {
     fetchLanguage();

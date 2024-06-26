@@ -157,74 +157,146 @@ export default function HomeScreen({ navigation }) {
     toggleCalendarModal()
   }
 
-  const fetchUpcomingSlot = () => {
-    AsyncStorage.getItem('userToken', (err, usertoken) => {
-      axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
+  // const fetchUpcomingSlot = () => {
+  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
+  //     axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         "Authorization": 'Bearer ' + usertoken,
+  //         //'Content-Type': 'multipart/form-data',
+  //       },
+  //     })
+  //       .then(res => {
+  //         console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+  //         if (res.data.response == true) {
+  //           const sortedData = res.data.data.sort((a, b) => {
+  //             const dateA = new Date(a.date);
+  //             const dateB = new Date(b.date);
+  //             if (dateA < dateB) return -1;
+  //             if (dateA > dateB) return 1;
+
+  //             const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+  //             const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+  //             return timeA - timeB;
+  //           });
+  //           console.log(sortedData, 'date wise sort data')
+  //           console.log(sortedData[0], 'first booking data')
+  //           setSortData(sortedData[0])
+
+  //           // Group by date
+  //           const groupedData = sortedData.reduce((acc, slot) => {
+  //             const date = moment(slot.date).format('DD-MM-YYYY');
+  //             if (!acc[date]) {
+  //               acc[date] = [];
+  //             }
+  //             acc[date].push(slot);
+  //             return acc;
+  //           }, {});
+
+  //           console.log(groupedData, 'grouped data')
+  //           setGroupedSlots(groupedData);
+  //           setIsLoading(false);
+
+  //         } else {
+  //           console.log('not okk')
+  //           setIsLoading(false)
+  //           Alert.alert('Oops..', "Something went wrong", [
+  //             {
+  //               text: 'Cancel',
+  //               onPress: () => console.log('Cancel Pressed'),
+  //               style: 'cancel',
+  //             },
+  //             { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //           ]);
+  //         }
+  //       })
+  //       .catch(e => {
+  //         setIsLoading(false)
+  //         console.log(`user register error ${e}`)
+  //         console.log(e.response)
+  //         Alert.alert('Oops..', e.response?.data?.message, [
+  //           {
+  //             text: 'Cancel',
+  //             onPress: () => console.log('Cancel Pressed'),
+  //             style: 'cancel',
+  //           },
+  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //         ]);
+  //       });
+  //   });
+  // }
+  const fetchUpcomingSlot = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
         headers: {
           'Accept': 'application/json',
-          "Authorization": 'Bearer ' + usertoken,
-          //'Content-Type': 'multipart/form-data',
+          "Authorization": `Bearer ${userToken}`,
         },
-      })
-        .then(res => {
-          console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
-          if (res.data.response == true) {
-            const sortedData = res.data.data.sort((a, b) => {
-              const dateA = new Date(a.date);
-              const dateB = new Date(b.date);
-              if (dateA < dateB) return -1;
-              if (dateA > dateB) return 1;
+      });
 
-              const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
-              const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
-              return timeA - timeB;
-            });
-            console.log(sortedData, 'date wise sort data')
-            console.log(sortedData[0], 'first booking data')
-            setSortData(sortedData[0])
+      const { data } = response.data;
+      console.log(JSON.stringify(data), 'fetch upcoming slot');
 
-            // Group by date
-            const groupedData = sortedData.reduce((acc, slot) => {
-              const date = moment(slot.date).format('DD-MM-YYYY');
-              if (!acc[date]) {
-                acc[date] = [];
-              }
-              acc[date].push(slot);
-              return acc;
-            }, {});
+      if (response.data.response) {
+        const sortedData = data.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          if (dateA < dateB) return -1;
+          if (dateA > dateB) return 1;
 
-            console.log(groupedData, 'grouped data')
-            setGroupedSlots(groupedData);
-            setIsLoading(false);
-
-          } else {
-            console.log('not okk')
-            setIsLoading(false)
-            Alert.alert('Oops..', "Something went wrong", [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              { text: 'OK', onPress: () => console.log('OK Pressed') },
-            ]);
-          }
-        })
-        .catch(e => {
-          setIsLoading(false)
-          console.log(`user register error ${e}`)
-          console.log(e.response)
-          Alert.alert('Oops..', e.response?.data?.message, [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ]);
+          const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+          const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+          return timeA - timeB;
         });
-    });
-  }
+
+        console.log(sortedData, 'date wise sort data');
+        console.log(sortedData[0], 'first booking data');
+        setSortData(sortedData[0]);
+
+        // Group by date
+        const groupedData = sortedData.reduce((acc, slot) => {
+          const date = moment(slot.date).format('DD-MM-YYYY');
+          if (!acc[date]) {
+            acc[date] = [];
+          }
+          acc[date].push(slot);
+          return acc;
+        }, {});
+
+        console.log(groupedData, 'grouped data');
+        setGroupedSlots(groupedData);
+      } else {
+        console.log('Response not OK');
+        Alert.alert('Oops..', "Something went wrong", [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
+      }
+    } catch (error) {
+      console.log(`Fetch upcoming slot error: ${error}`);
+      Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const formatISTTime = (time) => {
     return moment(time, 'HH:mm:ss').format('hh:mm A');
   };
