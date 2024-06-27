@@ -5,18 +5,18 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import { API_URL } from '@env';
 import Loader from '../../utils/Loader';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import InputField from '../../components/InputField';
 import CustomButton from '../../components/CustomButton';
-import { GreenTick, YellowTck, RedCross } from '../../utils/Images';
+import { GreenTick, RedCross, YellowTck } from '../../utils/Images';
+import CustomHeader from '../../components/CustomHeader';
 
 const SessionHistory = ({ navigation }) => {
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([]);
-    //const [perPage, setPerPage] = useState(10); // Adjust per page as needed
+    const [perPage, setPerPage] = useState(10);
     const [pageno, setPageno] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -39,16 +39,17 @@ const SessionHistory = ({ navigation }) => {
             }
             const response = await axios.post(`${API_URL}/therapist/therapist-all-session`,{}, {
                 params: {
-                    page: pageno,
-                    //per_page: perPage
+                    // per_page: perPage,
+                    page: pageno
                 },
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${userToken}`,
                 },
             });
-    
-            const responseData = response.data.data; // Assuming your data is nested under `data` key
+
+            const responseData = response.data.data.data; // Assuming your data is nested under `data` key
+            console.log(responseData,'responseDataresponseDataresponseDataresponseData')
             setTherapistSessionHistory(prevData => [...prevData, ...responseData]);
         } catch (error) {
             console.log(`Fetch session history error: ${error}`);
@@ -64,19 +65,26 @@ const SessionHistory = ({ navigation }) => {
             setLoading(false);
         }
     };
-
     useEffect(() => {
         fetchSessionHistory();
     }, []);
 
+    useEffect(() => {
+        fetchSessionHistory();
+    }, [pageno]);
+
     useFocusEffect(
         React.useCallback(() => {
+            setTherapistSessionHistory([]);
+            setPageno(1);
             fetchSessionHistory();
-        }, [pageno])
+        }, [])
     );
 
     const handleLoadMore = () => {
-        setPageno(prevPage => prevPage + 1);
+        if (!loading) {
+            setPageno(prevPage => prevPage + 1);
+        }
     };
 
     const renderFooter = () => {
@@ -99,7 +107,7 @@ const SessionHistory = ({ navigation }) => {
                                 item?.status === 'completed' ? GreenTick :
                                     item?.status === 'scheduled' ? YellowTck :
                                         item?.status === 'cancel' ? RedCross :
-                                            null
+                                            null // You can set a default image or handle the null case appropriately
                             }
                             style={styles.iconstyle}
                         />
@@ -141,19 +149,13 @@ const SessionHistory = ({ navigation }) => {
         </TouchableOpacity>
     );
 
-    const submitForm = async () => {
-        // Implement your form submission logic here
-        console.log('Submitting form...');
-        // Close the modal after submission
-        setModalVisible(false);
-    };
-
     if (isLoading) {
         return <Loader />;
     }
 
     return (
         <SafeAreaView style={styles.Container}>
+             <CustomHeader commingFrom={'Session History'} onPress={() => navigation.goBack()} title={'Session History'} />
             <View style={styles.wrapper}>
                 <FlatList
                     data={therapistSessionHistory}
@@ -181,7 +183,7 @@ const SessionHistory = ({ navigation }) => {
                         inputType={'address'}
                         onChangeText={(text) => console.log(text)} // Change as needed
                     />
-                    <CustomButton label={"Upload"} onPress={submitForm} />
+                    <CustomButton label={"Upload"} onPress={() => setModalVisible(false)} />
                 </View>
             </Modal>
         </SafeAreaView>

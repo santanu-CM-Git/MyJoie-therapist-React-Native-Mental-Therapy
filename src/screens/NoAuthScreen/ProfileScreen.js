@@ -546,7 +546,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   onChangeInput={(text) => console.log(text)}
                   altFontFamily="DMSans-Regular"
                   tagRemoveIconColor="#000000"
-                  tagBorderColor="#87ADA8"
+                  tagBorderColor="#417AA4"
                   tagTextColor="#2D2D2D"
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
@@ -556,7 +556,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
                   styleMainWrapper={styles.mainWrapper}
-                  submitButtonColor="#87ADA8"
+                  submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
@@ -585,7 +585,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   onChangeInput={(text) => console.log(text)}
                   altFontFamily="DMSans-Regular"
                   tagRemoveIconColor="#000000"
-                  tagBorderColor="#87ADA8"
+                  tagBorderColor="#417AA4"
                   tagTextColor="#2D2D2D"
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
@@ -595,7 +595,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
                   styleMainWrapper={styles.mainWrapper}
-                  submitButtonColor="#87ADA8"
+                  submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton
@@ -624,7 +624,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   onChangeInput={(text) => console.log(text)}
                   altFontFamily="DMSans-Regular"
                   tagRemoveIconColor="#000000"
-                  tagBorderColor="#87ADA8"
+                  tagBorderColor="#417AA4"
                   tagTextColor="#2D2D2D"
                   selectedItemTextColor="#000"
                   selectedItemIconColor="#000"
@@ -634,7 +634,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   styleDropdownMenu={styles.dropdownMenu}
                   styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
                   styleMainWrapper={styles.mainWrapper}
-                  submitButtonColor="#87ADA8"
+                  submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
                 //hideSubmitButton

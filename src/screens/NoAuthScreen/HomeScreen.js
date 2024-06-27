@@ -682,7 +682,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   earningView: {
-    height: responsiveHeight(15),
+    height: responsiveHeight(13),
     width: '92%',
     backgroundColor: '#F4F5F5',
     marginHorizontal: 15,
@@ -709,11 +709,11 @@ const styles = StyleSheet.create({
     fontSize: responsiveFontSize(2)
   },
   upcomingView: {
-    height: responsiveHeight(20),
+    height: responsiveHeight(18),
     width: '92%',
     backgroundColor: '#FFF',
     marginHorizontal: 15,
-    padding: 20,
+    padding: 15,
     borderRadius: 20,
     marginTop: responsiveHeight(2),
     elevation: 5
