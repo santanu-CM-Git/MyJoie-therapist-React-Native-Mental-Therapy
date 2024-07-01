@@ -56,6 +56,8 @@ export default function HomeScreen({ navigation }) {
   const [groupedSlots, setGroupedSlots] = useState([]);
   const [savePatientDetails, setSavePatientDetails] = useState(null)
   const [modalDetails, setModalDetails] = useState(null)
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [isButtonEnabled, setisButtonEnabled] = useState(null);
 
 
   const getFCMToken = async () => {
@@ -157,74 +159,6 @@ export default function HomeScreen({ navigation }) {
     toggleCalendarModal()
   }
 
-  // const fetchUpcomingSlot = () => {
-  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
-  //     axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         "Authorization": 'Bearer ' + usertoken,
-  //         //'Content-Type': 'multipart/form-data',
-  //       },
-  //     })
-  //       .then(res => {
-  //         console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
-  //         if (res.data.response == true) {
-  //           const sortedData = res.data.data.sort((a, b) => {
-  //             const dateA = new Date(a.date);
-  //             const dateB = new Date(b.date);
-  //             if (dateA < dateB) return -1;
-  //             if (dateA > dateB) return 1;
-
-  //             const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
-  //             const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
-  //             return timeA - timeB;
-  //           });
-  //           console.log(sortedData, 'date wise sort data')
-  //           console.log(sortedData[0], 'first booking data')
-  //           setSortData(sortedData[0])
-
-  //           // Group by date
-  //           const groupedData = sortedData.reduce((acc, slot) => {
-  //             const date = moment(slot.date).format('DD-MM-YYYY');
-  //             if (!acc[date]) {
-  //               acc[date] = [];
-  //             }
-  //             acc[date].push(slot);
-  //             return acc;
-  //           }, {});
-
-  //           console.log(groupedData, 'grouped data')
-  //           setGroupedSlots(groupedData);
-  //           setIsLoading(false);
-
-  //         } else {
-  //           console.log('not okk')
-  //           setIsLoading(false)
-  //           Alert.alert('Oops..', "Something went wrong", [
-  //             {
-  //               text: 'Cancel',
-  //               onPress: () => console.log('Cancel Pressed'),
-  //               style: 'cancel',
-  //             },
-  //             { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //           ]);
-  //         }
-  //       })
-  //       .catch(e => {
-  //         setIsLoading(false)
-  //         console.log(`user register error ${e}`)
-  //         console.log(e.response)
-  //         Alert.alert('Oops..', e.response?.data?.message, [
-  //           {
-  //             text: 'Cancel',
-  //             onPress: () => console.log('Cancel Pressed'),
-  //             style: 'cancel',
-  //           },
-  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //         ]);
-  //       });
-  //   });
-  // }
   const fetchUpcomingSlot = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -259,6 +193,10 @@ export default function HomeScreen({ navigation }) {
         console.log(sortedData, 'date wise sort data');
         console.log(sortedData[0], 'first booking data');
         setSortData(sortedData[0]);
+        const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
+        const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+        const isButtonEnabled = currentDateTime >= twoMinutesBefore;
+        setisButtonEnabled(isButtonEnabled)
 
         // Group by date
         const groupedData = sortedData.reduce((acc, slot) => {
@@ -357,6 +295,63 @@ export default function HomeScreen({ navigation }) {
     });
   }
 
+  const reportBlock = (patientid) => {
+    console.log(JSON.stringify(patientid))
+    const option = {
+      "patient_id": patientid,
+      "reason" : ''
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/report-block`, option, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+          //'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(res => {
+          console.log(JSON.stringify(res.data.data), 'cancel response')
+          if (res.data.response == true) {
+            setIsLoading(false);
+            Toast.show({
+              type: 'success',
+              text1: 'Hello',
+              text2: "Patient successfully blocked.",
+              position: 'top',
+              topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+            toggleModal()
+            fetchUpcomingSlot()
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user register error ${e}`)
+          console.log(e.response)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  }
+
   useEffect(() => {
     //fetchData();
     fetchUpcomingSlot()
@@ -396,9 +391,13 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.userText}> {sortData?.patient?.name}</Text>
                   <Text style={styles.userSubText}> Patient </Text>
                 </View>
-                <TouchableOpacity style={styles.joinButtonView} onPress={() => navigation.navigate('ChatScreen', { details: sortData })}>
+                <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
+                  onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: sortData })}
+                  disabled={!isButtonEnabled}
+                >
                   <Text style={styles.joinButtonText}>Join Now</Text>
                 </TouchableOpacity>
+
               </View>
               <View style={styles.dateTimeView}>
                 <View style={styles.dateView1}>
@@ -437,7 +436,7 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.headerText}>{date}</Text>
                 </View>
                 {groupedSlots[date].map(slot => (
-                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name,pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
                     <View key={slot.id}>
                       <View style={styles.itemnameView}>
                         <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
@@ -501,8 +500,9 @@ export default function HomeScreen({ navigation }) {
                     <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
                       <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => reportBlock(savePatientDetails?.pid)}>
                     <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
-
+                    </TouchableOpacity>
                   </View>
                 </View>
                 : <></>}

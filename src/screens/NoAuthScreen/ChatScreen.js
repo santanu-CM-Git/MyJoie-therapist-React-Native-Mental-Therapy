@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert, BackHandler } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -34,6 +34,7 @@ import {
 } from 'react-native-agora';
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Loader from '../../utils/Loader'
 // Define basic information
 const appId = '975e09acde854ac38b3304da072c111e';
 const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
@@ -70,13 +71,179 @@ const ChatScreen = ({ navigation, route }) => {
   const [fileVisible, setFileVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('chat')
+  const [isLoading, setIsLoading] = useState(true)
+  const [timer, setTimer] = useState(0);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
   useEffect(() => {
-    //receivedMsg()
+    const backAction = () => {
+      // Prevent the default back button action
+      return true;
+    };
+
+    // Add event listener to handle the back button
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    // Clean up the event listener when the component unmounts
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
+    // If timer is 0, return early
+    if (timer === 0) return;
+
+    // Create an interval that decrements the timer value every second
+    const interval = setInterval(() => {
+      setTimer((timer) => timer - 1);
+    }, 1000);
+
+    // Clear the interval if the component is unmounted or timer reaches 0
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  const formatTime = (totalSeconds) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    // Format the time to ensure it always shows two digits for minutes and seconds
+    return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  useEffect(() => {
+    // //receivedMsg()
+    console.log(route?.params?.details, 'details from home page')
+
+    sessionStart()
   }, [])
+
+  const sessionStart = () => {
+    setIsLoading(true)
+    const currentTime = moment().format('HH:mm:ss');
+    const option = {
+      "booked_slot_id": route?.params?.details?.id,
+      "time": currentTime
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/slot-start`, option, {
+        headers: {
+          Accept: 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            const endTime = route?.params?.details?.end_time;
+            // Get the current time using moment
+            const currentTime = moment().format('HH:mm:ss');
+            // Create a new Date object for the end time, assuming the date is today
+            const endDate = moment(endTime, 'HH:mm:ss').toDate();
+            // Create a new Date object for the current time
+            const currentDate = moment(currentTime, 'HH:mm:ss').toDate();
+            // Calculate the difference in seconds
+            const timeDifferenceInSeconds = Math.max(0, Math.floor((endDate - currentDate) / 1000));
+            // Set the timer state
+            setTimer(timeDifferenceInSeconds);
+            setIsLoading(false)
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user update error ${e}`)
+          console.log(e.response.data?.response.records)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  }
+
+  useEffect(() => {
+    if (timer > 0) {
+      const intervalId = setInterval(() => {
+        setTimer(prevTimer => {
+          if (prevTimer <= 1) {
+            clearInterval(intervalId);
+            handleTimerEnd();
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+
+      // Cleanup the interval on component unmount
+      return () => clearInterval(intervalId);
+    }
+  }, [timer]);
+
+  const handleTimerEnd = () => {
+    console.log('Timer has ended. Execute your function here.');
+    const currentTime = moment().format('HH:mm:ss');
+    const option = {
+      "booked_slot_id": route?.params?.details?.id,
+      "time": currentTime
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/slot-complete`, option, {
+        headers: {
+          Accept: 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            navigation.navigate('Home')
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user update error ${e}`)
+          console.log(e.response.data?.response.records)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  };
 
 
   const _pickDocument = async () => {
@@ -656,22 +823,30 @@ const ChatScreen = ({ navigation, route }) => {
     fetchSessionHistory()
   }, [])
 
+  if (isLoading) {
+    return (
+      <Loader />
+    )
+  }
+
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
       <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Ionicons name="chevron-back" size={25} color="#000" onPress={() => navigation.goBack()} />
+          <Ionicons name="chevron-back" size={25} color="#000" />
           <View style={{ flexDirection: 'column', marginLeft: 10 }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>{route?.params?.details?.patient?.name}</Text>
             <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Patient</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#CC2131', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(5) }}>14:59</Text>
-          <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
-            <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>End</Text>
-          </View>
+          <Text style={{ color: '#CC2131', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(5) }}>{formatTime(timer)}</Text>
+          <TouchableOpacity onPress={() => handleTimerEnd()}>
+            <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
+              <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>End</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
