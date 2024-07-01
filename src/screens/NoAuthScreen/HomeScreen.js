@@ -296,7 +296,6 @@ export default function HomeScreen({ navigation }) {
   }
 
   const reportBlock = (patientid) => {
-    console.log(JSON.stringify(patientid))
     const option = {
       "patient_id": patientid,
       "reason" : ''
