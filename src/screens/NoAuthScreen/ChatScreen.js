@@ -3,10 +3,11 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Imag
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GreenTick, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
+import { GreenTick, RedCross, YellowTck, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
 import { GiftedChat, InputToolbar, Bubble, Send, Composer } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as DocumentPicker from 'react-native-document-picker';
+import { useRoute } from '@react-navigation/native';
 import InChatFileTransfer from '../../components/InChatFileTransfer';
 import InChatViewFile from '../../components/InChatViewFile';
 // import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
@@ -42,7 +43,7 @@ const channelName = 'test';
 const uid = 0; // Local user UID, no need to modify
 
 const ChatScreen = ({ navigation, route }) => {
-
+  const routepage = useRoute();
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
     appId: '975e09acde854ac38b3304da072c111e',
@@ -78,20 +79,23 @@ const ChatScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    const backAction = () => {
-      // Prevent the default back button action
-      return true;
-    };
+    console.log(routepage.name);
+    if (routepage.name === 'ChatScreen') {
+      const backAction = () => {
+        // Prevent the default back button action
+        return true;
+      };
 
-    // Add event listener to handle the back button
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
+      // Add event listener to handle the back button
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
 
-    // Clean up the event listener when the component unmounts
-    return () => backHandler.remove();
-  }, []);
+      // Clean up the event listener when the component unmounts
+      return () => backHandler.remove();
+    }
+  }, [routepage]);
 
   useEffect(() => {
     // If timer is 0, return early
@@ -116,7 +120,7 @@ const ChatScreen = ({ navigation, route }) => {
   useEffect(() => {
     // //receivedMsg()
     console.log(route?.params?.details, 'details from home page')
-
+    fetchSessionHistory()
     sessionStart()
   }, [])
 
@@ -215,7 +219,7 @@ const ChatScreen = ({ navigation, route }) => {
         .then(res => {
           console.log(res.data)
           if (res.data.response == true) {
-            navigation.navigate('Home')
+            navigation.navigate('UploadSessionSummary', { bookedId: route?.params?.details?.id, pname: route?.params?.details?.patient?.name })
           } else {
             console.log('not okk')
             setIsLoading(false)
@@ -419,9 +423,6 @@ const ChatScreen = ({ navigation, route }) => {
     return <FontAwesome name="angle-double-down" size={28} color="#000" />;
   };
 
-  useEffect(() => {
-    console.log(route?.params?.details, 'details from home page')
-  }, [])
 
   useEffect(() => {
     // setMessages([
@@ -788,10 +789,17 @@ const ChatScreen = ({ navigation, route }) => {
           <Text style={styles.sessionHistoryInfoName}>{item?.patient?.name}</Text>
           <View style={styles.sessionHistoryImgView}>
             <Image
-              source={GreenTick}
+              source={
+                item?.status === 'completed' ? GreenTick :
+                  item?.status === 'scheduled' ? YellowTck :
+                    item?.status === 'cancel' ? RedCross :
+                      null // You can set a default image or handle the null case appropriately
+              }
               style={styles.sessionHistoryImg}
             />
-            <Text style={styles.sessionHistoryStatus}>Completed</Text>
+            <Text style={styles.sessionHistoryStatus}>
+              {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+            </Text>
           </View>
         </View>
         <View style={styles.sessionHistorySection1}>
@@ -819,10 +827,6 @@ const ChatScreen = ({ navigation, route }) => {
 
   )
 
-  useEffect(() => {
-    fetchSessionHistory()
-  }, [])
-
   if (isLoading) {
     return (
       <Loader />
@@ -832,7 +836,7 @@ const ChatScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
-      <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
+      <View style={styles.Containerheader}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
           <Ionicons name="chevron-back" size={25} color="#000" />
           <View style={{ flexDirection: 'column', marginLeft: 10 }}>
@@ -1082,6 +1086,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#EAECF0',
     paddingBottom: 10,
+  },
+  Containerheader: {
+    height: responsiveHeight(10),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 5
   },
   messageContainer: {
     backgroundColor: 'red',

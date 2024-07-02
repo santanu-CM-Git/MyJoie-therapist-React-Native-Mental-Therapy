@@ -20,6 +20,7 @@ import PrivacyPolicy from '../screens/NoAuthScreen/PrivacyPolicy';
 import ChatScreen from '../screens/NoAuthScreen/ChatScreen';
 import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
 import ScheduleScreen from '../screens/NoAuthScreen/ScheduleScreen';
+import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,12 @@ const HomeStack = () => {
         component={ProfileScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="UploadSessionSummary"
+        component={UploadSessionSummary}
+        options={{ headerShown: false }}
+      />
+      
     </Stack.Navigator>
   );
 };
@@ -206,8 +213,11 @@ const TabNavigator = () => {
             //borderWidth: 1,
             //borderColor: '#CACCCE'
           },
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="user" color={color} size={size} />
+          tabBarIcon: ({ color, size,focused }) => (
+            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+              {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
+            <FontAwesome name="user" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }}/>
+            </View>
           ),
           tabBarLabel: ({ color, focused }) => (
             <Text style={{ color, fontSize: responsiveFontSize(1.2), marginBottom: 5 }}>Profile</Text>
@@ -235,6 +245,8 @@ const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
   console.log(routeName)
   if (routeName == 'ChatScreen') {
+    return 'none';
+  }else if(routeName == 'UploadSessionSummary'){
     return 'none';
   } else {
     return 'flex';

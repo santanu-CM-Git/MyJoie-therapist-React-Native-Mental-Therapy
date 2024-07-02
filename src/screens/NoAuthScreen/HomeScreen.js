@@ -22,7 +22,7 @@ import CustomButton from '../../components/CustomButton'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../../store/cartSlice';
-import { dateIcon, timeIcon, ArrowGratter, documentImg, infoImg, requestImg, userPhoto, deleteImg, editImg, blockIcon, GreenTick, Payment, dotIcon } from '../../utils/Images';
+import { dateIcon, timeIcon, ArrowGratter, documentImg, infoImg, requestImg, userPhoto, deleteImg, editImg, blockIcon, GreenTick, Payment, dotIcon, YellowTck, RedCross } from '../../utils/Images';
 import Loader from '../../utils/Loader';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import CustomHeader from '../../components/CustomHeader';
@@ -34,6 +34,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import messaging from '@react-native-firebase/messaging';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
+import { ActivityIndicator } from '@react-native-material/core';
 
 
 export default function HomeScreen({ navigation }) {
@@ -42,6 +43,7 @@ export default function HomeScreen({ navigation }) {
   const { data: products, status } = useSelector(state => state.products)
   const { userInfo } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(true)
+  const [isModalLoading, setIsModalLoading] = useState(false);
   const [value, setValue] = useState('1');
   const [isFocus, setIsFocus] = useState(false);
   const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
@@ -57,9 +59,18 @@ export default function HomeScreen({ navigation }) {
   const [savePatientDetails, setSavePatientDetails] = useState(null)
   const [modalDetails, setModalDetails] = useState(null)
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [isButtonEnabled, setisButtonEnabled] = useState(null);
+  const [isButtonEnabled, setisButtonEnabled] = useState(false);
+  const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
+  const [isButtonEnabledForModal, setisButtonEnabledForModal] = useState(null);
 
+  useEffect(() => {
+    // Update currentDateTime every second
+    const interval = setInterval(() => {
+      setCurrentDateTime(moment().toDate());
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, []);
   const getFCMToken = async () => {
     try {
       // if (Platform.OS == 'android') {
@@ -67,7 +78,7 @@ export default function HomeScreen({ navigation }) {
       // }
       const token = await messaging().getToken();
       AsyncStorage.setItem('fcmToken', token)
-      console.log(token, 'fcm token');
+      //console.log(token, 'fcm token');
     } catch (e) {
       console.log(e);
     }
@@ -99,8 +110,19 @@ export default function HomeScreen({ navigation }) {
     return date.toLocaleDateString('en-US', options);
   };
   const toggleModal = (data, item) => {
-    console.log(data, 'ooooooooooooooo')
-    console.log(item, 'itemmmmmmmmmmmmmmmm')
+    //console.log(data, 'ooooooooooooooo')
+    //console.log(item, 'itemmmmmmmmmmmmmmmm')
+    if (!isModalVisible) {
+      fetchSessionHistory(data.pid)
+      const currentDateTime = moment().toDate();
+      //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
+      const endDateTime = new Date(`${item.date}T${item.end_time}`);
+      const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+      const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+      setisButtonEnabledForModal(isButtonEnabled)
+    }
+
     setModalDetails(item)
     setSavePatientDetails(data)
     setModalVisible(!isModalVisible);
@@ -147,18 +169,12 @@ export default function HomeScreen({ navigation }) {
 
   }
 
-  const fetchData = (getId) => {
-
-
-  }
-
   const dateRangeSearch = () => {
-    console.log(startDay)
-    console.log(endDay)
+    //console.log(startDay)
+    //console.log(endDay)
     //fetchData()
     toggleCalendarModal()
   }
-
   const fetchUpcomingSlot = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -167,37 +183,39 @@ export default function HomeScreen({ navigation }) {
         setIsLoading(false);
         return;
       }
-
+  
       const response = await axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
         headers: {
           'Accept': 'application/json',
           "Authorization": `Bearer ${userToken}`,
         },
       });
-
+  
       const { data } = response.data;
       console.log(JSON.stringify(data), 'fetch upcoming slot');
-
-      if (response.data.response) {
+      
+      if (response.data.response && data.length > 0) {
         const sortedData = data.sort((a, b) => {
           const dateA = new Date(a.date);
           const dateB = new Date(b.date);
           if (dateA < dateB) return -1;
           if (dateA > dateB) return 1;
-
+  
           const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
           const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
           return timeA - timeB;
         });
-
-        console.log(sortedData, 'date wise sort data');
+  
         console.log(sortedData[0], 'first booking data');
         setSortData(sortedData[0]);
+  
+        const currentDateTime = moment().toDate();
         const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
+        const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
         const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-        const isButtonEnabled = currentDateTime >= twoMinutesBefore;
-        setisButtonEnabled(isButtonEnabled)
-
+        const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+        setisButtonEnabled(isButtonEnabled);
+  
         // Group by date
         const groupedData = sortedData.reduce((acc, slot) => {
           const date = moment(slot.date).format('DD-MM-YYYY');
@@ -207,20 +225,22 @@ export default function HomeScreen({ navigation }) {
           acc[date].push(slot);
           return acc;
         }, {});
-
+  
         console.log(groupedData, 'grouped data');
         setGroupedSlots(groupedData);
       } else {
-        console.log('Response not OK');
-        Alert.alert('Oops..', "Something went wrong", [
+        setSortData([])
+        setGroupedSlots([])
+        console.log('No upcoming slots available or response not OK');
+        Alert.alert('No Slots', 'There are no upcoming slots available.', [
           {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
+            text: 'OK',
+            onPress: () => console.log('OK Pressed'),
           },
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
         ]);
+        
       }
+  
     } catch (error) {
       console.log(`Fetch upcoming slot error: ${error}`);
       Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
@@ -235,6 +255,88 @@ export default function HomeScreen({ navigation }) {
       setIsLoading(false);
     }
   };
+  
+  // const fetchUpcomingSlot = async () => {
+  //   try {
+  //     const userToken = await AsyncStorage.getItem('userToken');
+  //     if (!userToken) {
+  //       console.log('No user token found');
+  //       setIsLoading(false);
+  //       return;
+  //     }
+
+  //     const response = await axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         "Authorization": `Bearer ${userToken}`,
+  //       },
+  //     });
+
+  //     const { data } = response.data;
+  //     console.log(JSON.stringify(data), 'fetch upcoming slot');
+
+  //     if (response.data.response) {
+  //       const sortedData = data.sort((a, b) => {
+  //         const dateA = new Date(a.date);
+  //         const dateB = new Date(b.date);
+  //         if (dateA < dateB) return -1;
+  //         if (dateA > dateB) return 1;
+
+  //         const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+  //         const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+  //         return timeA - timeB;
+  //       });
+
+  //       //console.log(sortedData, 'date wise sort data');
+  //       console.log(sortedData[0], 'first booking data');
+  //       setSortData(sortedData[0]);
+
+
+  //       const currentDateTime = moment().toDate();
+  //       const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
+  //       const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
+  //       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+  //       const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+  //       setisButtonEnabled(isButtonEnabled)
+
+  //       // Group by date
+  //       const groupedData = sortedData.reduce((acc, slot) => {
+  //         const date = moment(slot.date).format('DD-MM-YYYY');
+  //         if (!acc[date]) {
+  //           acc[date] = [];
+  //         }
+  //         acc[date].push(slot);
+  //         return acc;
+  //       }, {});
+
+  //       console.log(groupedData, 'grouped data');
+  //       setGroupedSlots(groupedData);
+  //     } else {
+  //       console.log('Response not OK');
+  //       Alert.alert('Oops..', "Something went wrong", [
+  //         {
+  //           text: 'Cancel',
+  //           onPress: () => console.log('Cancel Pressed'),
+  //           style: 'cancel',
+  //         },
+  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ]);
+  //     }
+
+  //   } catch (error) {
+  //     console.log(`Fetch upcoming slot error: ${error}`);
+  //     Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+  //       {
+  //         text: 'Cancel',
+  //         onPress: () => console.log('Cancel Pressed'),
+  //         style: 'cancel',
+  //       },
+  //       { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //     ]);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const formatISTTime = (time) => {
     return moment(time, 'HH:mm:ss').format('hh:mm A');
   };
@@ -298,7 +400,7 @@ export default function HomeScreen({ navigation }) {
   const reportBlock = (patientid) => {
     const option = {
       "patient_id": patientid,
-      "reason" : ''
+      "reason": ''
     }
     console.log(option)
     AsyncStorage.getItem('userToken', (err, usertoken) => {
@@ -362,6 +464,90 @@ export default function HomeScreen({ navigation }) {
     }, [])
   )
 
+  const fetchSessionHistory = async (patientId) => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        //setIsLoading(false);
+        return;
+      }
+      setIsModalLoading(true)
+      const option = {
+        "patient_id": patientId
+      }
+      const response = await axios.post(`${API_URL}/therapist/patient-previous-session-check`, option, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${userToken}`,
+        },
+      });
+
+      const { data } = response.data;
+      console.log(JSON.stringify(data), 'fetch session history');
+      setTherapistSessionHistory(data)
+      setIsModalLoading(false)
+    } catch (error) {
+      console.log(`Fetch upcoming slot error: ${error}`);
+      setIsModalLoading(false)
+      Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    } finally {
+      setIsModalLoading(false);
+    }
+  }
+  const renderSessionHistory = ({ item }) => (
+    <>
+      <View style={styles.previousHistoryView}>
+        <View style={{ padding: 15 }}>
+          <View style={styles.flexStyle}>
+            <Text style={styles.userName}>{item?.patient?.name}</Text>
+            <View style={styles.flexCenter}>
+              <Image
+                source={
+                  item?.status === 'completed' ? GreenTick :
+                    item?.status === 'scheduled' ? YellowTck :
+                      item?.status === 'cancel' ? RedCross :
+                        null // You can set a default image or handle the null case appropriately
+                }
+                style={styles.iconstyle}
+              />
+              <Text style={styles.completedText}>
+                {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.paraView}>
+            <Text style={styles.paraIndex}>Order ID :</Text>
+            <Text style={styles.paraValue}>{item?.order_id}</Text>
+          </View>
+          <View style={styles.paraView}>
+            <Text style={styles.paraIndex}>Date :</Text>
+            <Text style={styles.paraValue}>{moment(item?.date).format('ddd, D MMMM')}, {moment(item?.start_time, 'HH:mm:ss').format('h:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('h:mm A')}</Text>
+          </View>
+          <View style={styles.paraView}>
+            <Text style={styles.paraIndex}>Appointment Time :</Text>
+            <Text style={styles.paraValue}>{moment(item?.end_time, 'HH:mm:ss').diff(moment(item?.start_time, 'HH:mm:ss'), 'minutes')} Min</Text>
+          </View>
+          {/* <View style={styles.paraView}>
+            <Text style={styles.paraIndex}>Rate :</Text>
+            <Text style={styles.paraValue}>Rs {item?.therapist_details?.rate} for 30 Min</Text>
+          </View> */}
+          <View style={{ marginTop: responsiveHeight(1.5) }}>
+            <Text style={styles.paraIndex}>Session Summary :</Text>
+            <Text style={[styles.paraValue, { marginTop: 5 }]}>{item?.prescription_content}</Text>
+          </View>
+        </View>
+      </View>
+    </>
+  )
+
   if (isLoading) {
     return (
       <Loader />
@@ -378,7 +564,7 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.earningAmountText}>₹ 5,00,000</Text>
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
-          {sortData ?
+          {sortData.length !== 0 ?
             <View style={styles.upcomingView}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
@@ -388,7 +574,7 @@ export default function HomeScreen({ navigation }) {
                 />
                 <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
                   <Text style={styles.userText}> {sortData?.patient?.name}</Text>
-                  <Text style={styles.userSubText}> Patient </Text>
+                  <Text style={styles.userSubText}> Patient</Text>
                 </View>
                 <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
                   onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: sortData })}
@@ -417,7 +603,7 @@ export default function HomeScreen({ navigation }) {
               </View>
             </View> :
             <View style={styles.upcomingView}>
-              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>No upcoming appointment yet</Text>
+              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2),color:'#746868' }}>No upcoming appointment yet</Text>
             </View>}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
@@ -428,14 +614,14 @@ export default function HomeScreen({ navigation }) {
             />
             {/* </TouchableOpacity> */}
           </View>
-          {sortData ?
+          {sortData.length !== 0 ?
             Object.keys(groupedSlots).map(date => (
               <View style={styles.scheduleView}>
                 <View style={styles.headerView}>
                   <Text style={styles.headerText}>{date}</Text>
                 </View>
                 {groupedSlots[date].map(slot => (
-                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name,pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
                     <View key={slot.id}>
                       <View style={styles.itemnameView}>
                         <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
@@ -461,7 +647,7 @@ export default function HomeScreen({ navigation }) {
             ))
             :
             <View style={styles.upcomingView}>
-              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>No schedule so far</Text>
+              <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2),color:'#746868' }}>No schedule so far</Text>
             </View>
           }
         </View>
@@ -500,7 +686,7 @@ export default function HomeScreen({ navigation }) {
                       <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => reportBlock(savePatientDetails?.pid)}>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
+                      <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -521,7 +707,11 @@ export default function HomeScreen({ navigation }) {
                       <Text style={styles.insidemodalTagtext}>New</Text>
                     </View>
                   </View>
-                  <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
+                  <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
+                    onPress={() => isButtonEnabledForModal && navigation.navigate('ChatScreen', { details: modalDetails })}
+                    disabled={!isButtonEnabledForModal}
+                  >
+                    {/* <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}> */}
                     <View style={styles.inActiveButtonInsideView}>
                       <Text style={styles.activeButtonInsideText}>Join Now</Text>
                     </View>
@@ -530,77 +720,23 @@ export default function HomeScreen({ navigation }) {
 
               </View>
             </View>
-            <ScrollView horizontal={true}>
-              <View style={styles.previousHistoryView}>
-                <View style={{ padding: 15 }}>
-                  <View style={styles.flexStyle}>
-                    <Text style={styles.userName}>Rohit Sharma</Text>
-                    <View style={styles.flexCenter}>
-                      <Image
-                        source={GreenTick}
-                        style={styles.iconstyle}
-                      />
-                      <Text style={styles.completedText}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Order ID :</Text>
-                    <Text style={styles.paraValue}>1923659</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Date :</Text>
-                    <Text style={styles.paraValue}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Appointment Time :</Text>
-                    <Text style={styles.paraValue}>60 Min</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Rate :</Text>
-                    <Text style={styles.paraValue}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={styles.paraIndex}>Session Summary :</Text>
-                    <Text style={[styles.paraValue, { marginTop: 5 }]}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.previousHistoryView}>
-                <View style={{ padding: 15 }}>
-                  <View style={styles.flexStyle}>
-                    <Text style={styles.userName}>Rohit Sharma</Text>
-                    <View style={styles.flexCenter}>
-                      <Image
-                        source={GreenTick}
-                        style={styles.iconstyle}
-                      />
-                      <Text style={styles.completedText}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Order ID :</Text>
-                    <Text style={styles.paraValue}>1923659</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Date :</Text>
-                    <Text style={styles.paraValue}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Appointment Time :</Text>
-                    <Text style={styles.paraValue}>60 Min</Text>
-                  </View>
-                  <View style={styles.paraView}>
-                    <Text style={styles.paraIndex}>Rate :</Text>
-                    <Text style={styles.paraValue}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={styles.paraIndex}>Session Summary :</Text>
-                    <Text style={[styles.paraValue, { marginTop: 5 }]}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
-
+            {isModalLoading ? (
+              <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
+            ) : (
+              <FlatList
+                data={therapistSessionHistory}
+                renderItem={renderSessionHistory}
+                keyExtractor={(item) => item.id.toString()}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                initialNumToRender={10}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                getItemLayout={(therapistSessionHistory, index) => (
+                  { length: 50, offset: 50 * index, index }
+                )}
+              />
+            )}
           </View>
         </View>
         {/* </TouchableWithoutFeedback> */}

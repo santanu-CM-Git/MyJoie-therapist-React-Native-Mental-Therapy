@@ -96,16 +96,7 @@ const AuthStack = () => {
           ),
         }}
       />
-      <Drawer.Screen
-        name="  Session Summary"
-        component={UploadSessionSummary}
-        options={{
-          drawerIcon: ({color}) => (
-            // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={PolicyIcon} style={{ width: 25,height: 25}} color={color}/>
-          ),
-        }}
-      />
+
       <Drawer.Screen
         name="  testtttt"
         component={TestPage}

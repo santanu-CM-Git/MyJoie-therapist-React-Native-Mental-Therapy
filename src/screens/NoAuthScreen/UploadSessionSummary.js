@@ -28,6 +28,8 @@ import MultiSelect from 'react-native-multiple-select';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/Entypo';
+import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const items = [
     { id: '92iijs7yta', name: 'Ondo' },
     { id: 'a0s0a8ssbsd', name: 'Ogun' },
@@ -56,153 +58,78 @@ const dataMonth = [
 ];
 
 const UploadSessionSummary = ({ navigation, route }) => {
-    const concatNo = route?.params?.countrycode + '-' + route?.params?.phoneno;
-    const [phoneno, setPhoneno] = useState('');
-    const [firstname, setFirstname] = useState('Jennifer Kourtney');
+    const [firstname, setFirstname] = useState(route?.params?.pname);
     const [firstNameError, setFirstNameError] = useState('')
     const [summary, setSummary] = useState('');
-    const [pickedDrivingLicenseBack, setPickedDrivingLicenseback] = useState(null);
-    const [DrivingLicenseBackError, setDrivingLicenseBackError] = useState('')
-
     const [isModalVisible, setModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const { login, userToken } = useContext(AuthContext);
 
-    const [selectedItems, setSelectedItems] = useState([]);
+
     const multiSelectRef = useRef(null);
-    const [statevalue, setStateValue] = useState(null);
-    const [isStateFocus, setStateIsFocus] = useState(false);
 
-    const [yearvalue, setYearValue] = useState(null);
-    const [isYearFocus, setYearIsFocus] = useState(false);
-
-    const [monthvalue, setMonthValue] = useState(null);
-    const [isMonthFocus, setMonthIsFocus] = useState(false);
-
-    const onSelectedItemsChange = selectedItems => {
-        setSelectedItems(selectedItems);
-    };
-
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
 
 
 
     const changeFirstname = (text) => {
         setFirstname(text)
-        if (text) {
-            setFirstNameError('')
-        } else {
-            setFirstNameError('Please enter First name')
+
+    }
+
+    const submitForm = () => {
+        const option = {
+            "slot_booked_id": route?.params?.bookedId,
+            "summary": summary
         }
+        setIsLoading(true)
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/prescription-update`, option, {
+                headers: {
+                    Accept: 'application/json',
+                    "Authorization": `Bearer ${usertoken}`,
+                },
+            })
+                .then(res => {
+                    console.log(res.data)
+                    if (res.data.response == true) {
+                        setIsLoading(false)
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Hello',
+                            text2: "Upload data Successfully",
+                            position: 'top',
+                            topOffset: Platform.OS == 'ios' ? 55 : 20
+                        });
+                        navigation.navigate('Home')
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
     }
 
-    const changeLastname = (text) => {
-        setLastname(text)
-        if (text) {
-            setLastNameError('')
-        } else {
-            setLastNameError('Please enter Last name')
-        }
-    }
-
-    const changePassword = (text) => {
-        setPassword(text)
-        if (text) {
-            setPasswordError('')
-        } else {
-            setPasswordError('Please enter Address')
-        }
-    }
-    const changeCity = (text) => {
-        setCity(text)
-        if (text) {
-            setCityError('')
-        } else {
-            setCityError('Please enter City')
-        }
-    }
-    const changePostAddress = (text) => {
-        setPostaddress(text)
-        // if (text) {
-        //   setPostaddressError('')
-        // } else {
-        //   setPostaddressError('Please enter Ghana Post Address')
-        // }
-    }
-
-    // const submitForm = () => {
-    //   //navigation.navigate('DocumentsUpload')
-    //   if (!firstname) {
-    //     setFirstNameError('Please enter First name')
-    //   }else if(!lastname){
-    //     setLastNameError('Please enter Last name')
-    //   }else if(!address){
-    //     setAddressError('Please enter Address')
-    //   }else if(!city){
-    //     setCityError('Please enter City')
-    //   } else {
-    //     setIsLoading(true)
-    //     var option = {}
-    //     if(email){
-    //       var option = {
-    //         "firstName": firstname,
-    //         "lastName": lastname,
-    //         "email": email,
-    //         "address": address,
-    //         "zipcode": postaddress,
-    //         "city" : city
-    //       }
-    //     }else{
-    //       var option = {
-    //         "firstName": firstname,
-    //         "lastName": lastname,
-    //         "address": address,
-    //         "zipcode": postaddress,
-    //         "city" : city
-    //       }
-    //     }
-
-    //     axios.post(`${API_URL}/api/driver/updateInformation`, option, {
-    //       headers: {
-    //         Accept: 'application/json',
-    //         "Authorization": 'Bearer ' + route?.params?.usertoken,
-    //       },
-    //     })
-    //       .then(res => {
-    //         console.log(res.data)
-    //         if (res.data.response.status.code === 200) {
-    //           setIsLoading(false)
-    //           navigation.push('DocumentsUpload', { usertoken: route?.params?.usertoken })
-    //       } else {
-    //           Alert.alert('Oops..', "Something went wrong", [
-    //               {
-    //                   text: 'Cancel',
-    //                   onPress: () => console.log('Cancel Pressed'),
-    //                   style: 'cancel',
-    //               },
-    //               { text: 'OK', onPress: () => console.log('OK Pressed') },
-    //           ]);
-    //       }
-    //       })
-    //       .catch(e => {
-    //         setIsLoading(false)
-    //         console.log(`user update error ${e}`)
-    //         console.log(e.response.data?.response.records)
-    //         Alert.alert('Oops..', "Something went wrong", [
-    //           {
-    //               text: 'Cancel',
-    //               onPress: () => console.log('Cancel Pressed'),
-    //               style: 'cancel',
-    //           },
-    //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-    //       ]);
-    //       });
-    //   }
-
-
-    // }
 
     if (isLoading) {
         return (
@@ -221,7 +148,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
                 <View style={styles.wrapper}>
                     <View style={styles.textinputview}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.header}>Patient Name</Text>
+                            <Text style={styles.header}>Patient Name </Text>
                         </View>
                         {firstNameError ? <Text style={{ color: 'red', fontFamily: 'Outfit-Regular' }}>{firstNameError}</Text> : <></>}
                         <View style={styles.inputView}>
@@ -231,7 +158,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
                                 value={firstname}
                                 //helperText={'Please enter lastname'}
                                 inputType={'nonedit'}
-                                onChangeText={(text) => changeFirstname(text)}
+                            //onChangeText={(text) => changeFirstname(text)}
                             />
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -245,7 +172,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
                                 value={summary}
                                 //helperText={'Please enter lastname'}
                                 inputType={'address'}
-                                onChangeText={(text) => changeFirstname(text)}
+                                onChangeText={(text) => setSummary(text)}
                             />
                         </View>
                     </View>
