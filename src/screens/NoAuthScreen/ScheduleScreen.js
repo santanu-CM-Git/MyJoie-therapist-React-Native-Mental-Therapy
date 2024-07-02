@@ -1109,59 +1109,139 @@ const ScheduleScreen = ({ navigation }) => {
     }, [])
 
     const cancelBooking = (id) => {
-        console.log(JSON.stringify(id))
-        const option = {
-            "booked_slot_id": id
-        }
-        console.log(option)
-        AsyncStorage.getItem('userToken', (err, usertoken) => {
-            axios.post(`${API_URL}/therapist/slot-cancel`, option, {
-                headers: {
-                    'Accept': 'application/json',
-                    "Authorization": 'Bearer ' + usertoken,
-                    //'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(res => {
-                    console.log(JSON.stringify(res.data.data), 'cancel response')
-                    if (res.data.response == true) {
-                        setIsLoading(false);
-                        Toast.show({
-                            type: 'success',
-                            text1: 'Hello',
-                            text2: "Schedule cancel successfully",
-                            position: 'top',
-                            topOffset: Platform.OS == 'ios' ? 55 : 20
-                        });
-                        toggleModal()
-                        fetchUpcomingSlot()
-                    } else {
-                        console.log('not okk')
-                        setIsLoading(false)
-                        Alert.alert('Oops..', "Something went wrong", [
-                            {
-                                text: 'Cancel',
-                                onPress: () => console.log('Cancel Pressed'),
-                                style: 'cancel',
-                            },
-                            { text: 'OK', onPress: () => console.log('OK Pressed') },
-                        ]);
+        Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
+            {
+                text: 'Cancel',
+                onPress: () => setIsFocus(!isFocus),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: () => {
+                    console.log(JSON.stringify(id))
+                    const option = {
+                        "booked_slot_id": id
                     }
-                })
-                .catch(e => {
-                    setIsLoading(false)
-                    console.log(`user register error ${e}`)
-                    console.log(e.response)
-                    Alert.alert('Oops..', e.response?.data?.message, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ]);
-                });
-        });
+                    console.log(option)
+                    AsyncStorage.getItem('userToken', (err, usertoken) => {
+                        axios.post(`${API_URL}/therapist/slot-cancel`, option, {
+                            headers: {
+                                'Accept': 'application/json',
+                                "Authorization": 'Bearer ' + usertoken,
+                                //'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                            .then(res => {
+                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                if (res.data.response == true) {
+                                    setIsLoading(false);
+                                    Toast.show({
+                                        type: 'success',
+                                        text1: 'Hello',
+                                        text2: "Schedule cancel successfully",
+                                        position: 'top',
+                                        topOffset: Platform.OS == 'ios' ? 55 : 20
+                                    });
+                                    toggleModal()
+                                    fetchUpcomingSlot()
+                                } else {
+                                    console.log('not okk')
+                                    setIsLoading(false)
+                                    Alert.alert('Oops..', "Something went wrong", [
+                                        {
+                                            text: 'Cancel',
+                                            onPress: () => console.log('Cancel Pressed'),
+                                            style: 'cancel',
+                                        },
+                                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                    ]);
+                                }
+                            })
+                            .catch(e => {
+                                setIsLoading(false)
+                                console.log(`user register error ${e}`)
+                                console.log(e.response)
+                                Alert.alert('Oops..', e.response?.data?.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                ]);
+                            });
+                    });
+                }
+            },
+        ]);
+
+    }
+
+    const reportBlock = (patientid) => {
+        Alert.alert('Hello', "Are you sure you want to block this person?", [
+            {
+                text: 'Cancel',
+                onPress: () => setIsFocus(!isFocus),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: () => {
+                    const option = {
+                        "patient_id": patientid,
+                        "reason": ''
+                    }
+                    console.log(option)
+                    AsyncStorage.getItem('userToken', (err, usertoken) => {
+                        axios.post(`${API_URL}/therapist/report-block`, option, {
+                            headers: {
+                                'Accept': 'application/json',
+                                "Authorization": 'Bearer ' + usertoken,
+                                //'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                            .then(res => {
+                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                if (res.data.response == true) {
+                                    setIsLoading(false);
+                                    Toast.show({
+                                        type: 'success',
+                                        text1: 'Hello',
+                                        text2: "Patient successfully blocked.",
+                                        position: 'top',
+                                        topOffset: Platform.OS == 'ios' ? 55 : 20
+                                    });
+                                    toggleModal()
+                                    fetchUpcomingSlot()
+                                } else {
+                                    console.log('not okk')
+                                    setIsLoading(false)
+                                    Alert.alert('Oops..', "Something went wrong", [
+                                        {
+                                            text: 'Cancel',
+                                            onPress: () => console.log('Cancel Pressed'),
+                                            style: 'cancel',
+                                        },
+                                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                    ]);
+                                }
+                            })
+                            .catch(e => {
+                                setIsLoading(false)
+                                console.log(`user register error ${e}`)
+                                console.log(e.response)
+                                Alert.alert('Oops..', e.response?.data?.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                ]);
+                            });
+                    });
+                }
+            },
+        ]);
+
     }
 
     const formatISTTime = (time) => {
@@ -1238,7 +1318,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 ))
                                 :
                                 <View style={[styles.upcomingCard, { padding: 20 }]}>
-                                    <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2),color:'#746868' }}>No schedule so far</Text>
+                                    <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), color: '#746868' }}>No schedule so far</Text>
                                 </View>
                             }
                         </>
@@ -1729,11 +1809,12 @@ const ScheduleScreen = ({ navigation }) => {
                             {isFocus ?
                                 <View style={{ width: responsiveWidth(40), backgroundColor: '#fff', height: responsiveHeight(15), position: 'absolute', right: 0, top: 30, zIndex: 10, padding: 10, borderRadius: 15, justifyContent: 'center', elevation: 5 }}>
                                     <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-                                        <Pressable onPress={() => cancelBooking(savePatientDetails?.id)}>
+                                        <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
                                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
-                                        </Pressable>
-                                        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
-
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => reportBlock(savePatientDetails?.pid)}>
+                                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                                 : <></>}
@@ -1757,7 +1838,7 @@ const ScheduleScreen = ({ navigation }) => {
                                         onPress={() => isButtonEnabledForModal && navigation.navigate('ChatScreen', { details: modalDetails })}
                                         disabled={!isButtonEnabledForModal}
                                     > */}
-                                        <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
                                         <View style={styles.inActiveButtonInsideView2}>
                                             <Text style={styles.activeButtonInsideText}>Join Now</Text>
                                         </View>
