@@ -82,7 +82,19 @@ export default function InputField({
           multiline={inputFieldType == 'address' ? true : false}
           placeholderTextColor="#808080"
         />
-      ) : (
+      ): inputType == 'password' ? (
+        <TextInput
+          style={styles.editinput}
+          onChangeText={onChangeText}
+          value={value}
+          placeholder={label}
+          keyboardType={keyboardType}
+          editable={inputType == 'nonedit' ? false : true}
+          multiline={inputFieldType == 'address' ? true : false}
+          placeholderTextColor="#808080"
+          secureTextEntry={true}
+        />
+      )  : (
         <MTextInput
           variant="outlined"
           label={label}

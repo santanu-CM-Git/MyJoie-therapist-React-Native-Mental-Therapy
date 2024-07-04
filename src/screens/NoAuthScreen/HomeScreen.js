@@ -232,12 +232,12 @@ export default function HomeScreen({ navigation }) {
         setSortData([])
         setGroupedSlots([])
         console.log('No upcoming slots available or response not OK');
-        Alert.alert('No Slots', 'There are no upcoming slots available.', [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK Pressed'),
-          },
-        ]);
+        // Alert.alert('No Slots', 'There are no upcoming slots available.', [
+        //   {
+        //     text: 'OK',
+        //     onPress: () => console.log('OK Pressed'),
+        //   },
+        // ]);
 
       }
 

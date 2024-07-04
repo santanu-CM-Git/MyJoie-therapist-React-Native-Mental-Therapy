@@ -198,7 +198,7 @@ const LoginScreen = ({ navigation }) => {
             <InputField
               label={'Password'}
               keyboardType="default"
-              inputType="others"
+              inputType="password"
               value={password}
               onChangeText={(text) => onChangePassword(text)}
             //helperText={mobileError}

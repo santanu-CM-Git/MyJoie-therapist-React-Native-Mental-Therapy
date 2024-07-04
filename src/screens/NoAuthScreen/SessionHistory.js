@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -22,13 +22,14 @@ const SessionHistory = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedSession, setSelectedSession] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
 
     const toggleModal = (session) => {
         setSelectedSession(session);
         setModalVisible(!isModalVisible);
     };
 
-    const fetchSessionHistory = async () => {
+    const fetchSessionHistory = useCallback(async (page = 1) => {
         try {
             setLoading(true);
             const userToken = await AsyncStorage.getItem('userToken');
@@ -37,10 +38,9 @@ const SessionHistory = ({ navigation }) => {
                 setIsLoading(false);
                 return;
             }
-            const response = await axios.post(`${API_URL}/therapist/therapist-all-session`,{}, {
+            const response = await axios.post(`${API_URL}/therapist/therapist-all-session`, {}, {
                 params: {
-                    // per_page: perPage,
-                    page: pageno
+                    page
                 },
                 headers: {
                     'Accept': 'application/json',
@@ -48,9 +48,11 @@ const SessionHistory = ({ navigation }) => {
                 },
             });
 
-            const responseData = response.data.data.data; // Assuming your data is nested under `data` key
-            console.log(responseData,'responseDataresponseDataresponseDataresponseData')
-            setTherapistSessionHistory(prevData => [...prevData, ...responseData]);
+            const responseData = response.data.data.data;
+            setTherapistSessionHistory(prevData => page === 1 ? responseData : [...prevData, ...responseData]);
+            if (responseData.length === 0) {
+                setHasMore(false); // No more data to load
+            }
         } catch (error) {
             console.log(`Fetch session history error: ${error}`);
             Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
@@ -64,25 +66,22 @@ const SessionHistory = ({ navigation }) => {
             setIsLoading(false);
             setLoading(false);
         }
-    };
-    useEffect(() => {
-        fetchSessionHistory();
     }, []);
-
     useEffect(() => {
-        fetchSessionHistory();
-    }, [pageno]);
+        fetchSessionHistory(pageno);
+    }, [fetchSessionHistory, pageno]);
 
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             setTherapistSessionHistory([]);
             setPageno(1);
-            fetchSessionHistory();
-        }, [])
+            setHasMore(true); // Reset hasMore on focus
+            fetchSessionHistory(1);
+        }, [fetchSessionHistory])
     );
 
     const handleLoadMore = () => {
-        if (!loading) {
+        if (!loading && hasMore) {
             setPageno(prevPage => prevPage + 1);
         }
     };
@@ -105,9 +104,7 @@ const SessionHistory = ({ navigation }) => {
                         <Image
                             source={
                                 item?.status === 'completed' ? GreenTick :
-                                    item?.status === 'scheduled' ? YellowTck :
-                                        item?.status === 'cancel' ? RedCross :
-                                            null // You can set a default image or handle the null case appropriately
+                                        item?.status === 'cancel' ? RedCross : YellowTck
                             }
                             style={styles.iconstyle}
                         />
@@ -155,7 +152,7 @@ const SessionHistory = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.Container}>
-             <CustomHeader commingFrom={'Session History'} onPress={() => navigation.goBack()} title={'Session History'} />
+            <CustomHeader commingFrom={'Session History'} onPress={() => navigation.goBack()} title={'Session History'} />
             <View style={styles.wrapper}>
                 <FlatList
                     data={therapistSessionHistory}
@@ -199,10 +196,10 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         flex: 1,
-        padding: 10,
+        padding: 15,
     },
     cardView: {
-        width: responsiveWidth(90),
+        width: responsiveWidth(92),
         backgroundColor: '#FFF',
         padding: 20,
         borderRadius: 20,
