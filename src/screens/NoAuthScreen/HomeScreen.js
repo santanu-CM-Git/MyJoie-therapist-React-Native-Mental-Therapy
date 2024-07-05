@@ -1032,7 +1032,7 @@ const styles = StyleSheet.create({
   },
   itemTagView: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 2,
     backgroundColor: '#FF9E45',
     borderRadius: 15,
     marginLeft: responsiveWidth(2)

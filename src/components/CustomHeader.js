@@ -85,7 +85,7 @@ export default function CustomHeader({
                 }
             });
             const userInfo = response.data.data;
-            console.log(userInfo, 'user data from header');
+            //console.log(userInfo, 'user data from header');
             setuserInfo(userInfo);
             if (userInfo.instant_availability === 'off') {
                 setIsEnabled(false)

@@ -4,65 +4,181 @@ import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { ArrowGratter, ArrowUp, GreenTick, Payment, YellowTck, dateIcon, notifyImg, timeIcon, userPhoto } from '../../utils/Images'
-import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import NoNotification from './NoNotification';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Dropdown } from 'react-native-element-dropdown';
+import Modal from "react-native-modal";
+import Icon from 'react-native-vector-icons/Entypo';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+import CustomButton from '../../components/CustomButton'
+import moment from 'moment';
+import axios from 'axios';
+import Loader from '../../utils/Loader';
+import { API_URL } from '@env'
+import { useFocusEffect } from '@react-navigation/native';
 const data = [
     { label: 'Today', value: '1' },
-    { label: 'Date Wise', value: '2' },
+    { label: 'Yesterday', value: '2' },
+    { label: 'This Week', value: '3' },
+    { label: 'This Month', value: '4' },
+    { label: 'Date Wise', value: '5' },
 ];
 
 const EarningScreen = ({ navigation }) => {
-    const [notifications, setNotifications] = useState([]);
-    const [notifyStatus, setnotifyStatus] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState('1');
     const [isFocus, setIsFocus] = useState(false);
+    const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
+    const [markedDates, setMarkedDates] = useState({});
+    const [startDay, setStartDay] = useState(null);
+    const [endDay, setEndDay] = useState(null);
+    const [earningSum, setEarningSum] = useState(0);
+    const [gstCharges, setGstCharges] = useState(0);
+    const [payableSum, setPayableSum] = useState(0);
 
     useEffect(() => {
-        if (Platform.OS == 'android') {
-            const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
-                Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-                console.log('Received foreground message:', JSON.stringify(remoteMessage));
-                setNotifications(prevNotifications => {
-                    const newNotifications = [...prevNotifications, remoteMessage];
-                    AsyncStorage.setItem('notifications', JSON.stringify(newNotifications));
-                    setnotifyStatus(true)
-                    return newNotifications;
-                });
-            });
+        setValue('1')
+        fetchData("1")
+    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            setValue('1')
+            fetchData("1")
+        }, [])
+    )
 
-            const unsubscribeBackground = messaging().setBackgroundMessageHandler(async remoteMessage => {
-                console.log('Received background message:', remoteMessage);
-                setNotifications(prevNotifications => {
-                    const newNotifications = [...prevNotifications, remoteMessage];
-                    AsyncStorage.setItem('notifications', JSON.stringify(newNotifications));
-                    setnotifyStatus(true)
-                    return newNotifications;
-                });
-            });
+    const toggleCalendarModal = () => {
+        setCalendarModalVisible(!isCalendarModalVisible);
+    }
+    const handleDayPress = (day) => {
+        if (startDay && !endDay) {
+            const date = {}
+            for (const d = moment(startDay); d.isSameOrBefore(day.dateString); d.add(1, 'days')) {
+                //console.log(d,'vvvvvvvvvv')
+                date[d.format('YYYY-MM-DD')] = {
+                    marked: true,
+                    color: 'black',
+                    textColor: 'white'
+                };
 
-            // Load notifications from AsyncStorage when component mounts
-            AsyncStorage.getItem('notifications').then((value) => {
-                if (value !== null) {
-                    setNotifications(JSON.parse(value));
-                    setnotifyStatus(true)
+                if (d.format('YYYY-MM-DD') === startDay) {
+                    date[d.format('YYYY-MM-DD')].startingDay = true;
                 }
+                if (d.format('YYYY-MM-DD') === day.dateString) {
+                    date[d.format('YYYY-MM-DD')].endingDay = true;
+                }
+            }
+
+            setMarkedDates(date);
+            setEndDay(day.dateString);
+        }
+        else {
+            setStartDay(day.dateString)
+            setEndDay(null)
+            setMarkedDates({
+                [day.dateString]: {
+                    marked: true,
+                    color: 'black',
+                    textColor: 'white',
+                    startingDay: true,
+                    endingDay: true
+                }
+            })
+        }
+
+    }
+
+    const dateRangeSearch = () => {
+        //console.log(startDay)
+        //console.log(endDay)
+        fetchData('5', startDay, endDay)
+        toggleCalendarModal()
+    }
+
+    const fetchData = async (selectedValue, startDay, endDay) => {
+        setIsLoading(true)
+        let option = {};
+
+        switch (selectedValue) {
+            case '1':
+                const currentDate = moment().format('YYYY-MM-DD');
+                option = {
+                    sdate: currentDate,
+                    edate: currentDate,
+                };
+                break;
+            case '2':
+                const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+                option = {
+                    sdate: yesterdayDate,
+                    edate: yesterdayDate,
+                };
+                break;
+            case '3':
+                const startOfWeek = moment().startOf('week').format('YYYY-MM-DD');
+                const endOfWeek = moment().endOf('week').format('YYYY-MM-DD');
+                option = {
+                    sdate: startOfWeek,
+                    edate: endOfWeek,
+                };
+                break;
+            case '4':
+                const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+                const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+                option = {
+                    sdate: startOfMonth,
+                    edate: endOfMonth,
+                };
+                break;
+            case '5':
+                option = {
+                    sdate: startDay,
+                    edate: endDay || startDay,
+                };
+                break;
+            default:
+                console.error('Invalid value');
+        }
+        console.log(option);
+
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            const response = await axios.post(`${API_URL}/therapist/earnnings`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${userToken}`,
+                },
             });
 
-            return () => {
-                unsubscribeForeground();
-                //unsubscribeBackground();
-            };
-        }
-    }, [])
+            console.log(JSON.stringify(response.data.data), 'response');
 
-    const handleSwipeLeft = (index) => {
-        const updatedNotifications = [...notifications];
-        updatedNotifications.splice(index, 1); // Remove the notification at the given index
-        setNotifications(updatedNotifications);
-        AsyncStorage.setItem('notifications', JSON.stringify(updatedNotifications)); // Update AsyncStorage
+            if (response.data.response === true) {
+                const res = response.data.data;
+                setIsLoading(false);
+                setEarningSum((res.earnings_sum).toFixed(2));
+                setGstCharges((res.gst_charges).toFixed(2));
+                setPayableSum((res.payable_sum).toFixed(2));
+            } else {
+                console.log('not okk');
+                setIsLoading(false);
+                Alert.alert('Oops..', "Something went wrong", [
+                    { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ]);
+            }
+        } catch (e) {
+            setIsLoading(false);
+            console.error('Fetch error:', e);
+            Alert.alert('Oops..', e.response?.data?.message, [
+                { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+        }
+    }
+
+    if (isLoading) {
+        return (
+            <Loader />
+        )
     }
 
 
@@ -74,7 +190,7 @@ const EarningScreen = ({ navigation }) => {
                     <View style={styles.outerView}>
                         <View style={styles.insideView}>
                             <Text style={styles.headerText}>Total Earnings</Text>
-                            <View style={{ width: responsiveWidth(30), }}>
+                            <View style={{ width: responsiveWidth(32), }}>
                                 <Dropdown
                                     style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
                                     placeholderStyle={styles.placeholderStyle}
@@ -91,16 +207,23 @@ const EarningScreen = ({ navigation }) => {
                                     value={value}
                                     onFocus={() => setIsFocus(true)}
                                     onBlur={() => setIsFocus(false)}
+                                    // onChange={item => {
+                                    //     setValue(item.value);
+                                    //     if (item.value == '5') {
+                                    //         setValue('5');
+                                    //         toggleCalendarModal()
+                                    //     } else {
+                                    //         fetchData()
+                                    //     }
+                                    //     setIsFocus(false);
+                                    // }}
                                     onChange={item => {
                                         setValue(item.value);
-                                        // if (item.value == '2') {
-                                        //     setValue('2');
-                                        //     toggleModal()
-                                        // } else if (item.value == '1') {
-                                        //     console.log(item.value, 'jjjjjj')
-                                        //     setValue('1');
-                                        //     fetchData(item.value)
-                                        // }
+                                        if (item.value === '5') {
+                                            toggleCalendarModal();
+                                        } else {
+                                            fetchData(item.value);
+                                        }
                                         setIsFocus(false);
                                     }}
                                 />
@@ -120,24 +243,24 @@ const EarningScreen = ({ navigation }) => {
                             />
                             <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemText}>Earning</Text>
-                                <Text style={styles.earningItemText}>₹ 5,00,000</Text>
+                                <Text style={styles.earningItemText}>₹ {earningSum}</Text>
                             </View>
                             <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemText}>GST </Text>
-                                <Text style={styles.earningItemText}>- ₹ 90,000</Text>
+                                <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
                             </View>
                             <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemText}>Net Payable</Text>
-                                <Text style={styles.earningItemText}>₹ 4,10,000</Text>
+                                <Text style={styles.earningItemText}>₹ {payableSum}</Text>
                             </View>
-                            <View style={styles.earningItemView}>
+                            {/* <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemText}>TDS</Text>
                                 <Text style={styles.earningItemText}>- ₹ 41,000</Text>
                             </View>
                             <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemTextBold}>Transfer to account</Text>
                                 <Text style={styles.earningItemTextBold}>₹ 3,69,000</Text>
-                            </View>
+                            </View> */}
                         </View>
                     </View>
                     {/* <View style={{ backgroundColor: '#FFFFFF', height: responsiveHeight(10), width: responsiveWidth(89), borderRadius: 20, padding: 10, elevation: 2, marginTop: responsiveHeight(2) }}>
@@ -188,6 +311,54 @@ const EarningScreen = ({ navigation }) => {
 
                 </View>
             </ScrollView>
+            <Modal
+                isVisible={isCalendarModalVisible}
+                style={{
+                    margin: 0, // Add this line to remove the default margin
+                    justifyContent: 'flex-end',
+                }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleCalendarModal} />
+                </View>
+                <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+                    <View style={{ padding: 20 }}>
+                        <View style={{ marginBottom: responsiveHeight(3) }}>
+                            <Text style={{ color: '#444', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(2) }}>Select your date</Text>
+                            <Calendar
+                                onDayPress={(day) => {
+                                    handleDayPress(day)
+                                }}
+                                //monthFormat={"yyyy MMM"}
+                                //hideDayNames={false}
+                                markingType={'period'}
+                                markedDates={markedDates}
+                                theme={{
+                                    selectedDayBackgroundColor: '#417AA4',
+                                    selectedDayTextColor: 'white',
+                                    monthTextColor: '#417AA4',
+                                    textMonthFontFamily: 'DMSans-Medium',
+                                    dayTextColor: 'black',
+                                    textMonthFontSize: 18,
+                                    textDayHeaderFontSize: 16,
+                                    arrowColor: '#2E2E2E',
+                                    dotColor: 'black'
+                                }}
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#E3EBF2',
+                                    borderRadius: 15,
+                                    height: responsiveHeight(50),
+                                    marginTop: 20,
+                                    marginBottom: 10
+                                }}
+                            />
+                            <View style={styles.buttonwrapper2}>
+                                <CustomButton label={"Ok"} onPress={() => { dateRangeSearch() }} />
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     )
 }
@@ -236,7 +407,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     outerView: {
-        height: responsiveHeight(45),
+        //height: responsiveHeight(45),
         width: '100%',
         backgroundColor: '#F4F5F5',
         padding: 20,
@@ -259,7 +430,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Bold',
     },
     priceBreakdownView: {
-        height: responsiveHeight(25),
+        // height: responsiveHeight(25),
         width: '100%',
         backgroundColor: '#FFF',
         padding: 20,
