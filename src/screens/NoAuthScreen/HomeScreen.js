@@ -657,8 +657,10 @@ export default function HomeScreen({ navigation }) {
                       <View style={styles.itemtimeView}>
                         <View style={styles.flexStyle}>
                           <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
-                          <View style={styles.itemTagView}>
-                            <Text style={styles.itemTagText}>New</Text>
+                          <View style={[styles.itemTagView, {
+                            backgroundColor: slot.repeat_user === 'no' ? '#FF9E45' : '#128807'
+                          }]}>
+                            <Text style={styles.itemTagText}>{slot.repeat_user === 'no' ? 'New' : 'Repeat'}</Text>
                           </View>
                         </View>
                         <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
@@ -1033,7 +1035,6 @@ const styles = StyleSheet.create({
   itemTagView: {
     paddingHorizontal: 10,
     paddingVertical: 2,
-    backgroundColor: '#FF9E45',
     borderRadius: 15,
     marginLeft: responsiveWidth(2)
   },
