@@ -15,6 +15,7 @@ import { API_URL } from '@env'
 import Toast from 'react-native-toast-message';
 import Loader from '../../utils/Loader';
 import { ActivityIndicator } from '@react-native-material/core';
+import { useFocusEffect } from '@react-navigation/native';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -1107,6 +1108,11 @@ const ScheduleScreen = ({ navigation }) => {
         fetchUpcomingSlot()
         fetchAvailability()
     }, [])
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchUpcomingSlot()
+        }, [])
+    )
 
     const cancelBooking = (id) => {
         Alert.alert('Hello', "Are you sure you want to cancel the booking?", [

@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, Platform, Alert } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, Platform, Alert, FlatList } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { ArrowGratter, ArrowUp, GreenTick, Payment, YellowTck, dateIcon, notifyImg, timeIcon, userPhoto } from '../../utils/Images'
+import { ArrowGratter, ArrowUp, GreenTick, Payment, RedCross, YellowTck, dateIcon, notifyImg, timeIcon, userPhoto } from '../../utils/Images'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
@@ -34,6 +34,7 @@ const EarningScreen = ({ navigation }) => {
     const [earningSum, setEarningSum] = useState(0);
     const [gstCharges, setGstCharges] = useState(0);
     const [payableSum, setPayableSum] = useState(0);
+    const [earningList, setEarningList] = useState([])
 
     useEffect(() => {
         setValue('1')
@@ -149,7 +150,7 @@ const EarningScreen = ({ navigation }) => {
                 },
             });
 
-            console.log(JSON.stringify(response.data.data), 'response');
+            console.log(JSON.stringify(response.data), 'response');
 
             if (response.data.response === true) {
                 const res = response.data.data;
@@ -157,6 +158,7 @@ const EarningScreen = ({ navigation }) => {
                 setEarningSum((res.earnings_sum).toFixed(2));
                 setGstCharges((res.gst_charges).toFixed(2));
                 setPayableSum((res.payable_sum).toFixed(2));
+                setEarningList(response.data.slots)
             } else {
                 console.log('not okk');
                 setIsLoading(false);
@@ -174,6 +176,49 @@ const EarningScreen = ({ navigation }) => {
             ]);
         }
     }
+
+    const renderEarningList = ({ item }) => (
+        <View style={styles.singleEarningView}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text style={styles.earningPersonName}>{item?.patient?.name}</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image
+                        source={
+                            item?.status === 'completed' ? GreenTick :
+                                item?.status === 'cancel' ? RedCross : YellowTck
+                        }
+                        style={styles.imageStyle}
+                    />
+                    <Text style={styles.statusText}>
+                        {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+                    </Text>
+                </View>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Order ID :</Text>
+                <Text style={styles.indexText}>{item?.order_id}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Date :</Text>
+                <Text style={styles.indexText}>{moment(item?.date).format('ddd, D MMMM')}, {moment(item?.start_time, 'HH:mm:ss').format('h:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('h:mm A')}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Appointment Time :</Text>
+                <Text style={styles.indexText}>{moment(item?.end_time, 'HH:mm:ss').diff(moment(item?.start_time, 'HH:mm:ss'), 'minutes')} Min</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
+                <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Rate :</Text>
+                <Text style={styles.indexText}>Rs {item?.therapist_details?.rate} for 30 Min</Text>
+            </View>
+            <View style={styles.paymentRecevedView}>
+                <Image
+                    source={Payment}
+                    style={styles.paymentIcon}
+                />
+                <Text style={styles.paymentRecevedText}>Payment Received : ₹ {item?.original_amount}</Text>
+            </View>
+        </View>
+    )
 
     if (isLoading) {
         return (
@@ -229,7 +274,7 @@ const EarningScreen = ({ navigation }) => {
                                 />
                             </View>
                         </View>
-                        <Text style={styles.priceText}>₹ 5,00,000</Text>
+                        <Text style={styles.priceText}>₹ {earningSum}</Text>
                         <View style={styles.priceBreakdownView}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text style={styles.earningText}>Earning Breakdown</Text>
@@ -272,42 +317,17 @@ const EarningScreen = ({ navigation }) => {
                             />
                         </View>
                     </View> */}
-                    <View style={styles.singleEarningView}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={styles.earningPersonName}>Rohit Sharma</Text>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Image
-                                    source={GreenTick}
-                                    style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                />
-                                <Text style={styles.statusText}>Completed</Text>
-                            </View>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Order ID :</Text>
-                            <Text style={styles.indexText}>1923659</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Date :</Text>
-                            <Text style={styles.indexText}>24-02-2024, 09:30 PM</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Appointment Time :</Text>
-                            <Text style={styles.indexText}>60 Min</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(1.5) }}>
-                            <Text style={[styles.indexText, { marginRight: responsiveWidth(2) }]}>Rate :</Text>
-                            <Text style={styles.indexText}>Rs 1100 for 30 Min</Text>
-                        </View>
-                        <View style={styles.paymentRecevedView}>
-                            <Image
-                                source={Payment}
-                                style={styles.paymentIcon}
-                            />
-                            <Text style={styles.paymentRecevedText}>Payment Received : ₹ 800</Text>
-                        </View>
-                    </View>
 
+                    <FlatList
+                        data={earningList}
+                        renderItem={renderEarningList}
+                        keyExtractor={(item) => item.id.toString()}
+                        maxToRenderPerBatch={10}
+                        windowSize={5}
+                        initialNumToRender={10}
+                        showsVerticalScrollIndicator={false}
+                        onEndReachedThreshold={0.5}
+                    />
 
                 </View>
             </ScrollView>
@@ -401,9 +421,8 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Regular'
     },
     imageStyle: {
-        height: 35,
-        width: 35,
-        marginBottom: 5,
+        height: 20,
+        width: 20,
         resizeMode: 'contain'
     },
     outerView: {
@@ -464,7 +483,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-SemiBold'
     },
     singleEarningView: {
-        width: '99%',
+        width: responsiveWidth(91),
         backgroundColor: '#FFF',
         padding: 20,
         borderRadius: 20,
