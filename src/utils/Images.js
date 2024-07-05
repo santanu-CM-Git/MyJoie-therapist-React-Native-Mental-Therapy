@@ -53,6 +53,7 @@ export const dateIcon = require("../assets/images/DateIcon.png");
 export const timeIcon = require("../assets/images/TimeIcon.png");
 export const ArrowGratter = require("../assets/images/ArrowGratter.png");
 export const ArrowUp = require("../assets/images/ArrowUp.png");
+export const ArrowDown = require("../assets/images/ArrowDown.png");
 export const YellowTck = require("../assets/images/YellowTick.png");
 export const GreenTick = require("../assets/images/GreenTick.png");
 export const RedCross = require("../assets/images/RedCross.png");
