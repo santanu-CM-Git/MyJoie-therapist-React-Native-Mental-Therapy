@@ -13,7 +13,7 @@ import InChatViewFile from '../../components/InChatViewFile';
 // import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 // import { getDatabase, ref, onValue, push } from '@react-native-firebase/database';
 // import * as firebase from "firebase/app"
-import { API_URL } from '@env'
+import { API_URL, AGORA_APP_ID } from '@env'
 import moment from 'moment-timezone';
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
@@ -37,7 +37,7 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Loader from '../../utils/Loader'
 // Define basic information
-const appId = '975e09acde854ac38b3304da072c111e';
+const appId = AGORA_APP_ID;
 const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
 const channelName = 'test';
 const uid = 0; // Local user UID, no need to modify
@@ -46,7 +46,7 @@ const ChatScreen = ({ navigation, route }) => {
   const routepage = useRoute();
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
-    appId: '975e09acde854ac38b3304da072c111e',
+    appId: AGORA_APP_ID,
     //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
     channel: 'test',
     token: '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==',
