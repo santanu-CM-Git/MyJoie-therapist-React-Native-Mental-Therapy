@@ -1840,11 +1840,11 @@ const ScheduleScreen = ({ navigation }) => {
                                             <Text style={styles.insidemodalTagtext}>New</Text>
                                         </View>
                                     </View>
-                                    {/* <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
+                                    <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
                                         onPress={() => isButtonEnabledForModal && navigation.navigate('ChatScreen', { details: modalDetails })}
                                         disabled={!isButtonEnabledForModal}
-                                    > */}
-                                    <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}>
+                                    >
+                                    {/* <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}> */}
                                         <View style={styles.inActiveButtonInsideView2}>
                                             <Text style={styles.activeButtonInsideText}>Join Now</Text>
                                         </View>

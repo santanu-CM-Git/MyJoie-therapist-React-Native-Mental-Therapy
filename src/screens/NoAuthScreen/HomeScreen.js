@@ -62,6 +62,7 @@ export default function HomeScreen({ navigation }) {
   const [isButtonEnabled, setisButtonEnabled] = useState(false);
   const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
   const [isButtonEnabledForModal, setisButtonEnabledForModal] = useState(null);
+  const [earningSum, setEarningSum] = useState(0);
 
   useEffect(() => {
     // Update currentDateTime every second
@@ -256,87 +257,6 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  // const fetchUpcomingSlot = async () => {
-  //   try {
-  //     const userToken = await AsyncStorage.getItem('userToken');
-  //     if (!userToken) {
-  //       console.log('No user token found');
-  //       setIsLoading(false);
-  //       return;
-  //     }
-
-  //     const response = await axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         "Authorization": `Bearer ${userToken}`,
-  //       },
-  //     });
-
-  //     const { data } = response.data;
-  //     console.log(JSON.stringify(data), 'fetch upcoming slot');
-
-  //     if (response.data.response) {
-  //       const sortedData = data.sort((a, b) => {
-  //         const dateA = new Date(a.date);
-  //         const dateB = new Date(b.date);
-  //         if (dateA < dateB) return -1;
-  //         if (dateA > dateB) return 1;
-
-  //         const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
-  //         const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
-  //         return timeA - timeB;
-  //       });
-
-  //       //console.log(sortedData, 'date wise sort data');
-  //       console.log(sortedData[0], 'first booking data');
-  //       setSortData(sortedData[0]);
-
-
-  //       const currentDateTime = moment().toDate();
-  //       const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
-  //       const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
-  //       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-  //       const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-  //       setisButtonEnabled(isButtonEnabled)
-
-  //       // Group by date
-  //       const groupedData = sortedData.reduce((acc, slot) => {
-  //         const date = moment(slot.date).format('DD-MM-YYYY');
-  //         if (!acc[date]) {
-  //           acc[date] = [];
-  //         }
-  //         acc[date].push(slot);
-  //         return acc;
-  //       }, {});
-
-  //       console.log(groupedData, 'grouped data');
-  //       setGroupedSlots(groupedData);
-  //     } else {
-  //       console.log('Response not OK');
-  //       Alert.alert('Oops..', "Something went wrong", [
-  //         {
-  //           text: 'Cancel',
-  //           onPress: () => console.log('Cancel Pressed'),
-  //           style: 'cancel',
-  //         },
-  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //       ]);
-  //     }
-
-  //   } catch (error) {
-  //     console.log(`Fetch upcoming slot error: ${error}`);
-  //     Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
-  //       {
-  //         text: 'Cancel',
-  //         onPress: () => console.log('Cancel Pressed'),
-  //         style: 'cancel',
-  //       },
-  //       { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //     ]);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   const formatISTTime = (time) => {
     return moment(time, 'HH:mm:ss').format('hh:mm A');
   };
@@ -477,14 +397,95 @@ export default function HomeScreen({ navigation }) {
 
   }
 
+  const fetchTherapistEarning = async (selectedValue, startDay, endDay) => {
+    setIsLoading(true)
+    let option = {};
+
+    switch (selectedValue) {
+        case '1':
+            const currentDate = moment().format('YYYY-MM-DD');
+            option = {
+                sdate: currentDate,
+                edate: currentDate,
+            };
+            break;
+        case '2':
+            const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+            option = {
+                sdate: yesterdayDate,
+                edate: yesterdayDate,
+            };
+            break;
+        case '3':
+            const startOfWeek = moment().startOf('week').format('YYYY-MM-DD');
+            const endOfWeek = moment().endOf('week').format('YYYY-MM-DD');
+            option = {
+                sdate: startOfWeek,
+                edate: endOfWeek,
+            };
+            break;
+        case '4':
+            const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+            const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+            option = {
+                sdate: startOfMonth,
+                edate: endOfMonth,
+            };
+            break;
+        case '5':
+            option = {
+                sdate: startDay,
+                edate: endDay || startDay,
+            };
+            break;
+        default:
+            console.error('Invalid value');
+    }
+    console.log(option);
+
+    try {
+        const userToken = await AsyncStorage.getItem('userToken');
+        const response = await axios.post(`${API_URL}/therapist/earnnings`, option, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${userToken}`,
+            },
+        });
+
+        console.log(JSON.stringify(response.data), 'response');
+
+        if (response.data.response === true) {
+            const res = response.data.data;
+            setIsLoading(false);
+            setEarningSum((res.earnings_sum).toFixed(2));
+        } else {
+            console.log('not okk');
+            setIsLoading(false);
+            Alert.alert('Oops..', "Something went wrong", [
+                { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+        }
+    } catch (e) {
+        setIsLoading(false);
+        console.error('Fetch error:', e);
+        Alert.alert('Oops..', e.response?.data?.message, [
+            { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
+    }
+}
+
   useEffect(() => {
     //fetchData();
     fetchUpcomingSlot()
+    fetchTherapistEarning('5')
   }, [])
 
   useFocusEffect(
     React.useCallback(() => {
       fetchUpcomingSlot()
+      fetchTherapistEarning('5')
     }, [])
   )
 
@@ -585,7 +586,7 @@ export default function HomeScreen({ navigation }) {
         <View style={{ marginBottom: 10 }}>
           <View style={styles.earningView}>
             <Text style={styles.earningText}>Earned this month</Text>
-            <Text style={styles.earningAmountText}>₹ 5,00,000</Text>
+            <Text style={styles.earningAmountText}>₹ {earningSum}</Text>
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
           {sortData.length !== 0 ?
