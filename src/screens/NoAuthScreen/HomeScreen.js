@@ -601,9 +601,12 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.userText}> {sortData?.patient?.name}</Text>
                   <Text style={styles.userSubText}> Patient</Text>
                 </View>
-                <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
+                {/* <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
                   onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: sortData })}
                   disabled={!isButtonEnabled}
+                > */}
+                  <TouchableOpacity style={[styles.joinButtonView]}
+                  onPress={() => navigation.navigate('ChatScreen', { details: sortData })}
                 >
                   <Text style={styles.joinButtonText}>Join Now</Text>
                 </TouchableOpacity>
@@ -902,7 +905,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEF8FF',
     borderColor: '#417AA4',
     borderWidth: 1,
-    padding: 10,
+    padding: 8,
     borderRadius: 20,
     flexDirection: 'row',
     justifyContent: 'center'

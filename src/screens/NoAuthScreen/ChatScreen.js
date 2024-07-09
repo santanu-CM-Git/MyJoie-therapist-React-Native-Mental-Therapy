@@ -64,7 +64,7 @@ const ChatScreen = ({ navigation, route }) => {
   const [therapistProfilePic, setTherapistProfilePic] = useState(route?.params?.details?.therapist?.profile_pic)
   const [patientId, setPatientId] = useState(route?.params?.details?.patient?.id)
   const [patientProfilePic, setPatientProfilePic] = useState(route?.params?.details?.patient?.profile_pic)
-  const [chatgenidres, setChatgenidres] = useState('4');
+  const [chatgenidres, setChatgenidres] = useState(route?.params?.details?.booking_uuid);
   const [isAttachImage, setIsAttachImage] = useState(false);
   const [isAttachFile, setIsAttachFile] = useState(false);
   const [imagePath, setImagePath] = useState('');
@@ -437,7 +437,8 @@ const ChatScreen = ({ navigation, route }) => {
     //     },
     //   },
     // ])
-    const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    // const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    const docid = chatgenidres;
     const messageRef = firestore().collection('chatrooms')
       .doc(docid)
       .collection('messages')
@@ -532,7 +533,8 @@ const ChatScreen = ({ navigation, route }) => {
       createdAt: new Date()
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg))
-    const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    // const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    const docid = chatgenidres;
 
     firestore().collection('chatrooms')
       .doc(docid)
