@@ -607,7 +607,7 @@ export default function HomeScreen({ navigation }) {
                 > */}
                   <TouchableOpacity style={[styles.joinButtonView]}
                   onPress={() => navigation.navigate('ChatScreen', { details: sortData })}
-                >
+                > 
                   <Text style={styles.joinButtonText}>Join Now</Text>
                 </TouchableOpacity>
 

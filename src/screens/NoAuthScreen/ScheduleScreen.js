@@ -1308,8 +1308,10 @@ const ScheduleScreen = ({ navigation }) => {
                                                     <View style={styles.itemtimeView}>
                                                         <View style={styles.flexStyle}>
                                                             <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
-                                                            <View style={styles.itemTagView}>
-                                                                <Text style={styles.itemTagText}>New</Text>
+                                                            <View style={[styles.itemTagView, {
+                                                                backgroundColor: slot.repeat_user === 'no' ? '#FF9E45' : '#128807'
+                                                            }]}>
+                                                                <Text style={styles.itemTagText}>{slot.repeat_user === 'no' ? 'New' : 'Repeat'}</Text>
                                                             </View>
                                                         </View>
                                                         <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
@@ -1844,7 +1846,7 @@ const ScheduleScreen = ({ navigation }) => {
                                         onPress={() => isButtonEnabledForModal && navigation.navigate('ChatScreen', { details: modalDetails })}
                                         disabled={!isButtonEnabledForModal}
                                     >
-                                    {/* <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}> */}
+                                        {/* <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}> */}
                                         <View style={styles.inActiveButtonInsideView2}>
                                             <Text style={styles.activeButtonInsideText}>Join Now</Text>
                                         </View>
