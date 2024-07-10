@@ -16,7 +16,7 @@ import InChatViewFile from '../../components/InChatViewFile';
 import { API_URL, AGORA_APP_ID } from '@env'
 import moment from 'moment-timezone';
 import firebase from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
+// import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore'
