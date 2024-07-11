@@ -956,10 +956,10 @@ const styles = StyleSheet.create({
   },
   textinputview: {
     marginBottom: responsiveHeight(10),
-    marginTop: responsiveHeight(5)
+    marginTop: responsiveHeight(2)
   },
   inputView: {
-    paddingVertical: 1
+    paddingVertical: 0
   },
   buttonwrapper: {
     paddingHorizontal: 20,

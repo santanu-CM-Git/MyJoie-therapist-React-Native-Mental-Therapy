@@ -1794,11 +1794,11 @@ const ScheduleScreen = ({ navigation }) => {
                     margin: 0, // Add this line to remove the default margin
                     justifyContent: 'flex-end',
                 }}>
-                <View style={styles.crossIcon}>
+                <View style={[styles.crossIcon, { bottom: modalDetails?.prescription_checked === 'yes' ? '78%': '33%', }]}>
                     <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
                 </View>
                 {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
-                <View style={styles.detailsModalView}>
+                <View style={[styles.detailsModalView, { height: modalDetails?.prescription_checked === 'yes' ? '75%' : '30%', }]}>
                     <View style={{ padding: 20 }}>
                         <View style={styles.flexStyle}>
                             <Text style={styles.modalHeaderText}>Patient Details</Text>
@@ -1855,24 +1855,28 @@ const ScheduleScreen = ({ navigation }) => {
 
                             </View>
                         </View>
-                        {isModalLoading ? (
-                            <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
-                        ) : (
-                            <FlatList
-                                data={therapistSessionHistory}
-                                renderItem={renderSessionHistory}
-                                keyExtractor={(item) => item.id.toString()}
-                                maxToRenderPerBatch={10}
-                                windowSize={5}
-                                initialNumToRender={10}
-                                horizontal={true}
-                                showsHorizontalScrollIndicator={false}
-                                getItemLayout={(therapistSessionHistory, index) => (
-                                    { length: 50, offset: 50 * index, index }
+                        {modalDetails?.prescription_checked === 'yes' ?
+                            <>
+                                {isModalLoading ? (
+                                    <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
+                                ) : (
+                                    <FlatList
+                                        data={therapistSessionHistory}
+                                        renderItem={renderSessionHistory}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        maxToRenderPerBatch={10}
+                                        windowSize={5}
+                                        initialNumToRender={10}
+                                        horizontal={true}
+                                        showsHorizontalScrollIndicator={false}
+                                        getItemLayout={(therapistSessionHistory, index) => (
+                                            { length: 50, offset: 50 * index, index }
+                                        )}
+                                    />
                                 )}
-                            />
-                        )}
-
+                            </>
+                            :
+                            null}
                     </View>
                 </View>
                 {/* </TouchableWithoutFeedback> */}
@@ -2090,12 +2094,11 @@ const styles = StyleSheet.create({
         width: 50,
         borderRadius: 25,
         position: 'absolute',
-        bottom: '78%',
         left: '45%',
         right: '45%'
     },
     detailsModalView: {
-        height: '75%',
+        // height: '75%',
         backgroundColor: '#fff',
         position: 'absolute',
         bottom: 0,

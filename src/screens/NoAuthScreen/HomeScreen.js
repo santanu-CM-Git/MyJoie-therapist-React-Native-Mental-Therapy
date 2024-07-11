@@ -402,79 +402,79 @@ export default function HomeScreen({ navigation }) {
     let option = {};
 
     switch (selectedValue) {
-        case '1':
-            const currentDate = moment().format('YYYY-MM-DD');
-            option = {
-                sdate: currentDate,
-                edate: currentDate,
-            };
-            break;
-        case '2':
-            const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
-            option = {
-                sdate: yesterdayDate,
-                edate: yesterdayDate,
-            };
-            break;
-        case '3':
-            const startOfWeek = moment().startOf('week').format('YYYY-MM-DD');
-            const endOfWeek = moment().endOf('week').format('YYYY-MM-DD');
-            option = {
-                sdate: startOfWeek,
-                edate: endOfWeek,
-            };
-            break;
-        case '4':
-            const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
-            const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
-            option = {
-                sdate: startOfMonth,
-                edate: endOfMonth,
-            };
-            break;
-        case '5':
-            option = {
-                sdate: startDay,
-                edate: endDay || startDay,
-            };
-            break;
-        default:
-            console.error('Invalid value');
+      case '1':
+        const currentDate = moment().format('YYYY-MM-DD');
+        option = {
+          sdate: currentDate,
+          edate: currentDate,
+        };
+        break;
+      case '2':
+        const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+        option = {
+          sdate: yesterdayDate,
+          edate: yesterdayDate,
+        };
+        break;
+      case '3':
+        const startOfWeek = moment().startOf('week').format('YYYY-MM-DD');
+        const endOfWeek = moment().endOf('week').format('YYYY-MM-DD');
+        option = {
+          sdate: startOfWeek,
+          edate: endOfWeek,
+        };
+        break;
+      case '4':
+        const startOfMonth = moment().startOf('month').format('YYYY-MM-DD');
+        const endOfMonth = moment().endOf('month').format('YYYY-MM-DD');
+        option = {
+          sdate: startOfMonth,
+          edate: endOfMonth,
+        };
+        break;
+      case '5':
+        option = {
+          sdate: startDay,
+          edate: endDay || startDay,
+        };
+        break;
+      default:
+        console.error('Invalid value');
     }
     console.log(option);
 
     try {
-        const userToken = await AsyncStorage.getItem('userToken');
-        const response = await axios.post(`${API_URL}/therapist/earnnings`, option, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${userToken}`,
-            },
-        });
+      const userToken = await AsyncStorage.getItem('userToken');
+      const response = await axios.post(`${API_URL}/therapist/earnnings`, option, {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${userToken}`,
+        },
+      });
 
-        console.log(JSON.stringify(response.data), 'response');
+      console.log(JSON.stringify(response.data), 'response');
 
-        if (response.data.response === true) {
-            const res = response.data.data;
-            setIsLoading(false);
-            setEarningSum((res.earnings_sum).toFixed(2));
-        } else {
-            console.log('not okk');
-            setIsLoading(false);
-            Alert.alert('Oops..', "Something went wrong", [
-                { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                { text: 'OK', onPress: () => console.log('OK Pressed') },
-            ]);
-        }
-    } catch (e) {
+      if (response.data.response === true) {
+        const res = response.data.data;
         setIsLoading(false);
-        console.error('Fetch error:', e);
-        Alert.alert('Oops..', e.response?.data?.message, [
-            { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
+        setEarningSum((res.earnings_sum).toFixed(2));
+      } else {
+        console.log('not okk');
+        setIsLoading(false);
+        Alert.alert('Oops..', "Something went wrong", [
+          { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
         ]);
+      }
+    } catch (e) {
+      setIsLoading(false);
+      console.error('Fetch error:', e);
+      Alert.alert('Oops..', e.response?.data?.message, [
+        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
     }
-}
+  }
 
   useEffect(() => {
     //fetchData();
@@ -750,23 +750,29 @@ export default function HomeScreen({ navigation }) {
 
               </View>
             </View>
-            {isModalLoading ? (
-              <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
-            ) : (
-              <FlatList
-                data={therapistSessionHistory}
-                renderItem={renderSessionHistory}
-                keyExtractor={(item) => item.id.toString()}
-                maxToRenderPerBatch={10}
-                windowSize={5}
-                initialNumToRender={10}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                getItemLayout={(therapistSessionHistory, index) => (
-                  { length: 50, offset: 50 * index, index }
+
+            {modalDetails?.prescription_checked === 'yes' ?
+              <>
+                {isModalLoading ? (
+                  <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
+                ) : (
+                  <FlatList
+                    data={therapistSessionHistory}
+                    renderItem={renderSessionHistory}
+                    keyExtractor={(item) => item.id.toString()}
+                    maxToRenderPerBatch={10}
+                    windowSize={5}
+                    initialNumToRender={10}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    getItemLayout={(therapistSessionHistory, index) => (
+                      { length: 50, offset: 50 * index, index }
+                    )}
+                  />
                 )}
-              />
-            )}
+              </>
+              :
+              null}
           </View>
         </View>
         {/* </TouchableWithoutFeedback> */}

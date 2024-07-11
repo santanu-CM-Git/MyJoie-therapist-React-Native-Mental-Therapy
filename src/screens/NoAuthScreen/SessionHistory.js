@@ -96,7 +96,6 @@ const SessionHistory = ({ navigation }) => {
     };
 
     const renderSessionHistory = ({ item }) => (
-        <TouchableOpacity onPress={() => toggleModal(item)}>
             <View style={styles.cardView}>
                 <View style={styles.flexStyle}>
                     <Text style={styles.userName}>{item?.patient?.name}</Text>
@@ -143,7 +142,6 @@ const SessionHistory = ({ navigation }) => {
                     </Text>
                 </View>
             </View>
-        </TouchableOpacity>
     );
 
     if (isLoading) {
@@ -204,7 +202,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 20,
         marginTop: responsiveHeight(1),
-        marginBottom: responsiveHeight(4),
+        marginBottom: responsiveHeight(1),
         borderColor: '#F4F5F5',
         borderWidth: 2,
     },
