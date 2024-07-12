@@ -34,6 +34,9 @@ const EarningScreen = ({ navigation }) => {
     const [earningSum, setEarningSum] = useState(0);
     const [gstCharges, setGstCharges] = useState(0);
     const [payableSum, setPayableSum] = useState(0);
+    const [walletAmount, setWalletAmount] = useState(0);
+    const [tdsAmount, setTdsAmount] = useState(0);
+    const [payable, setPayable] = useState(0)
     const [earningList, setEarningList] = useState([])
 
     useEffect(() => {
@@ -158,6 +161,9 @@ const EarningScreen = ({ navigation }) => {
                 setEarningSum((res.earnings_sum).toFixed(2));
                 setGstCharges((res.gst_charges).toFixed(2));
                 setPayableSum((res.payable_sum).toFixed(2));
+                setWalletAmount((res.briefcase).toFixed(2));
+                setTdsAmount((res.tds).toFixed(2));
+                setPayable((res.payable).toFixed(2))
                 setEarningList(response.data.slots)
             } else {
                 console.log('not okk');
@@ -287,7 +293,7 @@ const EarningScreen = ({ navigation }) => {
                                 style={styles.horizontalLine}
                             />
                             <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Earning</Text>
+                                <Text style={styles.earningItemText}>Earning (including GST)</Text>
                                 <Text style={styles.earningItemText}>₹ {earningSum}</Text>
                             </View>
                             <View style={styles.earningItemView}>
@@ -295,8 +301,20 @@ const EarningScreen = ({ navigation }) => {
                                 <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
                             </View>
                             <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Net Payable</Text>
+                                <Text style={styles.earningItemText}>Earning (excluding GST)</Text>
                                 <Text style={styles.earningItemText}>₹ {payableSum}</Text>
+                            </View>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>Wallet Amount</Text>
+                                <Text style={styles.earningItemText}>₹ {walletAmount}</Text>
+                            </View>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>TDS</Text>
+                                <Text style={styles.earningItemText}>₹ {tdsAmount}</Text>
+                            </View>
+                            <View style={styles.earningItemView}>
+                                <Text style={styles.earningItemText}>Net Payable</Text>
+                                <Text style={styles.earningItemText}>₹ {payable}</Text>
                             </View>
                             {/* <View style={styles.earningItemView}>
                                 <Text style={styles.earningItemText}>TDS</Text>
