@@ -601,13 +601,13 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.userText}> {sortData?.patient?.name}</Text>
                   <Text style={styles.userSubText}> Patient</Text>
                 </View>
-                <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
+                {/* <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
                   onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: sortData })}
                   disabled={!isButtonEnabled}
-                >
-                  {/* <TouchableOpacity style={[styles.joinButtonView]}
+                > */}
+                  <TouchableOpacity style={[styles.joinButtonView]}
                   onPress={() => navigation.navigate('ChatScreen', { details: sortData })}
-                >  */}
+                > 
                   <Text style={styles.joinButtonText}>Join Now</Text>
                 </TouchableOpacity>
 

@@ -945,7 +945,7 @@ const ChatScreen = ({ navigation, route }) => {
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
           </View>
         </TouchableOpacity> : null}
-      <View style={{ height: responsiveHeight(75), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+      <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
         {activeTab == 'chat' ?
           <GiftedChat
             messages={messages}
@@ -1044,7 +1044,7 @@ const ChatScreen = ({ navigation, route }) => {
               {videoCall ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <View style={{ height: responsiveHeight(75), }}>
+                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80) }}>
                     <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks}
                       styleProps={customPropsStyle} agoraConfig={agoraConfig}
                     />
