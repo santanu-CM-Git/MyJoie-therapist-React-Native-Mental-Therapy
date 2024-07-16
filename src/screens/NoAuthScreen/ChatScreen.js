@@ -153,6 +153,20 @@ const ChatScreen = ({ navigation, route }) => {
             const timeDifferenceInSeconds = Math.max(0, Math.floor((endDate - currentDate) / 1000));
             // Set the timer state
             setTimer(timeDifferenceInSeconds);
+
+            if (route?.params?.details?.mode_of_conversation === 'chat') {
+              setActiveTab('chat')
+              setVideoCall(false)
+              leave()
+            } else if (route?.params?.details?.mode_of_conversation === 'audio') {
+              join()
+              setActiveTab('audio')
+              setVideoCall(false)
+            } else if (route?.params?.details?.mode_of_conversation === 'video') {
+              setActiveTab('video')
+              setVideoCall(true)
+              leave()
+            }
             setIsLoading(false)
           } else {
             console.log('not okk')
@@ -921,15 +935,16 @@ const ChatScreen = ({ navigation, route }) => {
             </>
         }
       </View>
-      <TouchableOpacity onPress={() => toggleModal()}>
-        <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
-          <Image
-            source={summaryIcon}
-            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-          />
-          <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
-        </View>
-      </TouchableOpacity>
+      {route?.params?.details?.prescription_checked === 'yes' ?
+        <TouchableOpacity onPress={() => toggleModal()}>
+          <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
+            <Image
+              source={summaryIcon}
+              style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+            />
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
+          </View>
+        </TouchableOpacity> : null}
       <View style={{ height: responsiveHeight(75), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
         {activeTab == 'chat' ?
           <GiftedChat
