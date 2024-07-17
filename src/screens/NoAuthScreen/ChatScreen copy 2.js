@@ -28,7 +28,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import Loader from '../../utils/Loader'
 import BackgroundTimer from 'react-native-background-timer';
 
-
 // Define basic information
 const appId = AGORA_APP_ID;
 const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
@@ -67,8 +66,6 @@ const ChatScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('chat')
   const [isLoading, setIsLoading] = useState(true)
   const [timer, setTimer] = useState(0);
-  const [endTime, setEndTime] = useState(null);
-  const intervalRef = useRef(null);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -113,21 +110,21 @@ const ChatScreen = ({ navigation, route }) => {
   // };
 
   useEffect(() => {
-    if (endTime) {
-      intervalRef.current = BackgroundTimer.setInterval(() => {
-        const currentTime = new Date();
-        const endDate = moment(endTime, 'HH:mm:ss').toDate();
-        const timeDifferenceInSeconds = Math.max(0, Math.floor((endDate - currentTime) / 1000));
-        if (timeDifferenceInSeconds <= 0) {
-          BackgroundTimer.clearInterval(intervalRef.current);
-          handleTimerEnd();
-        }
-        setTimer(timeDifferenceInSeconds);
+    if (timer > 0) {
+      const interval = BackgroundTimer.setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer <= 1) {
+            BackgroundTimer.clearInterval(interval);
+            handleTimerEnd();
+            return 0;
+          }
+          return prevTimer - 1;
+        });
       }, 1000);
 
-      return () => BackgroundTimer.clearInterval(intervalRef.current);
+      return () => BackgroundTimer.clearInterval(interval);
     }
-  }, [endTime]);
+  }, [timer, handleTimerEnd]);
 
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -162,7 +159,10 @@ const ChatScreen = ({ navigation, route }) => {
 
       if (res.data.response === true) {
         const endTime = route?.params?.details?.end_time;
-        setEndTime(endTime); // Set the end time
+        const endDate = moment(endTime, 'HH:mm:ss').toDate();
+        const currentDate = new Date(); // Use the device's current time
+        const timeDifferenceInSeconds = Math.max(0, Math.floor((endDate - currentDate) / 1000));
+        setTimer(timeDifferenceInSeconds);
 
         if (route?.params?.details?.mode_of_conversation === 'chat') {
           setActiveTab('chat');
