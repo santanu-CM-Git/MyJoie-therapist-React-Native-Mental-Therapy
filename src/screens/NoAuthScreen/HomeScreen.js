@@ -22,7 +22,7 @@ import CustomButton from '../../components/CustomButton'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../../store/cartSlice';
-import { dateIcon, timeIcon, ArrowGratter, documentImg, infoImg, requestImg, userPhoto, deleteImg, editImg, blockIcon, GreenTick, Payment, dotIcon, YellowTck, RedCross } from '../../utils/Images';
+import { dateIcon, timeIcon, ArrowGratter, userPhoto,GreenTick, dotIcon, YellowTck, RedCross } from '../../utils/Images';
 import Loader from '../../utils/Loader';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import CustomHeader from '../../components/CustomHeader';
@@ -479,13 +479,13 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     //fetchData();
     fetchUpcomingSlot()
-    fetchTherapistEarning('5')
+    fetchTherapistEarning('4')
   }, [])
 
   useFocusEffect(
     React.useCallback(() => {
       fetchUpcomingSlot()
-      fetchTherapistEarning('5')
+      fetchTherapistEarning('4')
     }, [])
   )
 

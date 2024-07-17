@@ -6,6 +6,7 @@ import Thankyou from '../..//assets/images/misc/Thankyou.svg';
 import LinearGradient from 'react-native-linear-gradient';
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
+import { acceptImg } from '../../utils/Images';
 
 const ThankYouScreen = ({ navigation }) => {
   useFocusEffect(
@@ -39,7 +40,7 @@ const ThankYouScreen = ({ navigation }) => {
         }}>
         <View style={{ marginTop: 1, backgroundColor: '#F4F5F5', width: responsiveWidth(90), height: responsiveHeight(6), paddingHorizontal: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={require('../../assets/images/accept.png')}
+            source={acceptImg}
             style={{ height: 15, width: 15, resizeMode: 'contain' }}
           />
           <Text style={{ color: '#2D2D2D', alignSelf: 'center', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5), marginLeft: 10 }}>Registration Successfully Done</Text>
