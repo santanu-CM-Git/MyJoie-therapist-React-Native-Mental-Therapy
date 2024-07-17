@@ -880,6 +880,7 @@ const ChatScreen = ({ navigation, route }) => {
               _id: therapistId,
               //avatar: { uri: therapistProfilePic },
             }}
+            renderAvatar={null}
           //user={user}
           />
           : activeTab == 'audio' ?
