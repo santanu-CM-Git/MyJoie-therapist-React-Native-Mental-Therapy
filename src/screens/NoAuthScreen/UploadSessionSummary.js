@@ -77,34 +77,57 @@ const UploadSessionSummary = ({ navigation, route }) => {
     }
 
     const submitForm = () => {
-        const option = {
-            "slot_booked_id": route?.params?.bookedId,
-            "summary": summary
-        }
-        setIsLoading(true)
-        AsyncStorage.getItem('userToken', (err, usertoken) => {
-            axios.post(`${API_URL}/therapist/prescription-update`, option, {
-                headers: {
-                    Accept: 'application/json',
-                    "Authorization": `Bearer ${usertoken}`,
-                },
-            })
-                .then(res => {
-                    console.log(res.data)
-                    if (res.data.response == true) {
+        if(summary == ''){
+            Toast.show({
+                type: 'error',
+                text1: 'Hello',
+                text2: "Please write session summary",
+                position: 'top',
+                topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+        }else{
+            const option = {
+                "slot_booked_id": route?.params?.bookedId,
+                "summary": summary
+            }
+            setIsLoading(true)
+            AsyncStorage.getItem('userToken', (err, usertoken) => {
+                axios.post(`${API_URL}/therapist/prescription-update`, option, {
+                    headers: {
+                        Accept: 'application/json',
+                        "Authorization": `Bearer ${usertoken}`,
+                    },
+                })
+                    .then(res => {
+                        console.log(res.data)
+                        if (res.data.response == true) {
+                            setIsLoading(false)
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Hello',
+                                text2: "Upload data Successfully",
+                                position: 'top',
+                                topOffset: Platform.OS == 'ios' ? 55 : 20
+                            });
+                            navigation.navigate('Home')
+                        } else {
+                            console.log('not okk')
+                            setIsLoading(false)
+                            Alert.alert('Oops..', "Something went wrong", [
+                                {
+                                    text: 'Cancel',
+                                    onPress: () => console.log('Cancel Pressed'),
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => console.log('OK Pressed') },
+                            ]);
+                        }
+                    })
+                    .catch(e => {
                         setIsLoading(false)
-                        Toast.show({
-                            type: 'success',
-                            text1: 'Hello',
-                            text2: "Upload data Successfully",
-                            position: 'top',
-                            topOffset: Platform.OS == 'ios' ? 55 : 20
-                        });
-                        navigation.navigate('Home')
-                    } else {
-                        console.log('not okk')
-                        setIsLoading(false)
-                        Alert.alert('Oops..', "Something went wrong", [
+                        console.log(`user register error ${e}`)
+                        console.log(e.response)
+                        Alert.alert('Oops..', e.response?.data?.message, [
                             {
                                 text: 'Cancel',
                                 onPress: () => console.log('Cancel Pressed'),
@@ -112,22 +135,10 @@ const UploadSessionSummary = ({ navigation, route }) => {
                             },
                             { text: 'OK', onPress: () => console.log('OK Pressed') },
                         ]);
-                    }
-                })
-                .catch(e => {
-                    setIsLoading(false)
-                    console.log(`user register error ${e}`)
-                    console.log(e.response)
-                    Alert.alert('Oops..', e.response?.data?.message, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ]);
-                });
-        });
+                    });
+            });
+        }
+        
     }
 
 

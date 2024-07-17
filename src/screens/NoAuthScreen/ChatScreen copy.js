@@ -1,17 +1,21 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, KeyboardAvoidingView, PermissionsAndroid } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert, BackHandler } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GreenTick, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
+import { GreenTick, RedCross, YellowTck, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
 import { GiftedChat, InputToolbar, Bubble, Send, Composer } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import KeepAwake from 'react-native-keep-awake';
 import * as DocumentPicker from 'react-native-document-picker';
+import { useRoute } from '@react-navigation/native';
 import InChatFileTransfer from '../../components/InChatFileTransfer';
 import InChatViewFile from '../../components/InChatViewFile';
 // import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 // import { getDatabase, ref, onValue, push } from '@react-native-firebase/database';
 // import * as firebase from "firebase/app"
+import { API_URL, AGORA_APP_ID } from '@env'
+import moment from 'moment-timezone';
 import firebase from '@react-native-firebase/app';
 // import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
@@ -30,17 +34,20 @@ import {
   IRtcEngine,
   ChannelProfileType,
 } from 'react-native-agora';
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import Loader from '../../utils/Loader'
 // Define basic information
-const appId = '975e09acde854ac38b3304da072c111e';
+const appId = AGORA_APP_ID;
 const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
 const channelName = 'test';
 const uid = 0; // Local user UID, no need to modify
 
 const ChatScreen = ({ navigation, route }) => {
-
+  const routepage = useRoute();
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
-    appId: '975e09acde854ac38b3304da072c111e',
+    appId: AGORA_APP_ID,
     //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
     channel: 'test',
     token: '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==',
@@ -52,12 +59,13 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
   const [messages, setMessages] = useState([])
   const [therapistId, setTherapistId] = useState(route?.params?.details?.therapist?.id)
   const [therapistProfilePic, setTherapistProfilePic] = useState(route?.params?.details?.therapist?.profile_pic)
   const [patientId, setPatientId] = useState(route?.params?.details?.patient?.id)
   const [patientProfilePic, setPatientProfilePic] = useState(route?.params?.details?.patient?.profile_pic)
-  const [chatgenidres, setChatgenidres] = useState('4');
+  const [chatgenidres, setChatgenidres] = useState(route?.params?.details?.booking_uuid);
   const [isAttachImage, setIsAttachImage] = useState(false);
   const [isAttachFile, setIsAttachFile] = useState(false);
   const [imagePath, setImagePath] = useState('');
@@ -65,13 +73,197 @@ const ChatScreen = ({ navigation, route }) => {
   const [fileVisible, setFileVisible] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('chat')
+  const [isLoading, setIsLoading] = useState(true)
+  const [timer, setTimer] = useState(0);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
   useEffect(() => {
-    //receivedMsg()
+    console.log(routepage.name);
+    if (routepage.name === 'ChatScreen') {
+      const backAction = () => {
+        // Prevent the default back button action
+        return true;
+      };
+
+      // Add event listener to handle the back button
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+
+      // Clean up the event listener when the component unmounts
+      return () => backHandler.remove();
+    }
+  }, [routepage]);
+
+  useEffect(() => {
+    // If timer is 0, return early
+    if (timer === 0) return;
+
+    // Create an interval that decrements the timer value every second
+    const interval = setInterval(() => {
+      setTimer((timer) => timer - 1);
+    }, 1000);
+
+    // Clear the interval if the component is unmounted or timer reaches 0
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  const formatTime = (totalSeconds) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    // Format the time to ensure it always shows two digits for minutes and seconds
+    return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  useEffect(() => {
+    // //receivedMsg()
+    KeepAwake.activate();
+    console.log(route?.params?.details, 'details from home page')
+    fetchSessionHistory()
+    sessionStart()
   }, [])
+
+  const sessionStart = () => {
+    setIsLoading(true)
+    const currentTime = moment().format('HH:mm:ss');
+    const option = {
+      "booked_slot_id": route?.params?.details?.id,
+      "time": currentTime
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/slot-start`, option, {
+        headers: {
+          Accept: 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            const endTime = route?.params?.details?.end_time;
+            // Get the current time using moment
+            const currentTime = moment().format('HH:mm:ss');
+            // Create a new Date object for the end time, assuming the date is today
+            const endDate = moment(endTime, 'HH:mm:ss').toDate();
+            // Create a new Date object for the current time
+            const currentDate = moment(currentTime, 'HH:mm:ss').toDate();
+            // Calculate the difference in seconds
+            const timeDifferenceInSeconds = Math.max(0, Math.floor((endDate - currentDate) / 1000));
+            // Set the timer state
+            setTimer(timeDifferenceInSeconds);
+
+            if (route?.params?.details?.mode_of_conversation === 'chat') {
+              setActiveTab('chat')
+              setVideoCall(false)
+              leave()
+            } else if (route?.params?.details?.mode_of_conversation === 'audio') {
+              join()
+              setActiveTab('audio')
+              setVideoCall(false)
+            } else if (route?.params?.details?.mode_of_conversation === 'video') {
+              setActiveTab('video')
+              setVideoCall(true)
+              leave()
+            }
+            setIsLoading(false)
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user update error ${e}`)
+          console.log(e.response.data?.response.records)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  }
+
+  useEffect(() => {
+    if (timer > 0) {
+      const intervalId = setInterval(() => {
+        setTimer(prevTimer => {
+          if (prevTimer <= 1) {
+            clearInterval(intervalId);
+            handleTimerEnd();
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+
+      // Cleanup the interval on component unmount
+      return () => clearInterval(intervalId);
+    }
+  }, [timer]);
+
+  const handleTimerEnd = () => {
+    console.log('Timer has ended. Execute your function here.');
+    const currentTime = moment().format('HH:mm:ss');
+    const option = {
+      "booked_slot_id": route?.params?.details?.id,
+      "time": currentTime
+    }
+    console.log(option)
+    AsyncStorage.getItem('userToken', (err, usertoken) => {
+      axios.post(`${API_URL}/therapist/slot-complete`, option, {
+        headers: {
+          Accept: 'application/json',
+          "Authorization": 'Bearer ' + usertoken,
+        },
+      })
+        .then(res => {
+          console.log(res.data)
+          if (res.data.response == true) {
+            navigation.navigate('UploadSessionSummary', { bookedId: route?.params?.details?.id, pname: route?.params?.details?.patient?.name })
+          } else {
+            console.log('not okk')
+            setIsLoading(false)
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
+        })
+        .catch(e => {
+          setIsLoading(false)
+          console.log(`user update error ${e}`)
+          console.log(e.response.data?.response.records)
+          Alert.alert('Oops..', e.response?.data?.message, [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        });
+    });
+  };
 
 
   const _pickDocument = async () => {
@@ -247,9 +439,6 @@ const ChatScreen = ({ navigation, route }) => {
     return <FontAwesome name="angle-double-down" size={28} color="#000" />;
   };
 
-  useEffect(() => {
-    console.log(route?.params?.details, 'details from home page')
-  }, [])
 
   useEffect(() => {
     // setMessages([
@@ -264,7 +453,8 @@ const ChatScreen = ({ navigation, route }) => {
     //     },
     //   },
     // ])
-    const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    // const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    const docid = chatgenidres;
     const messageRef = firestore().collection('chatrooms')
       .doc(docid)
       .collection('messages')
@@ -359,7 +549,8 @@ const ChatScreen = ({ navigation, route }) => {
       createdAt: new Date()
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg))
-    const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    // const docid = patientId > therapistId ? therapistId + "-" + patientId : patientId + "-" + therapistId
+    const docid = chatgenidres;
 
     firestore().collection('chatrooms')
       .doc(docid)
@@ -572,24 +763,112 @@ const ChatScreen = ({ navigation, route }) => {
     // other configurations
   };
 
-  
+  const fetchSessionHistory = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        console.log('No user token found');
+        //setIsLoading(false);
+        return;
+      }
+      const option = {
+        "patient_id": patientId
+      }
+      const response = await axios.post(`${API_URL}/therapist/patient-previous-session-check`, option, {
+        headers: {
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${userToken}`,
+        },
+      });
+
+      const { data } = response.data;
+      console.log(JSON.stringify(data), 'fetch session history');
+      setTherapistSessionHistory(data)
+
+    } catch (error) {
+      console.log(`Fetch upcoming slot error: ${error}`);
+      Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    } finally {
+      //setIsLoading(false);
+    }
+  }
+
+  const renderSessionHistory = ({ item }) => (
+    <View style={styles.sessionHistoryView}>
+      <View style={{ padding: 15 }}>
+        <View style={styles.sessionHistoryInfo}>
+          <Text style={styles.sessionHistoryInfoName}>{item?.patient?.name}</Text>
+          <View style={styles.sessionHistoryImgView}>
+            <Image
+              source={
+                item?.status === 'completed' ? GreenTick :
+                  item?.status === 'scheduled' ? YellowTck :
+                    item?.status === 'cancel' ? RedCross :
+                      null // You can set a default image or handle the null case appropriately
+              }
+              style={styles.sessionHistoryImg}
+            />
+            <Text style={styles.sessionHistoryStatus}>
+              {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Order ID :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{item?.order_id}</Text>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Date :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{moment(item?.date).format('ddd, D MMMM')}, {moment(item?.start_time, 'HH:mm:ss').format('h:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('h:mm A')}</Text>
+        </View>
+        <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Appointment Time :</Text>
+          <Text style={styles.sessionHistorySection1Value}>{moment(item?.end_time, 'HH:mm:ss').diff(moment(item?.start_time, 'HH:mm:ss'), 'minutes')} Min</Text>
+        </View>
+        {/* <View style={styles.sessionHistorySection1}>
+          <Text style={styles.sessionHistorySection1Header}>Rate :</Text>
+          <Text style={styles.sessionHistorySection1Value}>Rs {item?.therapist_details?.rate} for 30 Min</Text>
+        </View> */}
+        <View style={{ marginTop: responsiveHeight(1.5) }}>
+          <Text style={styles.sessionHistorySection1Header}>Session Summary :</Text>
+          <Text style={[styles.sessionHistorySection1Value, { marginTop: 5 }]}>{item?.prescription_content}</Text>
+        </View>
+      </View>
+    </View>
+
+  )
+
+  if (isLoading) {
+    return (
+      <Loader />
+    )
+  }
 
   return (
     <SafeAreaView style={styles.Container} behavior="padding" keyboardVerticalOffset={30} enabled>
       {/* <CustomHeader commingFrom={'chat'} onPress={() => navigation.goBack()} title={'Admin Community'} /> */}
-      <View style={{ height: responsiveHeight(10), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 5 }}>
+      <View style={styles.Containerheader}>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Ionicons name="chevron-back" size={25} color="#000" onPress={() => navigation.goBack()} />
+          <Ionicons name="chevron-back" size={25} color="#000" />
           <View style={{ flexDirection: 'column', marginLeft: 10 }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>{route?.params?.details?.patient?.name}</Text>
             <Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Patient</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#CC2131', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(5) }}>14:59</Text>
-          <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
-            <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>End</Text>
-          </View>
+          <Text style={{ color: '#CC2131', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginRight: responsiveWidth(5) }}>{formatTime(timer)}</Text>
+          <TouchableOpacity onPress={() => handleTimerEnd()}>
+            <View style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
+              <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>End</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 }}>
@@ -658,16 +937,17 @@ const ChatScreen = ({ navigation, route }) => {
             </>
         }
       </View>
-      <TouchableOpacity onPress={() => toggleModal()}>
-        <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
-          <Image
-            source={summaryIcon}
-            style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
-          />
-          <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
-        </View>
-      </TouchableOpacity>
-      <View style={{ height: responsiveHeight(75), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+      {route?.params?.details?.prescription_checked === 'yes' ?
+        <TouchableOpacity onPress={() => toggleModal()}>
+          <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
+            <Image
+              source={summaryIcon}
+              style={{ height: 20, width: 20, resizeMode: 'contain', marginRight: 5 }}
+            />
+            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Previous Session Summary</Text>
+          </View>
+        </TouchableOpacity> : null}
+      <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), width: responsiveWidth(100), backgroundColor: '#FFF', position: 'absolute', bottom: 0, paddingBottom: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
         {activeTab == 'chat' ?
           <GiftedChat
             messages={messages}
@@ -766,7 +1046,7 @@ const ChatScreen = ({ navigation, route }) => {
               {videoCall ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <View style={{ height: responsiveHeight(75), }}>
+                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80) }}>
                     <AgoraUIKit connectionData={connectionData} rtcCallbacks={rtcCallbacks}
                       styleProps={customPropsStyle} agoraConfig={agoraConfig}
                     />
@@ -794,44 +1074,21 @@ const ChatScreen = ({ navigation, route }) => {
           <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
         </View>
         {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
-        <View style={{ height: '50%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
-          <View style={{ padding: 20 }}>
-            <ScrollView horizontal={true}>
-              <View style={styles.sessionHistoryView}>
-                <View style={{ padding: 15 }}>
-                  <View style={styles.sessionHistoryInfo}>
-                    <Text style={styles.sessionHistoryInfoName}>Rohit Sharma</Text>
-                    <View style={styles.sessionHistoryImgView}>
-                      <Image
-                        source={GreenTick}
-                        style={styles.sessionHistoryImg}
-                      />
-                      <Text style={styles.sessionHistoryStatus}>Completed</Text>
-                    </View>
-                  </View>
-                  <View style={styles.sessionHistorySection1}>
-                    <Text style={styles.sessionHistorySection1Header}>Order ID :</Text>
-                    <Text style={styles.sessionHistorySection1Value}>1923659</Text>
-                  </View>
-                  <View style={styles.sessionHistorySection1}>
-                    <Text style={styles.sessionHistorySection1Header}>Date :</Text>
-                    <Text style={styles.sessionHistorySection1Value}>24-02-2024, 09:30 PM</Text>
-                  </View>
-                  <View style={styles.sessionHistorySection1}>
-                    <Text style={styles.sessionHistorySection1Header}>Appointment Time :</Text>
-                    <Text style={styles.sessionHistorySection1Value}>60 Min</Text>
-                  </View>
-                  <View style={styles.sessionHistorySection1}>
-                    <Text style={styles.sessionHistorySection1Header}>Rate :</Text>
-                    <Text style={styles.sessionHistorySection1Value}>Rs 1100 for 30 Min</Text>
-                  </View>
-                  <View style={{ marginTop: responsiveHeight(1.5) }}>
-                    <Text style={styles.sessionHistorySection1Header}>Session Summary :</Text>
-                    <Text style={[styles.sessionHistorySection1Value,{marginTop:5}]}>The consultation session focused on exploring and addressing the patient's mental health concerns. The patient expressed their struggles with anxiety and depressive symptoms, impacting various aspects of their daily life. The therapist employed a person-centered approach, providing a safe and non-judgmental space for the patient to share their experiences.</Text>
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
+        <View style={{ height: '52%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+          <View style={{ paddingVertical: 10 }}>
+            <FlatList
+              data={therapistSessionHistory}
+              renderItem={renderSessionHistory}
+              keyExtractor={(item) => item.id.toString()}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              initialNumToRender={10}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              getItemLayout={(therapistSessionHistory, index) => (
+                { length: 50, offset: 50 * index, index }
+              )}
+            />
 
           </View>
         </View>
@@ -848,6 +1105,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#EAECF0',
     paddingBottom: 10,
+  },
+  Containerheader: {
+    height: responsiveHeight(10),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 5
   },
   messageContainer: {
     backgroundColor: 'red',
@@ -934,12 +1198,12 @@ const styles = StyleSheet.create({
   },
   //modal
   sessionHistoryView: {
-    width: responsiveWidth(89),
+    width: responsiveWidth(92),
     borderRadius: 15,
     borderColor: '#E3E3E3',
     borderWidth: 1,
     marginTop: responsiveHeight(2),
-    marginRight: 5
+    marginHorizontal: responsiveWidth(4)
   },
   sessionHistoryInfo: {
     flexDirection: 'row',
