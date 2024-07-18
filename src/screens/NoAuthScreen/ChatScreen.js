@@ -150,52 +150,119 @@ const ChatScreen = ({ navigation, route }) => {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime,
     };
-    console.log(option);
+    console.log('Request Payload:', option);
+
     try {
+      // Retrieve user token
       const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        throw new Error('User token is missing');
+      }
+
+      // Make API request
       const res = await axios.post(`${API_URL}/therapist/slot-start`, option, {
         headers: {
           Accept: 'application/json',
-          "Authorization": 'Bearer ' + userToken,
+          "Authorization": `Bearer ${userToken}`,
         },
       });
 
+      // Handle API response
       if (res.data.response === true) {
         const endTime = route?.params?.details?.end_time;
         setEndTime(endTime); // Set the end time
 
-        if (route?.params?.details?.mode_of_conversation === 'chat') {
+        const mode = route?.params?.details?.mode_of_conversation;
+        if (mode === 'chat') {
           setActiveTab('chat');
           setVideoCall(false);
           leave();
-        } else if (route?.params?.details?.mode_of_conversation === 'audio') {
+        } else if (mode === 'audio') {
           join();
           setActiveTab('audio');
           setVideoCall(false);
-        } else if (route?.params?.details?.mode_of_conversation === 'video') {
+        } else if (mode === 'video') {
           setActiveTab('video');
           setVideoCall(true);
           leave();
         }
+
         setIsLoading(false);
       } else {
-        console.log('not okk');
-        setIsLoading(false);
+        console.log('API Response Error:', res.data);
         Alert.alert('Oops..', "Something went wrong", [
           { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ]);
+        setIsLoading(false);
       }
     } catch (e) {
       setIsLoading(false);
-      console.log(`user update error ${e}`);
-      console.log(e.response?.data?.response.records);
-      Alert.alert('Oops..', e.response?.data?.message, [
+      console.error('Session Start Error:', e);
+
+      // Handle specific API errors if available
+      const errorMessage = e.response?.data?.message || 'An unexpected error occurred';
+      Alert.alert('Oops..', errorMessage, [
         { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     }
   };
+
+
+  // const sessionStart = async () => {
+  //   setIsLoading(true);
+  //   const currentTime = moment().format('HH:mm:ss');
+  //   const option = {
+  //     "booked_slot_id": route?.params?.details?.id,
+  //     "time": currentTime,
+  //   };
+  //   console.log(option);
+  //   try {
+  //     const userToken = await AsyncStorage.getItem('userToken');
+  //     const res = await axios.post(`${API_URL}/therapist/slot-start`, option, {
+  //       headers: {
+  //         Accept: 'application/json',
+  //         "Authorization": 'Bearer ' + userToken,
+  //       },
+  //     });
+
+  //     if (res.data.response === true) {
+  //       const endTime = route?.params?.details?.end_time;
+  //       setEndTime(endTime); // Set the end time
+
+  //       if (route?.params?.details?.mode_of_conversation === 'chat') {
+  //         setActiveTab('chat');
+  //         setVideoCall(false);
+  //         leave();
+  //       } else if (route?.params?.details?.mode_of_conversation === 'audio') {
+  //         join();
+  //         setActiveTab('audio');
+  //         setVideoCall(false);
+  //       } else if (route?.params?.details?.mode_of_conversation === 'video') {
+  //         setActiveTab('video');
+  //         setVideoCall(true);
+  //         leave();
+  //       }
+  //       setIsLoading(false);
+  //     } else {
+  //       console.log('not okk');
+  //       setIsLoading(false);
+  //       Alert.alert('Oops..', "Something went wrong", [
+  //         { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //       ]);
+  //     }
+  //   } catch (e) {
+  //     setIsLoading(false);
+  //     console.log(`user update error ${e}`);
+  //     console.log(e.response?.data?.response.records);
+  //     Alert.alert('Oops..', e.response?.data?.message, [
+  //       { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+  //       { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //     ]);
+  //   }
+  // };
 
   // useEffect(() => {
   //   if (timer > 0) {
