@@ -150,7 +150,7 @@ const ChatScreen = ({ navigation, route }) => {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime,
     };
-    console.log('Request Payload:', option);
+    console.log('Request Payload:', option); 
 
     try {
       // Retrieve user token
