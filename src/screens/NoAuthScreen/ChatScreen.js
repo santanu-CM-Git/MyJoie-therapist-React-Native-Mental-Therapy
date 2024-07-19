@@ -29,21 +29,26 @@ import Loader from '../../utils/Loader'
 import BackgroundTimer from 'react-native-background-timer';
 
 
-// Define basic information
-const appId = AGORA_APP_ID;
-const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
-const channelName = 'test';
-const uid = 0; // Local user UID, no need to modify
-
 const ChatScreen = ({ navigation, route }) => {
   const routepage = useRoute();
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
     appId: AGORA_APP_ID,
     //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
-    channel: 'test',
-    token: '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==',
+    channel: route?.params?.details?.agora_channel_id,
+    token: route?.params?.details?.agora_token,
+    //channel: 'test',
+    //token: '007eJxTYDAVFbklH3aK66/wmnl3vGvZ91vrH36+Q87qq2NNcPAViQ8KDGamaUYmaYkpyamGRibmaZYWyRZp5snm5olGxkapyRapJ2RmpTUEMjJwH5VmYWSAQBCfhaEktbiEgQEA75keUg=='
   };
+
+  // Define basic information
+  const appId = AGORA_APP_ID;
+  const token = route?.params?.details?.agora_token;
+  const channelName = route?.params?.details?.agora_channel_id;
+  //const token = '007eJxTYDAVFbklH3aK66/wmnl3vGvZ91vrH36+Q87qq2NNcPAViQ8KDGamaUYmaYkpyamGRibmaZYWyRZp5snm5olGxkapyRapJ2RmpTUEMjJwH5VmYWSAQBCfhaEktbiEgQEA75keUg==';
+  //const channelName = 'test';
+  const uid = 0; // Local user UID, no need to modify
+
   const rtcCallbacks = {
     EndCall: () => {
       setVideoCall(false);
@@ -150,7 +155,7 @@ const ChatScreen = ({ navigation, route }) => {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime,
     };
-    console.log('Request Payload:', option); 
+    console.log('Request Payload:', option);
 
     try {
       // Retrieve user token
