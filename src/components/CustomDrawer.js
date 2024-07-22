@@ -110,34 +110,16 @@ const CustomDrawer = props => {
           <DrawerItemList {...props} />
         </View>
       </DrawerContentScrollView>
-      <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc' }}>
-        {/* <TouchableOpacity onPress={() => { }} style={{ paddingVertical: 15 }}>
+      <View style={{ padding: 20, borderTopWidth: 1, borderTopColor: '#ccc', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <TouchableOpacity onPress={() => { logout() }} style={{ paddingVertical: 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="share-social-outline" size={22} />
-            <Text
-              style={{
-                fontSize: 15,
-                fontFamily: 'Outfit-Medium',
-                marginLeft: 5,
-              }}>
-              Tell a Friend
-            </Text>
-          </View>
-        </TouchableOpacity> */}
-        <TouchableOpacity onPress={() => { logout() }} style={{ paddingVertical: 15 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="exit-outline" size={22} color={'#000'}/>
-            <Text
-              style={{
-                fontSize: 15,
-                fontFamily: 'DMSans-Medium',
-                marginLeft: 5,
-                color: '#2D2D2D'
-              }}>
-              Sign Out
-            </Text>
+            <Ionicons name="exit-outline" size={22} color={'#000'} />
+            <Text style={{ fontSize: 15, fontFamily: 'DMSans-Medium', marginLeft: 5, color: '#2D2D2D' }}>Sign Out</Text>
           </View>
         </TouchableOpacity>
+        <View style={{ paddingVertical: 5 }}>
+          <Text style={{ fontSize: responsiveFontSize(1.8), fontFamily: 'Outfit-Medium', color: '#949494' }}>Version 1.0.0</Text>
+        </View>
       </View>
     </View>
   );

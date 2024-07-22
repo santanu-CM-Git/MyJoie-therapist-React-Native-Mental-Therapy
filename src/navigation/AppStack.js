@@ -32,7 +32,7 @@ const AuthStack = () => {
         drawerLabelStyle: {
           marginLeft: -25,
           fontFamily: 'DMSans-Medium',
-          fontSize: 15,
+          fontSize: responsiveFontSize(1.8),
         },
         //swipeEdgeWidth: 0, //for off the drawer swipe
       }}>
@@ -97,7 +97,7 @@ const AuthStack = () => {
         }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="  testtttt"
         component={TestPage}
         options={{
@@ -106,7 +106,7 @@ const AuthStack = () => {
             <Image source={PolicyIcon} style={{ width: 25,height: 25}} color={color}/>
           ),
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 };
