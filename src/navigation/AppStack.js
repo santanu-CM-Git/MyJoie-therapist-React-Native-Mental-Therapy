@@ -37,62 +37,62 @@ const AuthStack = () => {
         //swipeEdgeWidth: 0, //for off the drawer swipe
       }}>
       <Drawer.Screen
-        name="  Home"
+        name="Home"
         component={TabNavigator}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={homeImg} style={{ width: 25,height: 25,}} color={color}/>
+            <Image source={homeImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
       <Drawer.Screen
-        name="  Availability"
+        name="Availability"
         component={ScheduleScreen}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={availabilityBlackImg} style={{ width: 25,height: 25,}} color={color}/>
+            <Image source={availabilityBlackImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
        <Drawer.Screen
-        name="  Earning"
+        name="Earning"
         component={EarningScreen}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={earningBlackImg} style={{ width: 25,height: 25,}} color={color}/>
+            <Image source={earningBlackImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
       <Drawer.Screen
-        name="  Session History"
+        name="Session History"
         component={SessionHistory}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={SessionIcon} style={{ width: 25,height: 25}} color={color}/>
+            <Image source={SessionIcon} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
        <Drawer.Screen
-        name="  Customer Support"
+        name="Customer Support"
         component={CustomerSupport}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={helpImg} style={{ width: 25,height: 25}} color={color}/>
+            <Image source={helpImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
       <Drawer.Screen
-        name="  Privacy Policy"
+        name="Privacy Policy"
         component={PrivacyPolicy}
         options={{
           drawerIcon: ({color}) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={PolicyIcon} style={{ width: 25,height: 25}} color={color}/>
+            <Image source={PolicyIcon} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
           ),
         }}
       />
