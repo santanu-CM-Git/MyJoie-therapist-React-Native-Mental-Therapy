@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
@@ -13,12 +13,14 @@ import InputField from '../../components/InputField';
 import CustomButton from '../../components/CustomButton';
 import { GreenTick, RedCross, YellowTck } from '../../utils/Images';
 import CustomHeader from '../../components/CustomHeader';
+import Toast from 'react-native-toast-message';
 
 const SessionHistory = ({ navigation }) => {
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([]);
     const [perPage, setPerPage] = useState(10);
     const [pageno, setPageno] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
+    const [summaryData, setSummaryData] = useState('')
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedSession, setSelectedSession] = useState(null);
@@ -49,6 +51,7 @@ const SessionHistory = ({ navigation }) => {
             });
 
             const responseData = response.data.data.data;
+            console.log(responseData, 'session historyy')
             setTherapistSessionHistory(prevData => page === 1 ? responseData : [...prevData, ...responseData]);
             if (responseData.length === 0) {
                 setHasMore(false); // No more data to load
@@ -95,7 +98,11 @@ const SessionHistory = ({ navigation }) => {
         );
     };
 
-    const renderSessionHistory = ({ item }) => (
+    const renderSessionHistory = ({ item }) => {
+        const sessionEndDate = moment(item?.date + ' ' + item?.end_time, 'YYYY-MM-DD HH:mm:ss');
+        const currentDate = moment();
+        const isWithin24Hours = currentDate.diff(sessionEndDate, 'hours') < 24;
+        return (
             <View style={styles.cardView}>
                 <View style={styles.flexStyle}>
                     <Text style={styles.userName}>{item?.patient?.name}</Text>
@@ -103,7 +110,7 @@ const SessionHistory = ({ navigation }) => {
                         <Image
                             source={
                                 item?.status === 'completed' ? GreenTick :
-                                        item?.status === 'cancel' ? RedCross : YellowTck
+                                    item?.status === 'cancel' ? RedCross : YellowTck
                             }
                             style={styles.iconstyle}
                         />
@@ -132,9 +139,11 @@ const SessionHistory = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={styles.paraIndex}>Session Summary :</Text>
                         {item?.prescription_content ? null : (
-                            <TouchableOpacity onPress={() => toggleModal(item)}>
-                                <Text style={styles.editText}>Add Summary</Text>
-                            </TouchableOpacity>
+                            isWithin24Hours && (
+                                <TouchableOpacity onPress={() => toggleModal(item)}>
+                                    <Text style={styles.editText}>Add Summary</Text>
+                                </TouchableOpacity>
+                            )
                         )}
                     </View>
                     <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>
@@ -142,7 +151,75 @@ const SessionHistory = ({ navigation }) => {
                     </Text>
                 </View>
             </View>
-    );
+        )
+    };
+
+    const submitForm = () => {
+        if(summaryData == ''){
+            Toast.show({
+                type: 'error',
+                text1: 'Hello',
+                text2: "Please write session summary",
+                position: 'top',
+                topOffset: Platform.OS == 'ios' ? 55 : 20
+            });
+        }else{
+            const option = {
+                "slot_booked_id": selectedSession?.id,
+                "summary": summaryData
+            }
+            setIsLoading(true)
+            AsyncStorage.getItem('userToken', (err, usertoken) => {
+                axios.post(`${API_URL}/therapist/prescription-update`, option, {
+                    headers: {
+                        Accept: 'application/json',
+                        "Authorization": `Bearer ${usertoken}`,
+                    },
+                })
+                    .then(res => {
+                        console.log(res.data)
+                        if (res.data.response == true) {
+                            setIsLoading(false)
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Hello',
+                                text2: "Upload data Successfully",
+                                position: 'top',
+                                topOffset: Platform.OS == 'ios' ? 55 : 20
+                            });
+                            fetchSessionHistory(1);
+                            setModalVisible(false)
+                            setIsLoading(false)
+                        } else {
+                            console.log('not okk')
+                            setIsLoading(false)
+                            Alert.alert('Oops..', "Something went wrong", [
+                                {
+                                    text: 'Cancel',
+                                    onPress: () => console.log('Cancel Pressed'),
+                                    style: 'cancel',
+                                },
+                                { text: 'OK', onPress: () => console.log('OK Pressed') },
+                            ]);
+                        }
+                    })
+                    .catch(e => {
+                        setIsLoading(false)
+                        console.log(`user register error ${e}`)
+                        console.log(e.response)
+                        Alert.alert('Oops..', e.response?.data?.message, [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    });
+            });
+        }
+        
+    }
 
     if (isLoading) {
         return <Loader />;
@@ -173,12 +250,12 @@ const SessionHistory = ({ navigation }) => {
                 <View style={styles.modalContent}>
                     <Text style={styles.modalHeader}>Session Summary</Text>
                     <InputField
-                        label={'Aadhar No'}
-                        value={selectedSession?.order_id}
+                        label={'Enter Seesion Summary'}
+                        value={summaryData}
                         inputType={'address'}
-                        onChangeText={(text) => console.log(text)} // Change as needed
+                        onChangeText={(text) => setSummaryData(text)} // Change as needed
                     />
-                    <CustomButton label={"Upload"} onPress={() => setModalVisible(false)} />
+                    <CustomButton label={"Upload"} onPress={() => submitForm()} />
                 </View>
             </Modal>
         </SafeAreaView>
