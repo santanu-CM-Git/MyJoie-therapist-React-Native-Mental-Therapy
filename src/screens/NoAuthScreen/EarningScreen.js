@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Imag
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { ArrowGratter, ArrowUp, GreenTick, Payment, RedCross, YellowTck, dateIcon, notifyImg, timeIcon, userPhoto } from '../../utils/Images'
+import { ArrowDown, ArrowGratter, ArrowUp, GreenTick, Payment, RedCross, YellowTck, dateIcon, notifyImg, timeIcon, userPhoto } from '../../utils/Images'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from 'react-native-element-dropdown';
 import Modal from "react-native-modal";
@@ -27,6 +27,7 @@ const EarningScreen = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState('1');
     const [isFocus, setIsFocus] = useState(false);
+    const [breakdownVisibility, setBreakdownVisibility] = useState(false);
     const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
     const [startDay, setStartDay] = useState(null);
@@ -258,16 +259,6 @@ const EarningScreen = ({ navigation }) => {
                                     value={value}
                                     onFocus={() => setIsFocus(true)}
                                     onBlur={() => setIsFocus(false)}
-                                    // onChange={item => {
-                                    //     setValue(item.value);
-                                    //     if (item.value == '5') {
-                                    //         setValue('5');
-                                    //         toggleCalendarModal()
-                                    //     } else {
-                                    //         fetchData()
-                                    //     }
-                                    //     setIsFocus(false);
-                                    // }}
                                     onChange={item => {
                                         setValue(item.value);
                                         if (item.value === '5') {
@@ -284,58 +275,46 @@ const EarningScreen = ({ navigation }) => {
                         <View style={styles.priceBreakdownView}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text style={styles.earningText}>Earning Breakdown</Text>
-                                {/* <Image
-                                    source={ArrowUp}
-                                    style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                                /> */}
+                                <TouchableOpacity onPress={() => setBreakdownVisibility(!breakdownVisibility)}>
+                                    <Image
+                                        source={breakdownVisibility ? ArrowUp : ArrowDown}
+                                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                                    />
+                                </TouchableOpacity>
                             </View>
-                            <View
-                                style={styles.horizontalLine}
-                            />
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Earning (including GST)</Text>
-                                <Text style={styles.earningItemText}>₹ {earningSum}</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>GST </Text>
-                                <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Earning (excluding GST)</Text>
-                                <Text style={styles.earningItemText}>₹ {payableSum}</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Wallet Amount</Text>
-                                <Text style={styles.earningItemText}>₹ {walletAmount}</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>TDS</Text>
-                                <Text style={styles.earningItemText}>₹ {tdsAmount}</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>Net Payable</Text>
-                                <Text style={styles.earningItemText}>₹ {payable}</Text>
-                            </View>
-                            {/* <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemText}>TDS</Text>
-                                <Text style={styles.earningItemText}>- ₹ 41,000</Text>
-                            </View>
-                            <View style={styles.earningItemView}>
-                                <Text style={styles.earningItemTextBold}>Transfer to account</Text>
-                                <Text style={styles.earningItemTextBold}>₹ 3,69,000</Text>
-                            </View> */}
+
+                            {breakdownVisibility ?
+                                <>
+                                    <View
+                                        style={styles.horizontalLine}
+                                    />
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>Earning (including GST)</Text>
+                                        <Text style={styles.earningItemText}>₹ {earningSum}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>GST </Text>
+                                        <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>Earning (excluding GST)</Text>
+                                        <Text style={styles.earningItemText}>₹ {payableSum}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>Wallet Amount</Text>
+                                        <Text style={styles.earningItemText}>₹ {walletAmount}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>TDS</Text>
+                                        <Text style={styles.earningItemText}>₹ {tdsAmount}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>Net Payable</Text>
+                                        <Text style={styles.earningItemText}>₹ {payable}</Text>
+                                    </View>
+                                </> : null}
                         </View>
                     </View>
-                    {/* <View style={{ backgroundColor: '#FFFFFF', height: responsiveHeight(10), width: responsiveWidth(89), borderRadius: 20, padding: 10, elevation: 2, marginTop: responsiveHeight(2) }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ color: '#07273E', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Medium' }}>Earning Breakdown</Text>
-                            <Image
-                                source={ArrowUp}
-                                style={{ height: 20, width: 20, resizeMode: 'contain' }}
-                            />
-                        </View>
-                    </View> */}
-
                     <FlatList
                         data={earningList}
                         renderItem={renderEarningList}

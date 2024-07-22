@@ -17,6 +17,7 @@ import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
 import ScheduleScreen from '../screens/NoAuthScreen/ScheduleScreen';
 import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
 import TestPage from '../screens/NoAuthScreen/TestPage';
+import { responsiveFontSize } from 'react-native-responsive-dimensions';
 
 const Drawer = createDrawerNavigator();
 

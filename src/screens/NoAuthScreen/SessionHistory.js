@@ -139,15 +139,15 @@ const SessionHistory = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={styles.paraIndex}>Session Summary :</Text>
                         {item?.prescription_content ? null : (
-                            isWithin24Hours && (
+                            item?.status === 'completed' && isWithin24Hours && (
                                 <TouchableOpacity onPress={() => toggleModal(item)}>
                                     <Text style={styles.editText}>Add Summary</Text>
                                 </TouchableOpacity>
                             )
                         )}
                     </View>
-                    <Text style={{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 }}>
-                        {item?.prescription_content}
+                    <Text style={styles.contentText}>
+                        {item?.prescription_content?item?.prescription_content:'No content yet'}
                     </Text>
                 </View>
             </View>
@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: responsiveFontSize(1.7)
     },
+    contentText:{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 },
     editText: {
         color: '#5C9ECF',
         fontFamily: 'DMSans-Medium',
