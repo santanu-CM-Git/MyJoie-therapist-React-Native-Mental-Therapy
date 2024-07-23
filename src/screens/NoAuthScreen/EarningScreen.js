@@ -278,7 +278,7 @@ const EarningScreen = ({ navigation }) => {
                                 <TouchableOpacity onPress={() => setBreakdownVisibility(!breakdownVisibility)}>
                                     <Image
                                         source={breakdownVisibility ? ArrowUp : ArrowDown}
-                                        style={{ height: 20, width: 20, resizeMode: 'contain' }}
+                                        style={{ height: 15, width: 15, resizeMode: 'contain' }}
                                     />
                                 </TouchableOpacity>
                             </View>
