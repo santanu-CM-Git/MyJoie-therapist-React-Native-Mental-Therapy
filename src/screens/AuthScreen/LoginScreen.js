@@ -96,12 +96,10 @@ const LoginScreen = ({ navigation }) => {
       setIsLoading(true)
       AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
         console.log(fcmToken, 'firebase token')
-        console.log(deviceId, 'device id')
         const option = {
           "therapist_id": therapistId,
           "password": password,
-          //"deviceid": deviceId,
-          //"deviceToken": fcmToken
+          //"firebase_token": fcmToken
         }
         axios.post(`${API_URL}/therapist/login`, option, {
           headers: {
