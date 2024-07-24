@@ -34,19 +34,18 @@ const ChatScreen = ({ navigation, route }) => {
   const [videoCall, setVideoCall] = useState(true);
   const connectionData = {
     appId: AGORA_APP_ID,
-    //appId: '8b2a5d01a4eb489682000abfc52cfc9c',
     channel: route?.params?.details?.agora_channel_id,
     token: route?.params?.details?.agora_token,
-    //channel: 'test',
-    //token: '007eJxTYDAVFbklH3aK66/wmnl3vGvZ91vrH36+Q87qq2NNcPAViQ8KDGamaUYmaYkpyamGRibmaZYWyRZp5snm5olGxkapyRapJ2RmpTUEMjJwH5VmYWSAQBCfhaEktbiEgQEA75keUg=='
+    //channel: 'testChannel',
+    //token: '007eJxTYPA0+xLFlXWof37KbOsr+4LuSTEUTr6c5PZlXsLFM7dLl81QYDAzTTMySUtMSU41NDIxT7O0SLZIM082N080MjZKTbZIXbZ4QVpDICND9ZNMZkYGCATxuRlKUotLnDMS8/JScxgYAMU4JJ8='
   };
 
   // Define basic information
   const appId = AGORA_APP_ID;
   const token = route?.params?.details?.agora_token;
   const channelName = route?.params?.details?.agora_channel_id;
-  //const token = '007eJxTYDAVFbklH3aK66/wmnl3vGvZ91vrH36+Q87qq2NNcPAViQ8KDGamaUYmaYkpyamGRibmaZYWyRZp5snm5olGxkapyRapJ2RmpTUEMjJwH5VmYWSAQBCfhaEktbiEgQEA75keUg==';
-  //const channelName = 'test';
+  //const token = '007eJxTYPA0+xLFlXWof37KbOsr+4LuSTEUTr6c5PZlXsLFM7dLl81QYDAzTTMySUtMSU41NDIxT7O0SLZIM082N080MjZKTbZIXbZ4QVpDICND9ZNMZkYGCATxuRlKUotLnDMS8/JScxgYAMU4JJ8=';
+  //const channelName = 'testChannel';
   const uid = 0; // Local user UID, no need to modify
 
   const rtcCallbacks = {
@@ -181,15 +180,15 @@ const ChatScreen = ({ navigation, route }) => {
         if (mode === 'chat') {
           setActiveTab('chat');
           setVideoCall(false);
-          leave();
+          await leave();
         } else if (mode === 'audio') {
-          join();
+          await join();
           setActiveTab('audio');
           setVideoCall(false);
         } else if (mode === 'video') {
           setActiveTab('video');
           setVideoCall(true);
-          leave();
+          await leave();
         }
 
         setIsLoading(false);
@@ -214,127 +213,131 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const confirmEnd = () => {
+    Alert.alert(
+      'Confirm End',
+      'Are you sure you want to end this session?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => handleTimerEnd(),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
-  // const sessionStart = async () => {
-  //   setIsLoading(true);
+  // const handleTimerEnd = async () => {
+  //   console.log('Timer has ended. Execute your function here.');
   //   const currentTime = moment().format('HH:mm:ss');
   //   const option = {
   //     "booked_slot_id": route?.params?.details?.id,
-  //     "time": currentTime,
-  //   };
-  //   console.log(option);
-  //   try {
-  //     const userToken = await AsyncStorage.getItem('userToken');
-  //     const res = await axios.post(`${API_URL}/therapist/slot-start`, option, {
+  //     "time": currentTime
+  //   }
+  //   console.log(option)
+  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
+  //     axios.post(`${API_URL}/therapist/slot-complete`, option, {
   //       headers: {
   //         Accept: 'application/json',
-  //         "Authorization": 'Bearer ' + userToken,
+  //         "Authorization": 'Bearer ' + usertoken,
   //       },
-  //     });
-
-  //     if (res.data.response === true) {
-  //       const endTime = route?.params?.details?.end_time;
-  //       setEndTime(endTime); // Set the end time
-
-  //       if (route?.params?.details?.mode_of_conversation === 'chat') {
-  //         setActiveTab('chat');
-  //         setVideoCall(false);
-  //         leave();
-  //       } else if (route?.params?.details?.mode_of_conversation === 'audio') {
-  //         join();
-  //         setActiveTab('audio');
-  //         setVideoCall(false);
-  //       } else if (route?.params?.details?.mode_of_conversation === 'video') {
-  //         setActiveTab('video');
-  //         setVideoCall(true);
-  //         leave();
-  //       }
-  //       setIsLoading(false);
-  //     } else {
-  //       console.log('not okk');
-  //       setIsLoading(false);
-  //       Alert.alert('Oops..', "Something went wrong", [
-  //         { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-  //         { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //       ]);
-  //     }
-  //   } catch (e) {
-  //     setIsLoading(false);
-  //     console.log(`user update error ${e}`);
-  //     console.log(e.response?.data?.response.records);
-  //     Alert.alert('Oops..', e.response?.data?.message, [
-  //       { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-  //       { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //     ]);
-  //   }
+  //     })
+  //       .then(res => {
+  //         console.log(res.data)
+  //         if (res.data.response == true) {
+  //           setVideoCall(false)
+  //           leave()
+  //           navigation.navigate('UploadSessionSummary', { bookedId: route?.params?.details?.id, pname: route?.params?.details?.patient?.name })
+  //         } else {
+  //           console.log('not okk')
+  //           setIsLoading(false)
+  //           Alert.alert('Oops..', "Something went wrong", [
+  //             {
+  //               text: 'Cancel',
+  //               onPress: () => console.log('Cancel Pressed'),
+  //               style: 'cancel',
+  //             },
+  //             { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //           ]);
+  //         }
+  //       })
+  //       .catch(e => {
+  //         setIsLoading(false)
+  //         console.log(`user update error ${e}`)
+  //         console.log(e.response.data?.response.records)
+  //         Alert.alert('Oops..', e.response?.data?.message, [
+  //           {
+  //             text: 'Cancel',
+  //             onPress: () => console.log('Cancel Pressed'),
+  //             style: 'cancel',
+  //           },
+  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
+  //         ]);
+  //       });
+  //   });
   // };
 
-  // useEffect(() => {
-  //   if (timer > 0) {
-  //     const intervalId = setInterval(() => {
-  //       setTimer(prevTimer => {
-  //         if (prevTimer <= 1) {
-  //           clearInterval(intervalId);
-  //           handleTimerEnd();
-  //           return 0;
-  //         }
-  //         return prevTimer - 1;
-  //       });
-  //     }, 1000);
-
-  //     // Cleanup the interval on component unmount
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, [timer]);
-
-  const handleTimerEnd = () => {
+  const handleTimerEnd = async () => {
     console.log('Timer has ended. Execute your function here.');
     const currentTime = moment().format('HH:mm:ss');
     const option = {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime
     }
-    console.log(option)
-    AsyncStorage.getItem('userToken', (err, usertoken) => {
-      axios.post(`${API_URL}/therapist/slot-complete`, option, {
+    console.log(option);
+
+    try {
+      const userToken = await AsyncStorage.getItem('userToken');
+      if (!userToken) {
+        throw new Error('User token is missing');
+      }
+
+      const res = await axios.post(`${API_URL}/therapist/slot-complete`, option, {
         headers: {
           Accept: 'application/json',
-          "Authorization": 'Bearer ' + usertoken,
+          "Authorization": 'Bearer ' + userToken,
         },
-      })
-        .then(res => {
-          console.log(res.data)
-          if (res.data.response == true) {
-            navigation.navigate('UploadSessionSummary', { bookedId: route?.params?.details?.id, pname: route?.params?.details?.patient?.name })
-          } else {
-            console.log('not okk')
-            setIsLoading(false)
-            Alert.alert('Oops..', "Something went wrong", [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              { text: 'OK', onPress: () => console.log('OK Pressed') },
-            ]);
-          }
-        })
-        .catch(e => {
-          setIsLoading(false)
-          console.log(`user update error ${e}`)
-          console.log(e.response.data?.response.records)
-          Alert.alert('Oops..', e.response?.data?.message, [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ]);
-        });
-    });
-  };
+      });
 
+      if (res.data.response === true) {
+        setVideoCall(false);
+        await leave();
+        navigation.navigate('UploadSessionSummary', {
+          bookedId: route?.params?.details?.id,
+          pname: route?.params?.details?.patient?.name
+        });
+      } else {
+        console.log('not ok');
+        setIsLoading(false);
+        Alert.alert('Oops..', "Something went wrong", [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
+      }
+    } catch (e) {
+      setIsLoading(false);
+      console.error('User update error:', e);
+      console.error(e.response?.data?.response?.records);
+
+      const errorMessage = e.response?.data?.message || 'An unexpected error occurred';
+      Alert.alert('Oops..', errorMessage, [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+    }
+  };
 
 
   const renderChatFooter = useCallback(() => {
@@ -629,11 +632,11 @@ const ChatScreen = ({ navigation, route }) => {
     }
     try {
       // Set the channel profile type to communication after joining the channel
-      agoraEngineRef.current?.setChannelProfile(
+      await agoraEngineRef.current?.setChannelProfile(
         ChannelProfileType.ChannelProfileCommunication,
       );
       // Call the joinChannel method to join the channel
-      agoraEngineRef.current?.joinChannel(token, channelName, uid, {
+      await agoraEngineRef.current?.joinChannel(token, channelName, uid, {
         // Set the user role to broadcaster
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
@@ -641,11 +644,10 @@ const ChatScreen = ({ navigation, route }) => {
       console.log(e);
     }
   };
-  // Define the leave method called after clicking the leave channel button
-  const leave = () => {
+  // Define the leave method called after clicking the leave channel button 
+  const leave = async () => {
     try {
-      // Call the leaveChannel method to leave the channel
-      agoraEngineRef.current?.leaveChannel();
+      await agoraEngineRef.current?.leaveChannel();
       setRemoteUid(0);
       setIsJoined(false);
       showMessage('Left the channel');
@@ -654,21 +656,21 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
-  const goingToactiveTab = (name) => {
-
-    if (name == 'audio') {
-      join()
-      setActiveTab('audio')
-    } else if (name == 'video') {
-      setActiveTab('video')
-      leave()
-    } else if (name == 'chat') {
-      setActiveTab('chat')
-      leave()
+  const goingToactiveTab = async (name) => {
+    if (name === 'audio') {
+      await join();
+      setActiveTab('audio');
+      setVideoCall(false);
+    } else if (name === 'video') {
+      await leave();
+      setActiveTab('video');
+      setVideoCall(true);
+    } else if (name === 'chat') {
+      await leave();
+      setActiveTab('chat');
+      setVideoCall(false);
     }
-
-
-  }
+  };
 
   const customPropsStyle = {
     localBtnStyles: {
@@ -836,7 +838,7 @@ const ChatScreen = ({ navigation, route }) => {
         </View>
         <View style={styles.HeaderSectionHalf}>
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
-          <TouchableOpacity onPress={() => handleTimerEnd()}>
+          <TouchableOpacity onPress={() => confirmEnd()}>
             <View style={styles.endButtonView}>
               <Text style={styles.endButtonText}>End</Text>
             </View>
