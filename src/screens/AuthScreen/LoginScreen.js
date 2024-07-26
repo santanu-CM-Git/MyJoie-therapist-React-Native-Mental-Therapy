@@ -26,6 +26,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { orImg } from '../../utils/Images';
 import Toast from 'react-native-toast-message';
 
 const BannerWidth = Dimensions.get('window').width;
@@ -33,12 +34,12 @@ const ITEM_WIDTH = Math.round(BannerWidth * 0.7)
 const { height, width } = Dimensions.get('screen')
 
 const LoginScreen = ({ navigation }) => {
-  const [therapistId, setTherapistId] = useState('');
-  const [therapistIdError, settherapistIdError] = useState('')
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('')
+  const [phone, setPhone] = useState('');
   const [deviceId, setDeviceId] = useState('')
+  const [mobileError, setMobileError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [show, setShow] = useState(false);
+  const [countryCode, setCountryCode] = useState('+91');
 
   const { login, userToken } = useContext(AuthContext);
 
@@ -67,86 +68,87 @@ const LoginScreen = ({ navigation }) => {
   //   });
   // }
 
-
-  const onChangetherapistId = (text) => {
-    setTherapistId(text)
-    if (text) {
-      settherapistIdError('')
+  const onChangeText = (text) => {
+    const phoneRegex = /^\d{10}$/;
+    setPhone(text)
+    if (!phoneRegex.test(text)) {
+      setMobileError('Please enter a 10-digit number.')
     } else {
-      settherapistIdError('Please enter Therapist Id')
+      setMobileError('')
     }
   }
 
-  const onChangePassword = (text) => {
-    setPassword(text)
-    if (text) {
-      setPasswordError('')
-    } else {
-      setPasswordError('Please enter Password')
-    }
-  }
   const handleSubmit = () => {
-    //login()
-    if (!therapistId) {
-      settherapistIdError('Please enter Therapist Id')
-    } else if (!password) {
-      setPasswordError('Please enter Password')
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phone) {
+      setMobileError('Please enter Mobile no')
+    } else if (!phoneRegex.test(phone)) {
+      setMobileError('Please enter a 10-digit number.')
     } else {
-      //login()
-      setIsLoading(true)
-      AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
-        console.log(fcmToken, 'firebase token')
-        const option = {
-          "therapist_id": therapistId,
-          "password": password,
-          //"firebase_token": fcmToken
-        }
-        axios.post(`${API_URL}/therapist/login`, option, {
-          headers: {
-            'Accept': 'application/json',
-            //'Content-Type': 'multipart/form-data',
-          },
-        })
-          .then(res => {
-            console.log(res.data)
-            if (res.data.response == true) {
-              setIsLoading(false)
-              Toast.show({
-                type: 'success',
-                text1: 'Hello',
-                text2: "Login Successfull",
-                position: 'top',
-                topOffset: Platform.OS == 'ios' ? 55 : 20
-              });
-              login(res.data.token)
-            } else {
-              console.log('not okk')
-              setIsLoading(false)
-                Alert.alert('Oops..', "Something went wrong", [
-                  {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ]);
-            }
-          })
-          .catch(e => {
-            setIsLoading(false)
-            console.log(`user register error ${e}`)
-            console.log(e.response)
-            Alert.alert('Oops..', e.response?.data?.message, [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              { text: 'OK', onPress: () => console.log('OK Pressed') },
-            ]);
-          });
-      });
+      navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
+      //setIsLoading(true)
+      // AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
+      //   console.log(fcmToken, 'firebase token')
+      //   console.log(deviceId, 'device id')
+      //   const option = {
+      //     "mobile": phone,
+      //     "firebase_token": fcmToken,
+      //     //"deviceid": deviceId,
+      //   }
+      //   axios.post(`${API_URL}/patient/login`, option, {
+      //     headers: {
+      //       'Accept': 'application/json',
+      //       //'Content-Type': 'multipart/form-data',
+      //     },
+      //   })
+      //     .then(res => {
+      //       console.log(res.data)
+      //       if (res.data.response == true) {
+      //         setIsLoading(false)
+      //         Toast.show({
+      //           type: 'success',
+      //           text1: 'Hello',
+      //           text2: "OTP sent to your mobile no",
+      //           position: 'top',
+      //           topOffset: Platform.OS == 'ios' ? 55 : 20
+      //         });
+      //         alert(res.data?.otp)
+      //         // login(res.data.token)
+      //          navigation.navigate('Otp', {phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name})
+      //       } else {
+      //         console.log('not okk')
+      //         setIsLoading(false)
+      //         Alert.alert('Oops..', "Something went wrong", [
+      //           {
+      //             text: 'Cancel',
+      //             onPress: () => console.log('Cancel Pressed'),
+      //             style: 'cancel',
+      //           },
+      //           { text: 'OK', onPress: () => console.log('OK Pressed') },
+      //         ]);
+      //       }
+      //     })
+      //     .catch(e => {
+      //       setIsLoading(false)
+      //       console.log(`user login error ${e}`)
+      //       console.log(e.response)
+      //       Alert.alert('Oops..', e.response?.data?.message, [
+      //         {
+      //           text: 'Cancel',
+      //           onPress: () => console.log('Cancel Pressed'),
+      //           style: 'cancel',
+      //         },
+      //         { text: 'OK', onPress: () => console.log('OK Pressed') },
+      //       ]);
+      //     });
+      // });
     }
+    
+  }
+
+  const handleTruecaller = () => {
+    
   }
 
   if (isLoading) {
@@ -169,54 +171,74 @@ const LoginScreen = ({ navigation }) => {
 
         <View style={styles.wrapper}>
           <View style={{ marginBottom: responsiveHeight(2) }}>
-            <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2.5), marginBottom: responsiveHeight(1) }}>Welcome Back</Text>
-            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), lineHeight: responsiveHeight(2.5) }}>Enter your Email ID & Password to continue with your account.<Text style={{ color: '#444343', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5) }}> Create Account</Text></Text>
+            <Text style={styles.headerText}>Let’s get started! Enter your mobile number</Text>
           </View>
-          <Text
-            style={styles.header}>
-            Therapist ID
-          </Text>
-          {therapistIdError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{therapistIdError}</Text> : <></>}
+          {mobileError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{mobileError}</Text> : <></>}
           <View style={styles.textinputview}>
+            {/* <InputField
+            value={'  +91'}
+            inputType={'code'}
+            keyboardType="numeric"
+          /> */}
+            {/* <View style={styles.countryModal}>
+              <TouchableOpacity
+                onPress={() => setShow(true)}
+                style={styles.countryInputView}
+              >
+                <Text style={{
+                  color: '#808080',
+                  fontSize: responsiveFontSize(2),
+                }}>
+                  {countryCode}
+                </Text>
+              </TouchableOpacity>
+              <CountryPicker
+                show={show}
+                initialState={'+233'}
+                pickerButtonOnPress={(item) => {
+                  setCountryCode(item.dial_code);
+                  setShow(false);
+                }}
+                style={{
+                  modal: {
+                    height: responsiveHeight(60),
+                  },
+                }}
+              />
+            </View> */}
             <InputField
-              label={'Therapist ID'}
-              keyboardType="default"
-              inputType="others"
-              value={therapistId}
-              onChangeText={(text) => onChangetherapistId(text)}
-            //helperText={mobileError}
+              label={'Mobile Number'}
+              keyboardType="numeric"
+              value={phone}
+              inputType={'others'}
+              onChangeText={(text) => onChangeText(text)}
+              helperText={mobileError}
             />
           </View>
-          <Text
-            style={styles.header}>
-            Password
-          </Text>
-          {passwordError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{passwordError}</Text> : <></>}
-          <View style={styles.textinputview}>
-            <InputField
-              label={'Password'}
-              keyboardType="default"
-              inputType="password"
-              value={password}
-              onChangeText={(text) => onChangePassword(text)}
-            //helperText={mobileError}
-            />
-          </View>
-          <View style={{ marginBottom: responsiveHeight(0) }}>
-            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5) }}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
-          </View>
+          
         </View>
       </KeyboardAwareScrollView>
 
       <View style={styles.buttonwrapper}>
-        <CustomButton label={"Sign In"}
+        <CustomButton label={"Use OTP"}
           onPress={() => handleSubmit()}
         //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
         />
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(1.5), alignSelf: 'center', marginBottom: responsiveHeight(2) }}>Forgot Password</Text>
-      </TouchableOpacity>
+      <View style={styles.termsView}>
+        <Text style={styles.termsText}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
+      </View>
+      {/* <Image
+        source={orImg}
+        style={styles.orImg}
+      />
+      <View style={[styles.buttonwrapper, { marginTop: 10 }]}>
+        <CustomButton label={"Login With Truecaller"}
+          onPress={() => handleTruecaller()}
+          buttonColor='gray'
+        //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
+        />
+      </View> */}
     </SafeAreaView>
   );
 };
@@ -229,7 +251,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     paddingHorizontal: 20,
-    marginTop: -responsiveHeight(5),
+    marginTop: -responsiveHeight(2),
     backgroundColor: '#fff',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
@@ -237,19 +259,6 @@ const styles = StyleSheet.create({
     paddingTop: responsiveHeight(5),
     //position:'absolute',
     bottom: 0
-  },
-  header: {
-    fontFamily: 'DMSans-SemiBold',
-    fontSize: responsiveFontSize(2),
-    color: '#2F2F2F',
-    marginBottom: responsiveHeight(1),
-  },
-  subheader: {
-    fontFamily: 'Outfit-Medium',
-    fontSize: responsiveFontSize(1.8),
-    fontWeight: '400',
-    color: '#808080',
-    marginBottom: responsiveHeight(3),
   },
   textinputview: {
     flexDirection: 'row',
@@ -270,7 +279,7 @@ const styles = StyleSheet.create({
   },
   bannaerContainer: {
     width: responsiveWidth(100),
-    height: responsiveHeight(40),
+    height: responsiveHeight(55),
     backgroundColor: '#fff',
   },
   bannerBg: {
@@ -282,35 +291,29 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'cover',
   },
-  textWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
+  headerText: {
+    color: '#2D2D2D',
+    fontFamily: 'DMSans-SemiBold',
+    fontSize: responsiveFontSize(2.5),
+    marginBottom: responsiveHeight(1)
   },
-  bannerText: {
-    fontSize: responsiveFontSize(2),
-    color: '#FFFFFF',
-    fontWeight: '300',
-    fontFamily: 'Outfit-Medium',
-    position: 'relative',
-    zIndex: 1,
-    width: width * 0.8,
-    marginBottom: 10,
-    paddingLeft: 20,
+  termsView: {
+    marginBottom: responsiveHeight(5),
+    paddingHorizontal: 20,
+    alignSelf: 'center'
   },
-
-  bannerSubText: {
-    fontSize: responsiveFontSize(3),
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontFamily: 'Outfit-Medium',
-    position: 'relative',
-    zIndex: 1,
-    width: width * 0.8,
-    marginBottom: 30,
-    paddingLeft: 20,
+  termsText: {
+    color: '#746868',
+    fontFamily: 'DMSans-Regular',
+    fontSize: responsiveFontSize(1.5),
+    textAlign: 'center'
   },
+  orImg: {
+    height: responsiveHeight(4),
+    width: responsiveWidth(25),
+    resizeMode: 'contain',
+    alignSelf: "center"
+  }
 });
 
 

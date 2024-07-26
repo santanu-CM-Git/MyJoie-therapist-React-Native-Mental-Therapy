@@ -19,7 +19,6 @@ import { AuthContext } from '../../context/AuthContext';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import Loader from '../../utils/Loader';
 import Toast from 'react-native-toast-message';
-// import OTPVerify from 'react-native-otp-verify';
 
 const OtpScreen = ({ navigation, route }) => {
     const [otp, setOtp] = useState('');
@@ -27,7 +26,6 @@ const OtpScreen = ({ navigation, route }) => {
     const [errors, setError] = useState(true)
     const [errorText, setErrorText] = useState('Please enter OTP')
     const [isLoading, setIsLoading] = useState(false)
-    const [isResendDisabled, setIsResendDisabled] = useState(true);
 
     const { login, userToken } = useContext(AuthContext);
 
@@ -35,10 +33,7 @@ const OtpScreen = ({ navigation, route }) => {
     const [timer, setTimer] = useState(60 * 1);
     useEffect(() => {
         // If timer is 0, return early
-        if (timer === 0) {
-            setIsResendDisabled(false);
-            return;
-        }
+        if (timer === 0) return;
 
         // Create an interval that decrements the timer value every second
         const interval = setInterval(() => {
@@ -56,23 +51,6 @@ const OtpScreen = ({ navigation, route }) => {
         return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
 
-    // useEffect(() => {
-    //     // Start listening for OTP messages
-    //     OTPVerify.getOtp()
-    //       .then(promise => {
-    //         // Start listening for OTP
-    //         OTPVerify.addListener(message => {
-    //         const otp = /(\d{4})/g.exec(message)[1];
-    //           console.log('OTP received:', otp);
-    //           setOtp(otp);
-    //         });
-    
-    //         // Stop listening when component unmounts
-    //         return () => OTPVerify.removeListener();
-    //       })
-    //       .catch(error => console.error('Error setting up OTP listener:', error));
-    //   }, []);
-
     const onChangeCode = (code) => {
         setOtp(code)
         setError(false)
@@ -81,8 +59,6 @@ const OtpScreen = ({ navigation, route }) => {
 
     const goToNextPage = (code) => {
         setIsLoading(true)
-        //console.log(`Code is ${code}, you are good to go!`)
-        //navigation.navigate('PersonalInformation', { phoneno: 2454545435, usertoken: 'sdfwr32432423424' })
         // const option = {
         //     "phone": route?.params?.phoneno,
         //     "otp": code,
@@ -98,12 +74,7 @@ const OtpScreen = ({ navigation, route }) => {
                 position: 'top',
                 topOffset: Platform.OS == 'ios' ? 55 : 20
             });
-            if(route?.params?.name){
-                login(route?.params?.token)
-            }else{
-                navigation.navigate('PersonalInformation', { token: route?.params?.token })
-            }
-            
+            navigation.navigate('PasswordChange',{userId:route?.params?.userId})
         } else {
             console.log('not correct')
             setIsLoading(false)
@@ -117,14 +88,15 @@ const OtpScreen = ({ navigation, route }) => {
             ]);
             setOtp('')
         }
+
     }
 
     const resendOtp = () => {
         setIsLoading(true)
         const option = {
-            "mobile": route?.params?.phone,
+            "input": route?.params?.phoneno,
         }
-        axios.post(`${API_URL}/patient/login`, option, {
+        axios.post(`${API_URL}/therapist/forgot-password`, option, {
             headers: {
                 'Accept': 'application/json',
                 //'Content-Type': 'multipart/form-data',
@@ -137,13 +109,12 @@ const OtpScreen = ({ navigation, route }) => {
                     Toast.show({
                         type: 'success',
                         text1: 'Hello',
-                        text2: "OTP sent to your mobile no",
+                        text2: res.data.message,
                         position: 'top',
                         topOffset: Platform.OS == 'ios' ? 55 : 20
                     });
                     setComingOTP(res.data.otp)
                     setTimer(60 * 1)
-                    setIsResendDisabled(true);
                     setOtp('')
                 } else {
                     console.log('not okk')
@@ -160,7 +131,7 @@ const OtpScreen = ({ navigation, route }) => {
             })
             .catch(e => {
                 setIsLoading(false)
-                console.log(`resend otp error ${e}`)
+                console.log(`user register error ${e}`)
                 console.log(e.response)
                 Alert.alert('Oops..', e.response?.data?.message, [
                     {
@@ -187,15 +158,15 @@ const OtpScreen = ({ navigation, route }) => {
             <View style={styles.wrapper}>
                 <Text
                     style={styles.header}>
-                    Verify your number
+                    Verify Code
                 </Text>
                 <Text
                     style={styles.subheader}>
-                    A 4 digit OTP has been sent to your phone number
+                    We have sent a verification code to your email or phone no. Please verify the code.
                 </Text>
                 <Text
                     style={styles.subheadernum}>
-                   {route?.params?.phone}
+                    {route?.params?.phoneno}
                 </Text>
                 {/* <Text
                     style={styles.subheader}>
@@ -218,21 +189,20 @@ const OtpScreen = ({ navigation, route }) => {
                     />
                 </View>
                 {errors &&
-                    <Text style={styles.errorText}>{errorText}</Text>
+                    <Text style={{ fontSize: responsiveFontSize(1.5), color: 'red', marginBottom: 20, marginTop: -25, alignSelf: 'center', fontFamily: 'DMSans-Medium' }}>{errorText}</Text>
                 }
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.otpText}>Didn’t receive OTP?</Text>
-                    <Text style={styles.timerText}>{formatTime(timer)}</Text>
-                    <TouchableOpacity onPress={() => resendOtp()} disabled={isResendDisabled}>
-                        <Text style={[styles.resendText, isResendDisabled && { color: '#808080' }]}>Resend OTP</Text>
+                    <Text style={{ color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Didn’t receive OTP?</Text>
+                    <TouchableOpacity onPress={() => resendOtp()}>
+                        <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(1.7) }}>Resend OTP</Text>
                     </TouchableOpacity>
-                    
+                    <Text style={{ color: '#808080', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>{formatTime(timer)}</Text>
                 </View>
 
             </View>
             {/* <View style={styles.buttonwrapper}>
-                <CustomButton label={"Verify OTP "}
-                    onPress={() => navigation.navigate('PersonalInformation')}
+                <CustomButton label={"Verify Now"}
+                onPress={() => navigation.navigate('PasswordChange')} 
                 />
             </View> */}
         </SafeAreaView>
@@ -298,29 +268,6 @@ const styles = StyleSheet.create({
         borderColor: "#2F2F2F",
         borderRadius: 8
     },
-    errorText: {
-        fontSize: responsiveFontSize(1.5),
-        color: 'red',
-        marginBottom: 20,
-        marginTop: -25,
-        alignSelf: 'center',
-        fontFamily: 'DMSans-Medium'
-    },
-    timerText: {
-        color: '#808080',
-        fontFamily: 'DMSans-Medium',
-        fontSize: responsiveFontSize(1.7)
-    },
-    otpText: {
-        color: '#808080',
-        fontFamily: 'DMSans-Medium',
-        fontSize: responsiveFontSize(1.7)
-    },
-    resendText: {
-        color: '#2D2D2D',
-        fontFamily: 'DMSans-SemiBold',
-        fontSize: responsiveFontSize(1.7)
-    }
 });
 
 
