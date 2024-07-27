@@ -32,11 +32,6 @@ import Icon from 'react-native-vector-icons/Entypo';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
-const data = [
-  { label: 'Absa Bank Ghana Limited', value: 'Absa Bank Ghana Limited' },
-  { label: 'Access Bank (Ghana) Plc', value: 'Access Bank (Ghana) Plc' },
-  { label: 'Agricultural Development Bank Plc', value: 'Agricultural Development Bank Plc' },
-];
 const dataYear = [
   { label: '01', value: '1' },
   { label: '02', value: '2' },
@@ -48,6 +43,27 @@ const dataYear = [
   { label: '08', value: '8' },
   { label: '09', value: '9' },
   { label: '10', value: '10' },
+  { label: '11', value: '11' },
+  { label: '12', value: '12' },
+  { label: '13', value: '13' },
+  { label: '14', value: '14' },
+  { label: '15', value: '15' },
+  { label: '16', value: '16' },
+  { label: '17', value: '17' },
+  { label: '18', value: '18' },
+  { label: '19', value: '19' },
+  { label: '20', value: '20' },
+  { label: '21', value: '21' },
+  { label: '22', value: '22' },
+  { label: '23', value: '23' },
+  { label: '24', value: '24' },
+  { label: '25', value: '25' },
+  { label: '26', value: '26' },
+  { label: '27', value: '27' },
+  { label: '28', value: '28' },
+  { label: '29', value: '29' },
+  { label: '30', value: '30' },
+
 ];
 const dataMonth = [
   { label: '01', value: '1' },
@@ -60,6 +76,7 @@ const dataMonth = [
   { label: '08', value: '8' },
   { label: '09', value: '9' },
   { label: '10', value: '10' },
+  { label: '11', value: '11' },
 ];
 
 const ProfileScreen = ({ navigation, route }) => {
