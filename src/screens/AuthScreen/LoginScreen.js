@@ -86,63 +86,63 @@ const LoginScreen = ({ navigation }) => {
     } else if (!phoneRegex.test(phone)) {
       setMobileError('Please enter a 10-digit number.')
     } else {
-      navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
-      //setIsLoading(true)
-      // AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
-      //   console.log(fcmToken, 'firebase token')
-      //   console.log(deviceId, 'device id')
-      //   const option = {
-      //     "mobile": phone,
-      //     "firebase_token": fcmToken,
-      //     //"deviceid": deviceId,
-      //   }
-      //   axios.post(`${API_URL}/patient/login`, option, {
-      //     headers: {
-      //       'Accept': 'application/json',
-      //       //'Content-Type': 'multipart/form-data',
-      //     },
-      //   })
-      //     .then(res => {
-      //       console.log(res.data)
-      //       if (res.data.response == true) {
-      //         setIsLoading(false)
-      //         Toast.show({
-      //           type: 'success',
-      //           text1: 'Hello',
-      //           text2: "OTP sent to your mobile no",
-      //           position: 'top',
-      //           topOffset: Platform.OS == 'ios' ? 55 : 20
-      //         });
-      //         alert(res.data?.otp)
-      //         // login(res.data.token)
-      //          navigation.navigate('Otp', {phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name})
-      //       } else {
-      //         console.log('not okk')
-      //         setIsLoading(false)
-      //         Alert.alert('Oops..', "Something went wrong", [
-      //           {
-      //             text: 'Cancel',
-      //             onPress: () => console.log('Cancel Pressed'),
-      //             style: 'cancel',
-      //           },
-      //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-      //         ]);
-      //       }
-      //     })
-      //     .catch(e => {
-      //       setIsLoading(false)
-      //       console.log(`user login error ${e}`)
-      //       console.log(e.response)
-      //       Alert.alert('Oops..', e.response?.data?.message, [
-      //         {
-      //           text: 'Cancel',
-      //           onPress: () => console.log('Cancel Pressed'),
-      //           style: 'cancel',
-      //         },
-      //         { text: 'OK', onPress: () => console.log('OK Pressed') },
-      //       ]);
-      //     });
-      // });
+      // navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
+      setIsLoading(true)
+      AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
+        console.log(fcmToken, 'firebase token')
+        console.log(deviceId, 'device id')
+        const option = {
+          "mobile": phone,
+          "firebase_token": fcmToken,
+          //"deviceid": deviceId,
+        }
+        axios.post(`${API_URL}/therapist/login`, option, {
+          headers: {
+            'Accept': 'application/json',
+            //'Content-Type': 'multipart/form-data',
+          },
+        })
+          .then(res => {
+            console.log(res.data,'response data from therapist login')
+            if (res.data.response == true) {
+              setIsLoading(false)
+              Toast.show({
+                type: 'success',
+                text1: 'Hello',
+                text2: "OTP sent to your mobile no",
+                position: 'top',
+                topOffset: Platform.OS == 'ios' ? 55 : 20
+              });
+              alert(res.data?.otp)
+              // login(res.data.token)
+               navigation.navigate('Otp', {phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name})
+            } else {
+              console.log('not okk')
+              setIsLoading(false)
+              Alert.alert('Oops..', "Something went wrong", [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+              ]);
+            }
+          })
+          .catch(e => {
+            setIsLoading(false)
+            console.log(`user login error ${e}`)
+            console.log(e.response)
+            Alert.alert('Oops..', e.response?.data?.message, [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          });
+      });
     }
     
   }

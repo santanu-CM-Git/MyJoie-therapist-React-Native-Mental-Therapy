@@ -98,11 +98,14 @@ const OtpScreen = ({ navigation, route }) => {
                 position: 'top',
                 topOffset: Platform.OS == 'ios' ? 55 : 20
             });
-            if(route?.params?.name){
-                login(route?.params?.token)
-            }else{
-                navigation.navigate('PersonalInformation', { token: route?.params?.token })
-            }
+            
+            // if(route?.params?.name){
+            //     login(route?.params?.token)
+            // }else{
+            //     navigation.navigate('PersonalInformation', { token: route?.params?.token })
+            // }
+
+            login(route?.params?.token)
             
         } else {
             console.log('not correct')
