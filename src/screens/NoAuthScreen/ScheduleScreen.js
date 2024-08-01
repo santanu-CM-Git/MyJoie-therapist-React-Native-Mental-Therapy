@@ -112,56 +112,37 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const handleConfirm = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
             } else {
-                //newRanges[currentRange].endTime = dateInIST;
                 const startTime = newRanges[currentRange].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRange].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRange].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePicker();
     };
 
-    // const handleConfirm = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 
-    //     setTimeRanges(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTime) {
-    //             newRanges[currentRange].startTime = dateInIST;
-    //         } else {
-    //             const startTime = newRanges[currentRange].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = moment(dateInIST);
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRange].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
-    //             }
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePicker();
-    // };
 
 
     const addNewTimeRange = () => {
@@ -201,57 +182,60 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityTuesday(false);
     };
 
-    const handleConfirmTuesday = (date) => {
-        console.log('hiiiii');
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-        setTimeRangesTuesday(currentRanges => {
-            const newRanges = [...currentRanges];
-            if (isStartTimeTuesday) {
-                newRanges[currentRangeTuesday].startTime = dateInIST;
-            } else {
-                //newRanges[currentRangeTuesday].endTime = dateInIST;
-                const startTime = newRanges[currentRangeTuesday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
-                }
-                newRanges[currentRangeTuesday].endTime = dateInIST;
-            }
-            return newRanges;
-        });
-        hideDatePickerTuesday();
-    };
     // const handleConfirmTuesday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+    //     console.log('hiiiii');
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
 
     //     setTimeRangesTuesday(currentRanges => {
     //         const newRanges = [...currentRanges];
     //         if (isStartTimeTuesday) {
     //             newRanges[currentRangeTuesday].startTime = dateInIST;
     //         } else {
+    //             //newRanges[currentRangeTuesday].endTime = dateInIST;
     //             const startTime = newRanges[currentRangeTuesday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = moment(dateInIST);
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeTuesday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
     //             }
+    //             newRanges[currentRangeTuesday].endTime = dateInIST;
     //         }
     //         return newRanges;
     //     });
     //     hideDatePickerTuesday();
     // };
+    const handleConfirmTuesday = (date) => {
+        console.log('hiiiii');
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
+
+        setTimeRangesTuesday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeTuesday) {
+                newRanges[currentRangeTuesday].startTime = dateInIST;
+            } else {
+                const startTime = newRanges[currentRangeTuesday].startTime;
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeTuesday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
+                }
+            }
+            return newRanges;
+        });
+        hideDatePickerTuesday();
+    };
+
+
 
     const addNewTimeRangeTuesday = () => {
         setTimeRangesTuesday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -290,57 +274,56 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityWednesday(false);
     };
 
+    // const handleConfirmWednesday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesWednesday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeWednesday) {
+    //             newRanges[currentRangeWednesday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeWednesday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeWednesday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeWednesday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerWednesday();
+    // };
     const handleConfirmWednesday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesWednesday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeWednesday) {
                 newRanges[currentRangeWednesday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeWednesday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeWednesday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeWednesday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeWednesday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerWednesday();
     };
-
-    // const handleConfirmWednesday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata'); // Keep as a moment object for accurate comparison
-
-    //     setTimeRangesWednesday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeWednesday) {
-    //             newRanges[currentRangeWednesday].startTime = dateInIST.format('YYYY-MM-DD HH:mm:ss');
-    //         } else {
-    //             const startTime = newRanges[currentRangeWednesday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = dateInIST;
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeWednesday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
-    //             }
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerWednesday();
-    // };
 
 
     const addNewTimeRangeWednesday = () => {
@@ -380,57 +363,56 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityThursday(false);
     };
 
+    // const handleConfirmThursday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesThursday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeThursday) {
+    //             newRanges[currentRangeThursday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeThursday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeThursday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeThursday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerThursday();
+    // };
     const handleConfirmThursday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesThursday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeThursday) {
                 newRanges[currentRangeThursday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeThursday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeThursday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeThursday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeThursday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerThursday();
     };
-
-    // const handleConfirmThursday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata'); // Keep as a moment object for accurate comparison
-
-    //     setTimeRangesThursday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeThursday) {
-    //             newRanges[currentRangeThursday].startTime = dateInIST.format('YYYY-MM-DD HH:mm:ss');
-    //         } else {
-    //             const startTime = newRanges[currentRangeThursday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = dateInIST;
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeThursday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
-    //             }
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerThursday();
-    // };
 
 
     const addNewTimeRangeThursday = () => {
@@ -469,57 +451,58 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityFriday(false);
     };
 
+    // const handleConfirmFriday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesFriday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeFriday) {
+    //             newRanges[currentRangeFriday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeFriday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeFriday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeFriday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerFriday();
+    // };
+
     const handleConfirmFriday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesFriday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeFriday) {
                 newRanges[currentRangeFriday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeFriday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeFriday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeFriday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeFriday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerFriday();
     };
 
-    // const handleConfirmFriday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata'); // Keep as a moment object for accurate comparison
-
-    //     setTimeRangesFriday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeFriday) {
-    //             newRanges[currentRangeFriday].startTime = dateInIST.format('YYYY-MM-DD HH:mm:ss');
-    //         } else {
-    //             const startTime = newRanges[currentRangeFriday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = dateInIST;
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeFriday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
-    //             }
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerFriday();
-    // };
 
 
     const addNewTimeRangeFriday = () => {
@@ -559,57 +542,56 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySaturday(false);
     };
 
+    // const handleConfirmSaturday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesSaturday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeSaturday) {
+    //             newRanges[currentRangeSaturday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeSaturday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeSaturday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeSaturday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerSaturday();
+    // };
     const handleConfirmSaturday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesSaturday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeSaturday) {
                 newRanges[currentRangeSaturday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeSaturday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeSaturday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeSaturday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeSaturday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerSaturday();
     };
-
-    // const handleConfirmSaturday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata'); // Keep as a moment object for accurate comparison
-
-    //     setTimeRangesSaturday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeSaturday) {
-    //             newRanges[currentRangeSaturday].startTime = dateInIST.format('YYYY-MM-DD HH:mm:ss');
-    //         } else {
-    //             const startTime = newRanges[currentRangeSaturday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = dateInIST;
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeSaturday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
-    //             }
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerSaturday();
-    // };
 
 
     const addNewTimeRangeSaturday = () => {
@@ -649,58 +631,58 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySunday(false);
     };
 
-    const handleConfirmSunday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-        setTimeRangesSunday(currentRanges => {
-            const newRanges = [...currentRanges];
-            if (isStartTimeSunday) {
-                newRanges[currentRangeSunday].startTime = dateInIST;
-            } else {
-                //newRanges[currentRangeSunday].endTime = dateInIST;
-                const startTime = newRanges[currentRangeSunday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
-                }
-                newRanges[currentRangeSunday].endTime = dateInIST;
-            }
-            return newRanges;
-        });
-        hideDatePickerSunday();
-    };
-
     // const handleConfirmSunday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata'); // Keep as a moment object for accurate comparison
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
 
     //     setTimeRangesSunday(currentRanges => {
     //         const newRanges = [...currentRanges];
     //         if (isStartTimeSunday) {
-    //             newRanges[currentRangeSunday].startTime = dateInIST.format('YYYY-MM-DD HH:mm:ss');
+    //             newRanges[currentRangeSunday].startTime = dateInIST;
     //         } else {
+    //             //newRanges[currentRangeSunday].endTime = dateInIST;
     //             const startTime = newRanges[currentRangeSunday].startTime;
-    //             if (startTime) {
-    //                 const startMoment = moment(startTime);
-    //                 let endMoment = dateInIST;
-
-    //                 // If end time is before start time, assume it's on the next day
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     endMoment.add(1, 'days');
-    //                 }
-
-    //                 if (endMoment.isBefore(startMoment)) {
-    //                     Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                     return currentRanges; // Do not update state
-    //                 }
-
-    //                 newRanges[currentRangeSunday].endTime = endMoment.format('YYYY-MM-DD HH:mm:ss');
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
     //             }
+    //             newRanges[currentRangeSunday].endTime = dateInIST;
     //         }
     //         return newRanges;
     //     });
     //     hideDatePickerSunday();
     // };
 
+    const handleConfirmSunday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
+    
+        setTimeRangesSunday(currentRanges => {
+            const newRanges = [...currentRanges];
+            if (isStartTimeSunday) {
+                newRanges[currentRangeSunday].startTime = dateInIST;
+            } else {
+                const startTime = newRanges[currentRangeSunday].startTime;
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+    
+                    // Check if the end time is exactly 12:00 AM
+                    const isMidnight = timeOnly === '00:00:00';
+    
+                    // Ensure end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeSunday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
+                }
+            }
+            return newRanges;
+        });
+        hideDatePickerSunday();
+    };
+    
 
     const addNewTimeRangeSunday = () => {
         setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
