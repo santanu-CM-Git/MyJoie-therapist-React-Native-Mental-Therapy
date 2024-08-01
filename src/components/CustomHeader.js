@@ -136,7 +136,7 @@ export default function CustomHeader({
                             //style={{transform: [{rotate: '-15deg'}]}}
                             />
                         </View>
-                        <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
+                        {/* <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
                             <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold', marginRight: responsiveWidth(3) }}>Current Availability</Text>
                             <Switch
                                 trackColor={{ false: '#767577', true: '#000' }}
@@ -146,7 +146,7 @@ export default function CustomHeader({
                                 value={isEnabled}
                                 style={styles.switchStyle}
                             />
-                        </View>
+                        </View> */}
                     </LinearGradient>
                     <View style={styles.headerBottomMargin} />
                 </>
