@@ -103,7 +103,7 @@ const LoginScreen = ({ navigation }) => {
           },
         })
           .then(res => {
-            console.log(res.data,'response data from therapist login')
+            console.log(res.data, 'response data from therapist login')
             if (res.data.response == true) {
               setIsLoading(false)
               Toast.show({
@@ -115,7 +115,7 @@ const LoginScreen = ({ navigation }) => {
               });
               alert(res.data?.otp)
               // login(res.data.token)
-               navigation.navigate('Otp', {phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name})
+              navigation.navigate('Otp', { phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name })
             } else {
               console.log('not okk')
               setIsLoading(false)
@@ -144,11 +144,11 @@ const LoginScreen = ({ navigation }) => {
           });
       });
     }
-    
+
   }
 
   const handleTruecaller = () => {
-    
+
   }
 
   if (isLoading) {
@@ -175,26 +175,13 @@ const LoginScreen = ({ navigation }) => {
           </View>
           {mobileError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{mobileError}</Text> : <></>}
           <View style={styles.textinputview}>
-            {/* <InputField
-            value={'  +91'}
-            inputType={'code'}
-            keyboardType="numeric"
-          /> */}
-            {/* <View style={styles.countryModal}>
-              <TouchableOpacity
-                onPress={() => setShow(true)}
-                style={styles.countryInputView}
-              >
-                <Text style={{
-                  color: '#808080',
-                  fontSize: responsiveFontSize(2),
-                }}>
-                  {countryCode}
-                </Text>
+            <View style={styles.countryModal}>
+              <TouchableOpacity onPress={() => setShow(true)} style={styles.countryInputView}>
+                <Text style={{ color: '#808080', fontSize: responsiveFontSize(2) }}>{countryCode}</Text>
               </TouchableOpacity>
               <CountryPicker
                 show={show}
-                initialState={'+233'}
+                initialState={'+91'}
                 pickerButtonOnPress={(item) => {
                   setCountryCode(item.dial_code);
                   setShow(false);
@@ -205,17 +192,17 @@ const LoginScreen = ({ navigation }) => {
                   },
                 }}
               />
-            </View> */}
+            </View>
             <InputField
               label={'Mobile Number'}
               keyboardType="numeric"
               value={phone}
-              inputType={'others'}
+              inputType={'login'}
               onChangeText={(text) => onChangeText(text)}
               helperText={mobileError}
             />
           </View>
-          
+
         </View>
       </KeyboardAwareScrollView>
 
@@ -263,19 +250,25 @@ const styles = StyleSheet.create({
   textinputview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     //marginBottom: responsiveHeight(1)
   },
   buttonwrapper: {
     paddingHorizontal: 20,
   },
+  countryModal: {
+
+  },
   countryInputView: {
     height: responsiveHeight(7),
     width: responsiveWidth(15),
-    borderColor: '#808080',
+    borderColor: '#E0E0E0',
     borderWidth: 1,
     borderRadius: 6,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginRight: 5,
+    marginTop: -responsiveHeight(2)
   },
   bannaerContainer: {
     width: responsiveWidth(100),

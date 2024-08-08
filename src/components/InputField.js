@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet,Image } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image } from 'react-native';
 import { TextInput as MTextInput, IconButton } from "@react-native-material/core";
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import { YellowTck, eyeIcon } from '../utils/Images';
@@ -46,7 +46,7 @@ export default function InputField({
             <IconButton icon={props => <Image
               source={eyeIcon}
               style={{ height: 20, width: 20, resizeMode: 'contain' }}
-          />} {...props} />
+            />} {...props} />
           )}
         />
       ) : inputType == 'address' ? (
@@ -71,7 +71,7 @@ export default function InputField({
           multiline={inputFieldType == 'address' ? true : false}
           placeholderTextColor="#808080"
         />
-      ): inputType == 'others' ? (
+      ) : inputType == 'others' ? (
         <TextInput
           style={styles.editinput}
           onChangeText={onChangeText}
@@ -81,9 +81,21 @@ export default function InputField({
           editable={inputType == 'nonedit' ? false : true}
           multiline={inputFieldType == 'address' ? true : false}
           placeholderTextColor="#808080"
-          selectionColor="#808080" 
+          selectionColor="#808080"
         />
-      ): inputType == 'password' ? (
+      ) : inputType == 'login' ? (
+        <TextInput
+          style={styles.logininput}
+          onChangeText={onChangeText}
+          value={value}
+          placeholder={label}
+          keyboardType={keyboardType}
+          editable={inputType == 'nonedit' ? false : true}
+          multiline={inputFieldType == 'address' ? true : false}
+          placeholderTextColor="#808080"
+          selectionColor="#808080"
+        />
+      ) : inputType == 'password' ? (
         <TextInput
           style={styles.editinput}
           onChangeText={onChangeText}
@@ -95,7 +107,7 @@ export default function InputField({
           placeholderTextColor="#808080"
           secureTextEntry={true}
         />
-      )  : (
+      ) : (
         <MTextInput
           variant="outlined"
           label={label}
@@ -175,7 +187,7 @@ const styles = StyleSheet.create({
     height: responsiveHeight(30),
     textAlignVertical: 'top',
   },
-  noneditinput:{
+  noneditinput: {
     color: '#808080',
     fontFamily: 'DMSans-Regular',
     justifyContent: 'center',
@@ -187,9 +199,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: responsiveWidth(88),
     height: responsiveHeight(7),
-    backgroundColor:'#F4F5F5'
+    backgroundColor: '#F4F5F5'
   },
-  editinput:{
+  editinput: {
     color: '#808080',
     fontFamily: 'DMSans-Regular',
     justifyContent: 'center',
@@ -201,6 +213,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: responsiveWidth(88),
     height: responsiveHeight(7),
-  }
+  },
+  logininput: {
+    color: '#808080',
+    fontFamily: 'DMSans-Regular',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: responsiveHeight(1),
+    paddingLeft: responsiveHeight(1),
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
+    borderRadius: 8,
+    width: responsiveWidth(70),
+    height: responsiveHeight(7),
+  },
 
 });
