@@ -23,14 +23,14 @@ function App() {
     const unsubscribeForeground = setupNotificationHandlers(setNotifications, setnotifyStatus);
 
     messaging().onNotificationOpenedApp(remoteMessage => {
-      if (remoteMessage?.data?.screen) {
+      if (remoteMessage?.data?.screen === 'ScheduleScreen') {
         navigate('Schedule', { screen: 'ScheduleScreen' });
         
       }
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
-      if (remoteMessage?.data?.screen) {
+      if (remoteMessage?.data?.screen === 'ScheduleScreen') {
         navigate('Schedule', { screen: 'ScheduleScreen' });
       }
     });
