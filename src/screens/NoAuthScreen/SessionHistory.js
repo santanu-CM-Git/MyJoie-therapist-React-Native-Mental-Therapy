@@ -187,7 +187,7 @@ const SessionHistory = ({ navigation }) => {
                                 position: 'top',
                                 topOffset: Platform.OS == 'ios' ? 55 : 20
                             });
-                            fetchSessionHistory(1);
+                            fetchSessionHistory();
                             setModalVisible(false)
                             setIsLoading(false)
                         } else {

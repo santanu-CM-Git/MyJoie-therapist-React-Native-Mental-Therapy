@@ -53,7 +53,7 @@ const HomeStack = () => {
         component={UploadSessionSummary}
         options={{ headerShown: false }}
       />
-      
+
     </Stack.Navigator>
   );
 };
@@ -213,10 +213,10 @@ const TabNavigator = () => {
             //borderWidth: 1,
             //borderColor: '#CACCCE'
           },
-          tabBarIcon: ({ color, size,focused }) => (
+          tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center', }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-            <FontAwesome name="user" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }}/>
+              <FontAwesome name="user" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -246,7 +246,9 @@ const getTabBarVisibility = route => {
   console.log(routeName)
   if (routeName == 'ChatScreen') {
     return 'none';
-  }else if(routeName == 'UploadSessionSummary'){
+  } else if (routeName == 'UploadSessionSummary') {
+    return 'none';
+  } else if (routeName == 'ScheduleScreen') {
     return 'none';
   } else {
     return 'flex';
