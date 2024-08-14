@@ -53,7 +53,11 @@ const HomeStack = () => {
         component={UploadSessionSummary}
         options={{ headerShown: false }}
       />
-
+      <Stack.Screen
+        name="ScheduleScreen"
+        component={ScheduleScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
