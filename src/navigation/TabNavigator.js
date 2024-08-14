@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Text, Image, View } from 'react-native';
 
 import HomeScreen from '../screens/NoAuthScreen/HomeScreen';
 import ProfileScreen from '../screens/NoAuthScreen/ProfileScreen';
 import NotificationScreen from '../screens/NoAuthScreen/NotificationScreen';
-
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -39,7 +37,7 @@ const HomeStack = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name='ChatScreen'
+        name="ChatScreen"
         component={ChatScreen}
         options={{ headerShown: false }}
       />
@@ -51,11 +49,6 @@ const HomeStack = () => {
       <Stack.Screen
         name="UploadSessionSummary"
         component={UploadSessionSummary}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ScheduleScreen"
-        component={ScheduleScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -71,8 +64,7 @@ const EarningStack = () => {
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
-  )
-
+  );
 };
 
 const ScheduleStack = () => {
@@ -84,8 +76,7 @@ const ScheduleStack = () => {
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
-  )
-
+  );
 };
 
 const ProfileStack = () => {
@@ -102,13 +93,23 @@ const ProfileStack = () => {
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
-  )
-
+  );
 };
 
 const TabNavigator = () => {
-  const cartProducts = useSelector(state => state.cart)
-  console.log(cartProducts)
+  const navigation = useNavigation();
+  const cartProducts = useSelector(state => state.cart);
+
+  // useEffect(() => {
+  //   // Assuming you have a condition to check
+  //   // For example, navigating to ScheduleScreen based on some Redux state or parameter
+  //   const shouldNavigateToSchedule = true; // Replace this with your actual condition
+
+  //   if (shouldNavigateToSchedule) {
+  //     navigation.navigate('Schedule', { screen: 'ScheduleScreen' });
+  //   }
+  // }, [navigation]);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -130,14 +131,9 @@ const TabNavigator = () => {
             width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            //marginTop: -responsiveHeight(10),
-            //borderRadius: 30,
-            //marginBottom: 20,
-            //borderWidth: 1,
-            //borderColor: '#CACCCE'
           },
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
               <Ionicons name="home-outline" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
@@ -157,14 +153,9 @@ const TabNavigator = () => {
             width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            //marginTop: -responsiveHeight(10),
-            //borderRadius: 30,
-            //marginBottom: 20,
-            //borderWidth: 1,
-            //borderColor: '#CACCCE'
           },
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
               <FontAwesome name="rupee-sign" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
@@ -184,14 +175,9 @@ const TabNavigator = () => {
             width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            //marginTop: -responsiveHeight(10),
-            //borderRadius: 30,
-            //marginBottom: 20,
-            //borderWidth: 1,
-            //borderColor: '#CACCCE'
           },
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
               <AntDesign name="calendar" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
@@ -211,14 +197,9 @@ const TabNavigator = () => {
             width: responsiveWidth(100),
             height: responsiveHeight(8),
             alignSelf: 'center',
-            //marginTop: -responsiveHeight(10),
-            //borderRadius: 30,
-            //marginBottom: 20,
-            //borderWidth: 1,
-            //borderColor: '#CACCCE'
           },
           tabBarIcon: ({ color, size, focused }) => (
-            <View style={{ alignItems: 'center', justifyContent: 'center', }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
               <FontAwesome name="user" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
             </View>
@@ -232,27 +213,10 @@ const TabNavigator = () => {
   );
 };
 
-// const getTabBarVisibility = route => {
-//    console.log(route);
-//   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Feed';
-//   console.log(routeName);
-
-
-//   if (routeName == 'Chat') {
-//     return 'none';
-//   } else {
-//     return 'flex';
-//   }
-
-// };
 const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
   console.log(routeName)
-  if (routeName == 'ChatScreen') {
-    return 'none';
-  } else if (routeName == 'UploadSessionSummary') {
-    return 'none';
-  } else if (routeName == 'ScheduleScreen') {
+  if (routeName === 'ChatScreen' || routeName === 'UploadSessionSummary' || routeName === 'ScheduleScreen') {
     return 'none';
   } else {
     return 'flex';

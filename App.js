@@ -24,13 +24,14 @@ function App() {
 
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage?.data?.screen) {
-        navigate(remoteMessage?.data?.screen);
+        navigate('Schedule', { screen: 'ScheduleScreen' });
+        
       }
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
       if (remoteMessage?.data?.screen) {
-        navigate(remoteMessage?.data?.screen);
+        navigate('Schedule', { screen: 'ScheduleScreen' });
       }
     });
 
