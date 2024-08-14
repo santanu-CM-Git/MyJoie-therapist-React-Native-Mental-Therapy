@@ -82,7 +82,9 @@ const LoginScreen = ({ navigation }) => {
 
     const phoneRegex = /^\d{10}$/;
     if (!phone) {
-      setMobileError('Please enter Mobile no')
+      setMobileError('Please enter Mobile no.')
+    }else if(!countryCode){
+      setMobileError('Please enter Country Code.')
     } else if (!phoneRegex.test(phone)) {
       setMobileError('Please enter a 10-digit number.')
     } else {
@@ -90,9 +92,9 @@ const LoginScreen = ({ navigation }) => {
       setIsLoading(true)
       AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
         console.log(fcmToken, 'firebase token')
-        console.log(deviceId, 'device id')
+        //console.log(deviceId, 'device id')
         const option = {
-          //"code": countryCode,
+          //"country_code": countryCode,
           "mobile": phone,
           "firebase_token": fcmToken,
           //"deviceid": deviceId,

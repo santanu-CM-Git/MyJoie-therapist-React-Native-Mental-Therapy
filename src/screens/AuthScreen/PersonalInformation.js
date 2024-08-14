@@ -26,6 +26,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import MultiSelect from 'react-native-multiple-select';
 import { Dropdown } from 'react-native-element-dropdown';
 import Toast from 'react-native-toast-message';
+import { CountryPicker } from "react-native-country-codes-picker";
 
 // const qualificationitems = [
 //   { id: '92iijs7yta', name: 'Ondo' },
@@ -83,6 +84,8 @@ const PersonalInformation = ({ navigation, route }) => {
   const [emailError, setEmailError] = useState('')
   const [phoneno, setPhoneno] = useState('');
   const [phonenoError, setPhonenoError] = useState('')
+  const [countryCode, setCountryCode] = useState('+91');
+  const [show, setShow] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true)
   const { login, userToken } = useContext(AuthContext);
@@ -220,6 +223,8 @@ const PersonalInformation = ({ navigation, route }) => {
       setEmailError('Please enter Email Id')
     } else if (!phoneno) {
       setPhonenoError('Please enter Mobile No')
+    }else if(!countryCode){
+      setPhonenoError('Please enter Country Code.')
     } else if (selectedItemsType && selectedItemsType.length == 0) {
       setSelectedItemError('Please select type of therapist')
     } else if (selectedItemsLanguage && selectedItemsLanguage.length == 0) {
@@ -237,16 +242,17 @@ const PersonalInformation = ({ navigation, route }) => {
       //  console.log(JSON.stringify(formData), 'form data')
       setIsLoading(true)
       var experienceValue = ''
-      if(yearvalue && monthvalue){
+      if (yearvalue && monthvalue) {
         var experienceValue = yearvalue + '.' + monthvalue;
-      }else{
+      } else {
         var experienceValue = '';
       }
-      
+
       const option = {
         "name": firstname,
         "email": email,
         "mobile": phoneno,
+        //"country_code": countryCode,
         "therapy_types": selectedItemsType,
         "languages": selectedItemsLanguage,
         "qualifications": selectedItems,
@@ -276,14 +282,14 @@ const PersonalInformation = ({ navigation, route }) => {
           } else {
             console.log('not okk')
             setIsLoading(false)
-              Alert.alert('Oops..', "Something went wrong", [
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                { text: 'OK', onPress: () => console.log('OK Pressed') },
-              ]);
+            Alert.alert('Oops..', "Something went wrong", [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
           }
         })
         .catch(e => {
@@ -355,13 +361,32 @@ const PersonalInformation = ({ navigation, route }) => {
               <Text style={styles.requiredheader}>*</Text>
             </View>
             {phonenoError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{phonenoError}</Text> : <></>}
-            <View style={styles.inputView}>
+            <View style={[styles.inputView, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+
+              <View style={styles.countryModal}>
+                <TouchableOpacity onPress={() => setShow(true)} style={styles.countryInputView}>
+                  <Text style={{ color: '#808080', fontSize: responsiveFontSize(2) }}>{countryCode}</Text>
+                </TouchableOpacity>
+                <CountryPicker
+                  show={show}
+                  initialState={'+91'}
+                  pickerButtonOnPress={(item) => {
+                    setCountryCode(item.dial_code);
+                    setShow(false);
+                  }}
+                  style={{
+                    modal: {
+                      height: responsiveHeight(60),
+                    },
+                  }}
+                />
+              </View>
               <InputField
                 label={'Mobile number'}
                 keyboardType=" "
                 value={phoneno}
                 //helperText={firstNameError}
-                inputType={'others'}
+                inputType={'login'}
                 onChangeText={(text) => changePhone(text)}
               />
             </View>
@@ -663,5 +688,19 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     color: '#2F2F2F'
+  },
+  countryModal: {
+
+  },
+  countryInputView: {
+    height: responsiveHeight(7),
+    width: responsiveWidth(15),
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 5,
+    marginTop: -responsiveHeight(2)
   },
 });
