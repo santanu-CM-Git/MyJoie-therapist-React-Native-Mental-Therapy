@@ -24,24 +24,6 @@ export const openSettings = () => {
   Linking.openSettings();
 };
 
-// export const requestPermission = async () => {
-//   const checkPermission = await checkNotificationPermission();
-
-//   if (checkPermission === RESULTS.GRANTED) {
-//     console.log('Notification permission already granted.');
-//     return;
-//   }
-
-//   const request = await requestNotificationPermission();
-
-//   if (request !== RESULTS.GRANTED) {
-//     Alert.alert(
-//       'Notification Permission Required',
-//       'Please enable notifications to stay updated.',
-//       [{ text: 'OK', onPress: openSettings }]
-//     );
-//   }
-// };
 export const requestPermission = async () => {
   const checkPermission = await checkNotificationPermission();
 
@@ -101,9 +83,6 @@ const handleAction = (action, remoteMessage, navigation) => {
       break;
     default:
       console.log('Unknown action:', action);
-      if (navigation && navigation.current) {
-        navigation.current.navigate('ScheduleScreen');
-      }
       break;
   }
 };
