@@ -24,7 +24,21 @@ const data = [
 const ScheduleScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false)
-    const [isButtonLoader, setIsButtonLoader] = useState(false);
+    const [isButtonLoader, setIsButtonLoader] = useState({
+        sunday: false,
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+    });
+    const toggleLoader = (day, value) => {
+        setIsButtonLoader(prevState => ({
+            ...prevState,
+            [day]: value,
+        }));
+    };
     const [isModalLoading, setIsModalLoading] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
     const [sortData, setSortData] = useState([])
@@ -656,7 +670,7 @@ const ScheduleScreen = ({ navigation }) => {
     const handleConfirmSunday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
-    
+
         setTimeRangesSunday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeSunday) {
@@ -666,10 +680,10 @@ const ScheduleScreen = ({ navigation }) => {
                 if (startTime) {
                     const startMoment = moment(startTime);
                     let endMoment = moment(dateInIST);
-    
+
                     // Check if the end time is exactly 12:00 AM
                     const isMidnight = timeOnly === '00:00:00';
-    
+
                     // Ensure end time is on the same day and greater than the start time or exactly 12:00 AM
                     if (isMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeSunday].endTime = dateInIST;
@@ -683,7 +697,7 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePickerSunday();
     };
-    
+
 
     const addNewTimeRangeSunday = () => {
         setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -857,7 +871,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
-        setIsButtonLoader(true)
+        toggleLoader(day, true);
         console.log(day, 'llllllllll')
         const option = {
             "day": day,
@@ -873,7 +887,7 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsButtonLoader(false)
+                        toggleLoader(day, false);
 
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
@@ -894,7 +908,7 @@ const ScheduleScreen = ({ navigation }) => {
                         }
                     } else {
                         console.log('not okk')
-                        setIsButtonLoader(false)
+                        toggleLoader(day, false);
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -906,7 +920,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsButtonLoader(false)
+                    toggleLoader(day, false);
                     console.log(`user register error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -942,7 +956,7 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsButtonLoader(false)
+                        toggleLoader(day, false);
                         Toast.show({
                             type: 'success',
                             text1: 'Hello',
@@ -953,7 +967,7 @@ const ScheduleScreen = ({ navigation }) => {
                         fetchAvailability()
                     } else {
                         console.log('not okk')
-                        setIsButtonLoader(false)
+                        toggleLoader(day, false);
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -965,7 +979,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsButtonLoader(false)
+                    toggleLoader(day, false);
                     console.log(`set availibility error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -1593,7 +1607,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRange() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.monday} onPress={() => { saveTimeRange() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
@@ -1657,7 +1671,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeTuesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.tuesday} onPress={() => { saveTimeRangeTuesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleTuesday}
@@ -1721,7 +1735,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeWednesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.wednesday} onPress={() => { saveTimeRangeWednesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleWednesday}
@@ -1785,7 +1799,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeThursday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.thursday} onPress={() => { saveTimeRangeThursday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleThursday}
@@ -1849,7 +1863,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeFriday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.friday} onPress={() => { saveTimeRangeFriday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleFriday}
@@ -1913,7 +1927,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeSaturday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.saturday} onPress={() => { saveTimeRangeSaturday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSaturday}
@@ -1977,7 +1991,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader}  onPress={() => { saveTimeRangeSunday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.sunday} onPress={() => { saveTimeRangeSunday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSunday}

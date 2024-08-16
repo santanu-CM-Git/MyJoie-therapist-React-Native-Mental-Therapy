@@ -17,12 +17,12 @@ import { AuthContext } from '../../context/AuthContext';
 import { getProducts } from '../../store/productSlice'
 import Icon from 'react-native-vector-icons/Entypo';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import CustomButton from '../../components/CustomButton'
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from '../../store/cartSlice';
-import { dateIcon, timeIcon, ArrowGratter, userPhoto,GreenTick, dotIcon, YellowTck, RedCross } from '../../utils/Images';
+import { dateIcon, timeIcon, ArrowGratter, userPhoto, GreenTick, dotIcon, YellowTck, RedCross } from '../../utils/Images';
 import Loader from '../../utils/Loader';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 import CustomHeader from '../../components/CustomHeader';
@@ -65,13 +65,18 @@ export default function HomeScreen({ navigation }) {
   const [earningSum, setEarningSum] = useState(0);
 
   useEffect(() => {
-    // Update currentDateTime every second
-    const interval = setInterval(() => {
-      setCurrentDateTime(moment().toDate());
-    }, 1000);
+    const timer = setInterval(() => {
+      const nowUTC = new Date();
+      // IST is UTC+5:30
+      const offsetIST = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+      const nowIST = new Date(nowUTC.getTime() + offsetIST);
+      console.log("IST Time:", nowIST);
+      setCurrentDateTime(nowIST);
+    }, 60000); // Update every minute
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
+
   const getFCMToken = async () => {
     try {
       // if (Platform.OS == 'android') {
@@ -115,7 +120,7 @@ export default function HomeScreen({ navigation }) {
     //console.log(item, 'itemmmmmmmmmmmmmmmm')
     if (!isModalVisible) {
       fetchSessionHistory(data.pid)
-      const currentDateTime = moment().toDate();
+      //const currentDateTime = currentDateTime;
       //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
       const endDateTime = new Date(`${item.date}T${item.end_time}`);
@@ -176,6 +181,32 @@ export default function HomeScreen({ navigation }) {
     //fetchData()
     toggleCalendarModal()
   }
+
+  useEffect(() => {
+    //console.log('useEffect called:', currentDateTime, sortData);
+    if (sortData.length > 0) {
+      updateButtonState();
+    }
+  }, [currentDateTime, sortData]);
+
+  const updateButtonState = () => {
+    if (sortData.length > 0) {
+      const bookingDateTime = moment(`${sortData.date}T${sortData.start_time}`).toDate();
+      const endDateTime = moment(`${sortData.date}T${sortData.end_time}`).toDate();
+      const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+
+      console.log("Current DateTime:", currentDateTime);
+      console.log("Booking DateTime:", bookingDateTime);
+      console.log("End DateTime:", endDateTime);
+      console.log("Two Minutes Before Booking:", twoMinutesBefore);
+
+      const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+      console.log("Is Button Enabled:", isButtonEnabled);
+
+      setisButtonEnabled(isButtonEnabled);
+    }
+  };
+
   const fetchUpcomingSlot = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -209,13 +240,13 @@ export default function HomeScreen({ navigation }) {
 
         console.log(sortedData[0], 'first booking data');
         setSortData(sortedData[0]);
-
-        const currentDateTime = moment().toDate();
-        const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
-        const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
-        const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-        const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-        setisButtonEnabled(isButtonEnabled);
+  
+        // //const currentDateTime = moment().toDate();
+        // const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
+        // const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
+        // const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+        // const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+        // setisButtonEnabled(isButtonEnabled);
 
         // Group by date
         const groupedData = sortedData.reduce((acc, slot) => {
