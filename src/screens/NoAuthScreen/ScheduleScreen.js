@@ -24,6 +24,7 @@ const data = [
 const ScheduleScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false)
+    const [isButtonLoader, setIsButtonLoader] = useState(false);
     const [isModalLoading, setIsModalLoading] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
     const [sortData, setSortData] = useState([])
@@ -856,7 +857,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
-        setIsLoading(true)
+        setIsButtonLoader(true)
         console.log(day, 'llllllllll')
         const option = {
             "day": day,
@@ -872,7 +873,7 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsLoading(false)
+                        setIsButtonLoader(false)
 
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
@@ -893,7 +894,7 @@ const ScheduleScreen = ({ navigation }) => {
                         }
                     } else {
                         console.log('not okk')
-                        setIsLoading(false)
+                        setIsButtonLoader(false)
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -905,7 +906,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsLoading(false)
+                    setIsButtonLoader(false)
                     console.log(`user register error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -941,7 +942,7 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsLoading(false)
+                        setIsButtonLoader(false)
                         Toast.show({
                             type: 'success',
                             text1: 'Hello',
@@ -952,7 +953,7 @@ const ScheduleScreen = ({ navigation }) => {
                         fetchAvailability()
                     } else {
                         console.log('not okk')
-                        setIsLoading(false)
+                        setIsButtonLoader(false)
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -964,7 +965,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsLoading(false)
+                    setIsButtonLoader(false)
                     console.log(`set availibility error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -1592,7 +1593,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRange() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRange() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
@@ -1656,7 +1657,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeTuesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeTuesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleTuesday}
@@ -1720,7 +1721,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeWednesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeWednesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleWednesday}
@@ -1784,7 +1785,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeThursday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeThursday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleThursday}
@@ -1848,7 +1849,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeFriday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeFriday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleFriday}
@@ -1912,7 +1913,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSaturday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader} onPress={() => { saveTimeRangeSaturday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSaturday}
@@ -1976,7 +1977,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSunday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader}  onPress={() => { saveTimeRangeSunday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSunday}

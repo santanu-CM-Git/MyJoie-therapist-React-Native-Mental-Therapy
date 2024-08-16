@@ -1,29 +1,18 @@
+import { Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import { forwordImg } from '../utils/Images';
+import { chatImg, forwordImg } from '../utils/Images';
 
-export default function CustomButton({ label, onPress, buttonIcon, buttonColor, isButtonLoader }) {
+export default function CustomButton({ label, onPress, buttonIcon, buttonColor }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={buttonColor === 'red' ? styles.buttonViewRed
-        : buttonColor === 'gray' ? styles.buttonViewGray
-          : buttonColor === 'small' ? styles.buttonViewSmall
-            : styles.buttonView}
-      disabled={isButtonLoader} // Disable the button while loading
-    >
-      {isButtonLoader ? (
-        <ActivityIndicator size="small" color="#417AA4" />
-      ) : (
-        <>
-          <Text style={buttonColor === 'red' ? styles.buttonTextRed : styles.buttonText}>
-            {label}
-          </Text>
-          {buttonIcon && !isButtonLoader ? (
-            <Image source={forwordImg} style={styles.iconImage} tintColor={'#FFF'} />
-          ) : null}
-        </>
-      )}
+      style={buttonColor == 'red' ? styles.buttonViewRed : buttonColor == 'gray' ? styles.buttonViewGray : buttonColor == 'small' ? styles.buttonViewSmall : styles.buttonView}>
+
+      <Text
+        style={buttonColor == 'red' ? styles.buttonTextRed : styles.buttonText}>
+        {label}
+      </Text>
+      {buttonIcon ? <Image source={forwordImg} style={styles.iconImage} tintColor={'#FFF'} /> : null}
     </TouchableOpacity>
   );
 }
@@ -86,4 +75,4 @@ const styles = StyleSheet.create({
     height: 23,
     marginLeft: 5
   }
-});
+})

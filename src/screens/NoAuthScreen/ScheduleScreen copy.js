@@ -1,10 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button, Pressable, TouchableOpacity, FlatList } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { ArrowGratter, dateIcon, deleteImg, plus, timeIcon } from '../../utils/Images'
+import { ArrowGratter, GreenTick, dateIcon, deleteImg, dotIcon, plus, timeIcon } from '../../utils/Images'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -15,6 +14,8 @@ import axios from 'axios';
 import { API_URL } from '@env'
 import Toast from 'react-native-toast-message';
 import Loader from '../../utils/Loader';
+import { ActivityIndicator } from '@react-native-material/core';
+import { useFocusEffect } from '@react-navigation/native';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -23,8 +24,13 @@ const data = [
 const ScheduleScreen = ({ navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false)
-
+    const [isModalLoading, setIsModalLoading] = useState(false);
+    const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
+    const [sortData, setSortData] = useState([])
     const [groupedSlots, setGroupedSlots] = useState([]);
+    const [savePatientDetails, setSavePatientDetails] = useState(null)
+    const [modalDetails, setModalDetails] = useState(null)
+    const [isButtonEnabledForModal, setisButtonEnabledForModal] = useState(null);
 
     const [activeTab, setActiveTab] = useState('Calender')
     // Monday
@@ -85,6 +91,7 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isFocus, setIsFocus] = useState(false);
     const [startDay, setStartDay] = useState(null);
     const [endDay, setEndDay] = useState(null);
     const [markedDates, setMarkedDates] = useState({});
@@ -105,25 +112,38 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const handleConfirm = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
             } else {
-                //newRanges[currentRange].endTime = dateInIST;
                 const startTime = newRanges[currentRange].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRange].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRange].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePicker();
     };
+
+
+
 
     const addNewTimeRange = () => {
         setTimeRanges(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -162,27 +182,60 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityTuesday(false);
     };
 
+    // const handleConfirmTuesday = (date) => {
+    //     console.log('hiiiii');
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesTuesday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeTuesday) {
+    //             newRanges[currentRangeTuesday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeTuesday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeTuesday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeTuesday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerTuesday();
+    // };
     const handleConfirmTuesday = (date) => {
         console.log('hiiiii');
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesTuesday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeTuesday) {
                 newRanges[currentRangeTuesday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeTuesday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeTuesday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeTuesday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeTuesday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerTuesday();
     };
+
+
 
     const addNewTimeRangeTuesday = () => {
         setTimeRangesTuesday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -221,26 +274,57 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityWednesday(false);
     };
 
+    // const handleConfirmWednesday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesWednesday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeWednesday) {
+    //             newRanges[currentRangeWednesday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeWednesday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeWednesday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeWednesday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerWednesday();
+    // };
     const handleConfirmWednesday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesWednesday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeWednesday) {
                 newRanges[currentRangeWednesday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeWednesday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeWednesday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeWednesday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeWednesday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerWednesday();
     };
+
 
     const addNewTimeRangeWednesday = () => {
         setTimeRangesWednesday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -279,26 +363,57 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityThursday(false);
     };
 
+    // const handleConfirmThursday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesThursday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeThursday) {
+    //             newRanges[currentRangeThursday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeThursday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeThursday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeThursday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerThursday();
+    // };
     const handleConfirmThursday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesThursday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeThursday) {
                 newRanges[currentRangeThursday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeThursday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeThursday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or it is exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeThursday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeThursday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerThursday();
     };
+
 
     const addNewTimeRangeThursday = () => {
         setTimeRangesThursday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -336,26 +451,59 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityFriday(false);
     };
 
+    // const handleConfirmFriday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesFriday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeFriday) {
+    //             newRanges[currentRangeFriday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeFriday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeFriday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeFriday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerFriday();
+    // };
+
     const handleConfirmFriday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesFriday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeFriday) {
                 newRanges[currentRangeFriday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeFriday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeFriday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeFriday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeFriday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerFriday();
     };
+
+
 
     const addNewTimeRangeFriday = () => {
         setTimeRangesFriday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -394,26 +542,57 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySaturday(false);
     };
 
+    // const handleConfirmSaturday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+
+    //     setTimeRangesSaturday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeSaturday) {
+    //             newRanges[currentRangeSaturday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeSaturday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeSaturday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeSaturday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerSaturday();
+    // };
     const handleConfirmSaturday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRangesSaturday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeSaturday) {
                 newRanges[currentRangeSaturday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeSaturday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeSaturday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+
+                    // Check if the end time is not after 12:00 AM
+                    const isAfterMidnight = timeOnly === '00:00:00';
+
+                    // Ensure the end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeSaturday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeSaturday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerSaturday();
     };
+
 
     const addNewTimeRangeSaturday = () => {
         setTimeRangesSaturday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -452,26 +631,58 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySunday(false);
     };
 
-    const handleConfirmSunday = (date) => {
-        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
+    // const handleConfirmSunday = (date) => {
+    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
 
+    //     setTimeRangesSunday(currentRanges => {
+    //         const newRanges = [...currentRanges];
+    //         if (isStartTimeSunday) {
+    //             newRanges[currentRangeSunday].startTime = dateInIST;
+    //         } else {
+    //             //newRanges[currentRangeSunday].endTime = dateInIST;
+    //             const startTime = newRanges[currentRangeSunday].startTime;
+    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
+    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
+    //                 return currentRanges; // Do not update state
+    //             }
+    //             newRanges[currentRangeSunday].endTime = dateInIST;
+    //         }
+    //         return newRanges;
+    //     });
+    //     hideDatePickerSunday();
+    // };
+
+    const handleConfirmSunday = (date) => {
+        const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+        const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
+    
         setTimeRangesSunday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeSunday) {
                 newRanges[currentRangeSunday].startTime = dateInIST;
             } else {
-                //newRanges[currentRangeSunday].endTime = dateInIST;
                 const startTime = newRanges[currentRangeSunday].startTime;
-                if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-                    Alert.alert('Invalid Time', 'End time must be greater than start time.');
-                    return currentRanges; // Do not update state
+                if (startTime) {
+                    const startMoment = moment(startTime);
+                    let endMoment = moment(dateInIST);
+    
+                    // Check if the end time is exactly 12:00 AM
+                    const isMidnight = timeOnly === '00:00:00';
+    
+                    // Ensure end time is on the same day and greater than the start time or exactly 12:00 AM
+                    if (isMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
+                        newRanges[currentRangeSunday].endTime = dateInIST;
+                    } else {
+                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        return currentRanges; // Do not update state
+                    }
                 }
-                newRanges[currentRangeSunday].endTime = dateInIST;
             }
             return newRanges;
         });
         hideDatePickerSunday();
     };
+    
 
     const addNewTimeRangeSunday = () => {
         setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -538,7 +749,105 @@ const ScheduleScreen = ({ navigation }) => {
         toggleModal()
     }
 
-    const toggleModal = () => {
+    const fetchSessionHistory = async (patientId) => {
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (!userToken) {
+                console.log('No user token found');
+                //setIsLoading(false);
+                return;
+            }
+            setIsModalLoading(true)
+            const option = {
+                "patient_id": patientId
+            }
+            const response = await axios.post(`${API_URL}/therapist/patient-previous-session-check`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    "Authorization": `Bearer ${userToken}`,
+                },
+            });
+
+            const { data } = response.data;
+            console.log(JSON.stringify(data), 'fetch session history');
+            setTherapistSessionHistory(data)
+            setIsModalLoading(false)
+        } catch (error) {
+            console.log(`Fetch upcoming slot error: ${error}`);
+            setIsModalLoading(false)
+            Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+        } finally {
+            setIsModalLoading(false);
+        }
+    }
+    const renderSessionHistory = ({ item }) => (
+        <>
+            <View style={styles.previousHistoryView}>
+                <View style={{ padding: 15 }}>
+                    <View style={styles.flexStyle}>
+                        <Text style={styles.userName}>{item?.patient?.name}</Text>
+                        <View style={styles.flexCenter}>
+                            <Image
+                                source={
+                                    item?.status === 'completed' ? GreenTick :
+                                        item?.status === 'scheduled' ? YellowTck :
+                                            item?.status === 'cancel' ? RedCross :
+                                                null // You can set a default image or handle the null case appropriately
+                                }
+                                style={styles.iconstyle}
+                            />
+                            <Text style={styles.completedText}>
+                                {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.paraView}>
+                        <Text style={styles.paraIndex}>Order ID :</Text>
+                        <Text style={styles.paraValue}>{item?.order_id}</Text>
+                    </View>
+                    <View style={styles.paraView}>
+                        <Text style={styles.paraIndex}>Date :</Text>
+                        <Text style={styles.paraValue}>{moment(item?.date).format('ddd, D MMMM')}, {moment(item?.start_time, 'HH:mm:ss').format('h:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('h:mm A')}</Text>
+                    </View>
+                    <View style={styles.paraView}>
+                        <Text style={styles.paraIndex}>Appointment Time :</Text>
+                        <Text style={styles.paraValue}>{moment(item?.end_time, 'HH:mm:ss').diff(moment(item?.start_time, 'HH:mm:ss'), 'minutes')} Min</Text>
+                    </View>
+                    {/* <View style={styles.paraView}>
+                        <Text style={styles.paraIndex}>Rate :</Text>
+                        <Text style={styles.paraValue}>Rs {item?.therapist_details?.rate} for 30 Min</Text>
+                    </View> */}
+                    <View style={{ marginTop: responsiveHeight(1.5) }}>
+                        <Text style={styles.paraIndex}>Session Summary :</Text>
+                        <Text style={[styles.paraValue, { marginTop: 5 }]}>{item?.prescription_content}</Text>
+                    </View>
+                </View>
+            </View>
+        </>
+    )
+
+    const toggleModal = (data, item) => {
+        //console.log(data, 'ooooooooooooooo')
+        //console.log(item, 'itemmmmmmmmmmmmmmmm')
+        if (!isModalVisible) {
+            fetchSessionHistory(data.pid)
+            const currentDateTime = moment().toDate();
+            console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+            const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
+            const endDateTime = new Date(`${item.date}T${item.end_time}`);
+            const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+            const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+            setisButtonEnabledForModal(isButtonEnabled)
+        }
+        setModalDetails(item)
+        setSavePatientDetails(data)
         setModalVisible(!isModalVisible);
     };
 
@@ -547,6 +856,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
+        setIsLoading(true)
         console.log(day, 'llllllllll')
         const option = {
             "day": day,
@@ -567,14 +877,19 @@ const ScheduleScreen = ({ navigation }) => {
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
                         } else {
-                            Alert.alert('Hello', res.data.message, [
-                                {
-                                    text: 'Cancel',
-                                    onPress: () => console.log('Cancel Pressed'),
-                                    style: 'cancel',
-                                },
-                                { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
-                            ]);
+                            if (res.data.booking == 'yes') {
+                                Alert.alert('Hello', res.data.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => timeEntryinRespectOfDay(day, time, status) },
+                                ]);
+                            } else {
+                                timeEntryinRespectOfDay(day, time, status)
+                            }
+
                         }
                     } else {
                         console.log('not okk')
@@ -950,7 +1265,7 @@ const ScheduleScreen = ({ navigation }) => {
                             const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
                             return timeA - timeB;
                         });
-
+                        setSortData(sortedData)
                         // Group by date
                         const groupedData = sortedData.reduce((acc, slot) => {
                             const date = moment(slot.date).format('DD-MM-YYYY');
@@ -997,6 +1312,147 @@ const ScheduleScreen = ({ navigation }) => {
         fetchUpcomingSlot()
         fetchAvailability()
     }, [])
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchUpcomingSlot()
+        }, [])
+    )
+
+    const cancelBooking = (id) => {
+        Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
+            {
+                text: 'Cancel',
+                onPress: () => setIsFocus(!isFocus),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: () => {
+                    console.log(JSON.stringify(id))
+                    const option = {
+                        "booked_slot_id": id
+                    }
+                    console.log(option)
+                    AsyncStorage.getItem('userToken', (err, usertoken) => {
+                        axios.post(`${API_URL}/therapist/slot-cancel`, option, {
+                            headers: {
+                                'Accept': 'application/json',
+                                "Authorization": 'Bearer ' + usertoken,
+                                //'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                            .then(res => {
+                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                if (res.data.response == true) {
+                                    setIsLoading(false);
+                                    Toast.show({
+                                        type: 'success',
+                                        text1: 'Hello',
+                                        text2: "Schedule cancel successfully",
+                                        position: 'top',
+                                        topOffset: Platform.OS == 'ios' ? 55 : 20
+                                    });
+                                    toggleModal()
+                                    fetchUpcomingSlot()
+                                } else {
+                                    console.log('not okk')
+                                    setIsLoading(false)
+                                    Alert.alert('Oops..', "Something went wrong", [
+                                        {
+                                            text: 'Cancel',
+                                            onPress: () => console.log('Cancel Pressed'),
+                                            style: 'cancel',
+                                        },
+                                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                    ]);
+                                }
+                            })
+                            .catch(e => {
+                                setIsLoading(false)
+                                console.log(`user register error ${e}`)
+                                console.log(e.response)
+                                Alert.alert('Oops..', e.response?.data?.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                ]);
+                            });
+                    });
+                }
+            },
+        ]);
+
+    }
+
+    const reportBlock = (patientid) => {
+        Alert.alert('Hello', "Are you sure you want to block this person?", [
+            {
+                text: 'Cancel',
+                onPress: () => setIsFocus(!isFocus),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: () => {
+                    const option = {
+                        "patient_id": patientid,
+                        "reason": ''
+                    }
+                    console.log(option)
+                    AsyncStorage.getItem('userToken', (err, usertoken) => {
+                        axios.post(`${API_URL}/therapist/report-block`, option, {
+                            headers: {
+                                'Accept': 'application/json',
+                                "Authorization": 'Bearer ' + usertoken,
+                                //'Content-Type': 'multipart/form-data',
+                            },
+                        })
+                            .then(res => {
+                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                if (res.data.response == true) {
+                                    setIsLoading(false);
+                                    Toast.show({
+                                        type: 'success',
+                                        text1: 'Hello',
+                                        text2: "Patient successfully blocked.",
+                                        position: 'top',
+                                        topOffset: Platform.OS == 'ios' ? 55 : 20
+                                    });
+                                    toggleModal()
+                                    fetchUpcomingSlot()
+                                } else {
+                                    console.log('not okk')
+                                    setIsLoading(false)
+                                    Alert.alert('Oops..', "Something went wrong", [
+                                        {
+                                            text: 'Cancel',
+                                            onPress: () => console.log('Cancel Pressed'),
+                                            style: 'cancel',
+                                        },
+                                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                    ]);
+                                }
+                            })
+                            .catch(e => {
+                                setIsLoading(false)
+                                console.log(`user register error ${e}`)
+                                console.log(e.response)
+                                Alert.alert('Oops..', e.response?.data?.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                                ]);
+                            });
+                    });
+                }
+            },
+        ]);
+
+    }
 
     const formatISTTime = (time) => {
         return moment(time, 'HH:mm:ss').format('hh:mm A');
@@ -1029,52 +1485,54 @@ const ScheduleScreen = ({ navigation }) => {
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
                                 <Text style={styles.headerText}>Calender</Text>
-                                <TouchableOpacity onPress={toggleModal}>
-                                    <Image
-                                        source={dateIcon}
-                                        style={styles.iconStyle}
-                                    />
-                                </TouchableOpacity>
+                                {/* <TouchableOpacity onPress={toggleModal}> */}
+                                <Image
+                                    source={dateIcon}
+                                    style={styles.iconStyle}
+                                />
+                                {/* </TouchableOpacity> */}
                             </View>
-                            {Object.keys(groupedSlots).map(date => (
-                                <View style={styles.upcomingCard}>
-                                    <View style={styles.upcomingCardDate}>
-                                        <Text style={styles.upcomingCardDateText}>{date}</Text>
-                                    </View>
-                                    {groupedSlots[date].map(slot => (
-                                        <View key={slot.id}>
-                                            <View style={styles.headerTextView}>
-                                                <Text style={styles.headerText}>{slot.patient?.name}</Text>
-                                                <Image
-                                                    source={ArrowGratter}
-                                                    style={styles.iconStyle}
-                                                />
-                                            </View>
-                                            {/* <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5, }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Text style={{ color: '#969696', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>06:00 PM - 06:15 PM</Text>
-                                            <View style={{ paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#FF9E45', borderRadius: 15, marginLeft: responsiveWidth(2) }}>
-                                                <Text style={{ color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) }}>New</Text>
-                                            </View>
+                            {sortData.length !== 0 ?
+                                Object.keys(groupedSlots).map(date => (
+                                    <View style={styles.upcomingCard}>
+                                        <View style={styles.upcomingCardDate}>
+                                            <Text style={styles.upcomingCardDateText}>{date}</Text>
                                         </View>
-                                        <Text style={{ color: '#5C9ECF', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) }}>Free</Text>
-                                    </View> */}
-                                            <View style={styles.itemtimeView}>
-                                                <View style={styles.flexStyle}>
-                                                    <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
-                                                    <View style={styles.itemTagView}>
-                                                        <Text style={styles.itemTagText}>New</Text>
+                                        {groupedSlots[date].map(slot => (
+                                            <Pressable onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                                                <View >
+                                                    <View style={styles.headerTextView}>
+                                                        <Text style={styles.headerText}>{slot.patient?.name}</Text>
+                                                        <Image
+                                                            source={ArrowGratter}
+                                                            style={styles.iconStyle}
+                                                        />
                                                     </View>
+
+                                                    <View style={styles.itemtimeView}>
+                                                        <View style={styles.flexStyle}>
+                                                            <Text style={styles.itemTimeText}>{`${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}`}</Text>
+                                                            <View style={[styles.itemTagView, {
+                                                                backgroundColor: slot.repeat_user === 'no' ? '#FF9E45' : '#128807'
+                                                            }]}>
+                                                                <Text style={styles.itemTagText}>{slot.repeat_user === 'no' ? 'New' : 'Repeat'}</Text>
+                                                            </View>
+                                                        </View>
+                                                        <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
+                                                    </View>
+                                                    <View
+                                                        style={styles.horizontalLine}
+                                                    />
                                                 </View>
-                                                <Text style={styles.freeText}>{slot.slot_type === 'free' ? 'Free' : 'Paid'}</Text>
-                                            </View>
-                                            <View
-                                                style={styles.horizontalLine}
-                                            />
-                                        </View>
-                                    ))}
+                                            </Pressable>
+                                        ))}
+                                    </View>
+                                ))
+                                :
+                                <View style={[styles.upcomingCard, { padding: 20 }]}>
+                                    <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), color: '#746868' }}>No schedule so far</Text>
                                 </View>
-                            ))}
+                            }
                         </>
                         :
                         <>
@@ -1535,51 +1993,97 @@ const ScheduleScreen = ({ navigation }) => {
             </ScrollView>
             <Modal
                 isVisible={isModalVisible}
+                // onBackdropPress={() => setIsFocus(false)} // modal off by clicking outside of the modal
                 style={{
                     margin: 0, // Add this line to remove the default margin
                     justifyContent: 'flex-end',
                 }}>
-                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
+                <View style={[styles.crossIcon, { bottom: modalDetails?.prescription_checked === 'yes' ? '78%' : '33%', }]}>
                     <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleModal} />
                 </View>
-                <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+                {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
+                <View style={[styles.detailsModalView, { height: modalDetails?.prescription_checked === 'yes' ? '75%' : '30%', }]}>
                     <View style={{ padding: 20 }}>
-                        <View style={{ marginBottom: responsiveHeight(3) }}>
-                            <Text style={{ color: '#444', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(2) }}>Select your date</Text>
-                            <Calendar
-                                onDayPress={(day) => {
-                                    handleDayPress(day)
-                                }}
-                                //monthFormat={"yyyy MMM"}
-                                //hideDayNames={false}
-                                markingType={'period'}
-                                markedDates={markedDates}
-                                theme={{
-                                    selectedDayBackgroundColor: '#339999',
-                                    selectedDayTextColor: 'white',
-                                    monthTextColor: '#339999',
-                                    textMonthFontFamily: 'DMSans-Medium',
-                                    dayTextColor: 'black',
-                                    textMonthFontSize: 18,
-                                    textDayHeaderFontSize: 16,
-                                    arrowColor: '#2E2E2E',
-                                    dotColor: 'black'
-                                }}
-                                style={{
-                                    borderWidth: 1,
-                                    borderColor: '#E3EBF2',
-                                    borderRadius: 15,
-                                    height: responsiveHeight(50),
-                                    marginTop: 20,
-                                    marginBottom: 10
-                                }}
-                            />
-                            <View style={styles.buttonwrapper2}>
-                                <CustomButton label={"Ok"} onPress={() => { dateRangeSearch() }} />
+                        <View style={styles.flexStyle}>
+                            <Text style={styles.modalHeaderText}>Patient Details</Text>
+                            <Pressable onPress={(e) => {
+                                e.stopPropagation();
+                                setIsFocus(!isFocus)
+                            }}>
+                                {!isFocus ?
+                                    <Image
+                                        source={dotIcon}
+                                        style={{ height: 25, width: 25, resizeMode: 'contain', }}
+                                    /> :
+                                    <Icon name="cross" size={25} color="#B0B0B0" onPress={() => setIsFocus(!isFocus)} />
+                                }
+                            </Pressable>
+                            {isFocus ?
+                                <View style={{ width: responsiveWidth(40), backgroundColor: '#fff', height: responsiveHeight(15), position: 'absolute', right: 0, top: 30, zIndex: 10, padding: 10, borderRadius: 15, justifyContent: 'center', elevation: 5 }}>
+                                    <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+                                        <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
+                                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => reportBlock(savePatientDetails?.pid)}>
+                                            <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Report & Block</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                : <></>}
+
+                        </View>
+                        <View style={{ width: responsiveWidth(90), borderRadius: 15, borderColor: '#E3E3E3', borderWidth: 1, marginTop: responsiveHeight(2) }}>
+                            <View style={{ padding: 15 }}>
+                                <View style={styles.insidemodalTimedateView}>
+
+                                    <Text style={styles.insidemodalTimeText}>{savePatientDetails?.date}</Text>
+                                    <Text style={styles.insidemodalTimeText}>{savePatientDetails?.time}</Text>
+                                </View>
+                                <View style={styles.flexStyle}>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <Text style={styles.insidemodalName}>{savePatientDetails?.pname}</Text>
+                                        <View style={styles.insidemodalTagView}>
+                                            <Text style={styles.insidemodalTagtext}>New</Text>
+                                        </View>
+                                    </View>
+                                    <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
+                                        onPress={() => isButtonEnabledForModal && navigation.navigate('ChatScreen', { details: modalDetails })}
+                                        disabled={!isButtonEnabledForModal}
+                                    >
+                                        {/* <TouchableOpacity onPress={() => navigation.navigate('ChatScreen', { details: modalDetails })}> */}
+                                        <View style={styles.inActiveButtonInsideView2}>
+                                            <Text style={styles.activeButtonInsideText}>Join Now</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+
                             </View>
                         </View>
+                        {modalDetails?.prescription_checked === 'yes' ?
+                            <>
+                                {isModalLoading ? (
+                                    <ActivityIndicator size="small" color="#417AA4" style={{ marginTop: responsiveHeight(10) }} />
+                                ) : (
+                                    <FlatList
+                                        data={therapistSessionHistory}
+                                        renderItem={renderSessionHistory}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        maxToRenderPerBatch={10}
+                                        windowSize={5}
+                                        initialNumToRender={10}
+                                        horizontal={true}
+                                        showsHorizontalScrollIndicator={false}
+                                        getItemLayout={(therapistSessionHistory, index) => (
+                                            { length: 50, offset: 50 * index, index }
+                                        )}
+                                    />
+                                )}
+                            </>
+                            :
+                            null}
                     </View>
                 </View>
+                {/* </TouchableWithoutFeedback> */}
             </Modal>
         </SafeAreaView>
     )
@@ -1599,11 +2103,11 @@ const styles = StyleSheet.create({
         //marginBottom: responsiveHeight(1)
     },
     activeButtonView: {
-        backgroundColor: '#ECFCFA',
+        backgroundColor: '#EEF8FF',
         height: responsiveHeight(5),
         width: responsiveWidth(45),
         borderRadius: 20,
-        borderColor: '#87ADA8',
+        borderColor: '#417AA4',
         borderWidth: 1,
         justifyContent: 'center',
         alignItems: 'center'
@@ -1760,7 +2264,8 @@ const styles = StyleSheet.create({
     flexStyle: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        //backgroundColor:'red'
     },
     itemTimeText: {
         color: '#969696',
@@ -1783,6 +2288,118 @@ const styles = StyleSheet.create({
         color: '#5C9ECF',
         fontFamily: 'DMSans-Medium',
         fontSize: responsiveFontSize(1.7)
+    },
+    //modal
+    crossIcon: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        height: 50,
+        width: 50,
+        borderRadius: 25,
+        position: 'absolute',
+        left: '45%',
+        right: '45%'
+    },
+    detailsModalView: {
+        // height: '75%',
+        backgroundColor: '#fff',
+        position: 'absolute',
+        bottom: 0,
+        width: '100%'
+    },
+    modalHeaderText: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2)
+    },
+    previousHistoryView: {
+        width: responsiveWidth(89),
+        borderRadius: 15,
+        borderColor: '#E3E3E3',
+        borderWidth: 1,
+        marginTop: responsiveHeight(2),
+        marginRight: 5
+    },
+    completedText: {
+        color: '#444343',
+        fontSize: responsiveFontSize(1.7),
+        fontFamily: 'DMSans-SemiBold',
+        marginLeft: responsiveWidth(1)
+    },
+    paraView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: responsiveHeight(1.5)
+    },
+    paraIndex: {
+        color: '#444343',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7),
+        marginRight: responsiveWidth(2)
+    },
+    paraValue: {
+        color: '#746868',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
+    insidemodalTimedateView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 10
+    },
+    insidemodalTimeText: {
+        color: '#969696',
+        fontFamily: 'DMSans-Medium',
+        fontSize: responsiveFontSize(1.7)
+    },
+    insidemodalName: {
+        color: '#2D2D2D',
+        fontFamily: 'DMSans-Bold',
+        fontSize: responsiveFontSize(2),
+        marginVertical: 10
+    },
+    insidemodalTagView: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        backgroundColor: '#FF9E45',
+        borderRadius: 15,
+        width: responsiveWidth(20),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    insidemodalTagtext: {
+        color: '#FFF',
+        fontFamily: 'DMSans-Semibold',
+        fontSize: responsiveFontSize(1.5)
+    },
+    iconstyle: {
+        height: 20,
+        width: 20,
+        resizeMode: 'contain'
+    },
+    inActiveButtonInsideView2: {
+        backgroundColor: '#EEF8FF',
+        height: responsiveHeight(5),
+        width: responsiveWidth(35),
+        borderRadius: 15,
+        borderColor: '#417AA4',
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    userName: {
+        color: '#2D2D2D',
+        fontSize: responsiveFontSize(2),
+        fontFamily: 'DMSans-Bold'
+    },
+    flexCenter: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
 
 });
