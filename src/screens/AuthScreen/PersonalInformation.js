@@ -51,16 +51,18 @@ import { CountryPicker } from "react-native-country-codes-picker";
 //   { id: '3', content: 'Gujrati' },
 // ];
 const dataYear = [
-  { label: '01', value: '1' },
-  { label: '02', value: '2' },
-  { label: '03', value: '3' },
-  { label: '04', value: '4' },
-  { label: '05', value: '5' },
-  { label: '06', value: '6' },
-  { label: '07', value: '7' },
-  { label: '08', value: '8' },
-  { label: '09', value: '9' },
-  { label: '10', value: '10' },
+  { label: '01', value: '1' },{ label: '02', value: '2' },{ label: '03', value: '3' },{ label: '04', value: '4' },{ label: '05', value: '5' },{ label: '06', value: '6' },{ label: '07', value: '7' },{ label: '08', value: '8' },{ label: '09', value: '9' },{ label: '10', value: '10' },
+  { label: '11', value: '11' },
+  { label: '12', value: '12' },
+  { label: '13', value: '13' },
+  { label: '14', value: '14' },
+  { label: '15', value: '15' },
+  { label: '16', value: '16' },
+  { label: '17', value: '17' },
+  { label: '18', value: '18' },
+  { label: '19', value: '19' },
+  { label: '20', value: '20' },
+
 ];
 const dataMonth = [
   { label: '01', value: '1' },
@@ -73,6 +75,7 @@ const dataMonth = [
   { label: '08', value: '8' },
   { label: '09', value: '9' },
   { label: '10', value: '10' },
+  { label: '11', value: '11' },
 ];
 
 const PersonalInformation = ({ navigation, route }) => {
@@ -252,7 +255,7 @@ const PersonalInformation = ({ navigation, route }) => {
         "name": firstname,
         "email": email,
         "mobile": phoneno,
-        //"country_code": countryCode,
+        "country_code": countryCode,
         "therapy_types": selectedItemsType,
         "languages": selectedItemsLanguage,
         "qualifications": selectedItems,

@@ -82,6 +82,7 @@ const dataMonth = [
 const ProfileScreen = ({ navigation, route }) => {
   const [firstname, setFirstname] = useState('');
   const [email, setEmail] = useState('');
+  const [countryCode, setCountryCode] = useState('')
   const [phoneno, setPhoneno] = useState('');
   const [dob, setdob] = useState('');
   const [gender, setGender] = useState('');
@@ -265,6 +266,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
       setFirstname(userInfo?.name || '');
       setEmail(userInfo?.email || '');
+      setCountryCode(userInfo?.country_code || '')
       setPhoneno(userInfo?.mobile || '');
       setdob(userInfo?.dob || '');
       setGender(userInfo?.gender || '');
@@ -485,7 +487,7 @@ const ProfileScreen = ({ navigation, route }) => {
               <InputField
                 label={'Mobile number'}
                 keyboardType=" "
-                value={phoneno}
+                value={countryCode + '' + phoneno}
                 //helperText={firstNameError}
                 inputType={'nonedit'}
               //onChangeText={(text) => changeFirstname(text)}
