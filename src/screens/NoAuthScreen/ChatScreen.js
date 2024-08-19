@@ -36,16 +36,16 @@ const ChatScreen = ({ navigation, route }) => {
     appId: AGORA_APP_ID,
     channel: route?.params?.details?.agora_channel_id,
     token: route?.params?.details?.agora_token,
-    //channel: 'testChannel',
-    //token: '007eJxTYPA0+xLFlXWof37KbOsr+4LuSTEUTr6c5PZlXsLFM7dLl81QYDAzTTMySUtMSU41NDIxT7O0SLZIM082N080MjZKTbZIXbZ4QVpDICND9ZNMZkYGCATxuRlKUotLnDMS8/JScxgYAMU4JJ8='
+    //channel: 'myjoie',
+    //token: '007eJxTYCi/5Ol0SJHBQGfb4oOXi54W7nj96cK7f8pGLw9Eba4W/DtJgcHMNM3IJC0xJTnV0MjEPM3SItkizTzZ3DzRyNgoNdki9YnD4bSGQEYGe7OdrIwMEAjiszHkVmblZ6YyMAAAc6cjcA=='
   };
 
   // Define basic information
   const appId = AGORA_APP_ID;
-  const token = route?.params?.details?.agora_token2;
-  const channelName = route?.params?.details?.agora_channel_id2;
-  //const token = '007eJxTYPA0+xLFlXWof37KbOsr+4LuSTEUTr6c5PZlXsLFM7dLl81QYDAzTTMySUtMSU41NDIxT7O0SLZIM082N080MjZKTbZIXbZ4QVpDICND9ZNMZkYGCATxuRlKUotLnDMS8/JScxgYAMU4JJ8=';
-  //const channelName = 'testChannel';
+  const token = route?.params?.details?.agora_token;
+  const channelName = route?.params?.details?.agora_channel_id;
+  //const token = '007eJxTYCi/5Ol0SJHBQGfb4oOXi54W7nj96cK7f8pGLw9Eba4W/DtJgcHMNM3IJC0xJTnV0MjEPM3SItkizTzZ3DzRyNgoNdki9YnD4bSGQEYGe7OdrIwMEAjiszHkVmblZ6YyMAAAc6cjcA==';
+  //const channelName = 'myjoie';
   const uid = 0; // Local user UID, no need to modify
 
   const rtcCallbacks = {
