@@ -166,9 +166,9 @@ const EarningScreen = ({ navigation }) => {
             if (response.data.response === true) {
                 const res = response.data.data;
                 setIsLoading(false);
-                setEarningSum((res.earnings_sum).toFixed(2));
-                setGstCharges((res.gst_charges).toFixed(2));
-                setPayableSum((res.payable_sum).toFixed(2));
+                setEarningSum((res.total_incluissive_gst).toFixed(2));
+                setGstCharges((res.gst).toFixed(2));
+                setPayableSum((res.total_exclusive_gst).toFixed(2));
                 setWalletAmount((res.briefcase).toFixed(2));
                 setTdsAmount((res.tds).toFixed(2));
                 setPayable((res.payable).toFixed(2))
@@ -229,7 +229,7 @@ const EarningScreen = ({ navigation }) => {
                     source={Payment}
                     style={styles.paymentIcon}
                 />
-                <Text style={styles.paymentRecevedText}>Payment Received : ₹ {item?.original_amount}</Text>
+                <Text style={styles.paymentRecevedText}>Payment Received : ₹ {item?.therapist_earnnings}</Text>
             </View>
         </View>
     )
@@ -302,12 +302,12 @@ const EarningScreen = ({ navigation }) => {
                                         <Text style={styles.earningItemText}>₹ {earningSum}</Text>
                                     </View>
                                     <View style={styles.earningItemView}>
-                                        <Text style={styles.earningItemText}>GST </Text>
-                                        <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
-                                    </View>
-                                    <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>Earning (excluding GST)</Text>
                                         <Text style={styles.earningItemText}>₹ {payableSum}</Text>
+                                    </View>
+                                    <View style={styles.earningItemView}>
+                                        <Text style={styles.earningItemText}>GST </Text>
+                                        <Text style={styles.earningItemText}>- ₹ {gstCharges}</Text>
                                     </View>
                                     {/* <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>Wallet Amount</Text>
