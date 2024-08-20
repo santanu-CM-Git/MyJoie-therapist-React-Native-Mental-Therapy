@@ -23,6 +23,7 @@ const data = [
 
 const ScheduleScreen = ({ navigation }) => {
 
+    const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [isButtonLoader, setIsButtonLoader] = useState({
         sunday: false,
@@ -762,7 +763,7 @@ const ScheduleScreen = ({ navigation }) => {
     const dateRangeSearch = () => {
         console.log(startDay)
         console.log(endDay)
-        toggleModal()
+        toggleCalendarModal()
     }
 
     const fetchSessionHistory = async (patientId) => {
@@ -1487,6 +1488,10 @@ const ScheduleScreen = ({ navigation }) => {
         )
     }
 
+    const toggleCalendarModal = () => {
+        setCalendarModalVisible(!isCalendarModalVisible);
+    }
+
     return (
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Schedule'} onPress={() => navigation.goBack()} title={'Schedule'} />
@@ -1510,12 +1515,12 @@ const ScheduleScreen = ({ navigation }) => {
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
                                 <Text style={styles.headerText}>Calender</Text>
-                                {/* <TouchableOpacity onPress={toggleModal}> */}
-                                <Image
-                                    source={dateIcon}
-                                    style={styles.iconStyle}
-                                />
-                                {/* </TouchableOpacity> */}
+                                <TouchableOpacity onPress={toggleCalendarModal}>
+                                    <Image
+                                        source={dateIcon}
+                                        style={styles.iconStyle}
+                                    />
+                                </TouchableOpacity>
                             </View>
                             {sortData.length !== 0 ?
                                 Object.keys(groupedSlots).map(date => (
@@ -2111,6 +2116,55 @@ const ScheduleScreen = ({ navigation }) => {
                     </View>
                 </View>
                 {/* </TouchableWithoutFeedback> */}
+            </Modal>
+            {/* calender modal */}
+            <Modal
+                isVisible={isCalendarModalVisible}
+                style={{
+                    margin: 0, // Add this line to remove the default margin
+                    justifyContent: 'flex-end',
+                }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleCalendarModal} />
+                </View>
+                <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+                    <View style={{ padding: 20 }}>
+                        <View style={{ marginBottom: responsiveHeight(3) }}>
+                            <Text style={{ color: '#444', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(2) }}>Select your date</Text>
+                            <Calendar
+                                onDayPress={(day) => {
+                                    handleDayPress(day)
+                                }}
+                                //monthFormat={"yyyy MMM"}
+                                //hideDayNames={false}
+                                markingType={'period'}
+                                markedDates={markedDates}
+                                theme={{
+                                    selectedDayBackgroundColor: '#417AA4',
+                                    selectedDayTextColor: 'white',
+                                    monthTextColor: '#417AA4',
+                                    textMonthFontFamily: 'DMSans-Medium',
+                                    dayTextColor: 'black',
+                                    textMonthFontSize: 18,
+                                    textDayHeaderFontSize: 16,
+                                    arrowColor: '#2E2E2E',
+                                    dotColor: 'black'
+                                }}
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#E3EBF2',
+                                    borderRadius: 15,
+                                    height: responsiveHeight(50),
+                                    marginTop: 20,
+                                    marginBottom: 10
+                                }}
+                            />
+                            <View style={styles.buttonwrapper2}>
+                                <CustomButton label={"Ok"} onPress={() => { dateRangeSearch() }} />
+                            </View>
+                        </View>
+                    </View>
+                </View>
             </Modal>
         </SafeAreaView>
     )
