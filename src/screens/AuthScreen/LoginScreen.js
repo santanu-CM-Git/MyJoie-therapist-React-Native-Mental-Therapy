@@ -216,7 +216,20 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
       <View style={styles.termsView}>
-        <Text style={styles.termsText}>By signing in you agree to our Terms & Condition and Privacy Policy</Text>
+        <Text style={styles.termsText}>
+          By signing in you agree to our{' '}
+          <Text
+            style={styles.termsLinkText}
+            onPress={() => navigation.navigate('Termsofuse')}>
+            Terms & Condition
+          </Text>{' '}
+          and{' '}
+          <Text
+            style={styles.termsLinkText}
+            onPress={() => navigation.navigate('PrivacyPolicy')}>
+            Privacy Policy
+          </Text>.
+        </Text>
       </View>
       {/* <Image
         source={orImg}
@@ -296,13 +309,20 @@ const styles = StyleSheet.create({
   termsView: {
     marginBottom: responsiveHeight(5),
     paddingHorizontal: 20,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   termsText: {
     color: '#746868',
     fontFamily: 'DMSans-Regular',
     fontSize: responsiveFontSize(1.5),
-    textAlign: 'center'
+    textAlign: 'center',
+  },
+  termsLinkText: {
+    color: '#746868',
+    fontFamily: 'DMSans-Regular',
+    fontSize: responsiveFontSize(1.5),
+    textAlign: 'center',
+    textDecorationLine: 'underline', // Optional: to make the link look more like a link
   },
   orImg: {
     height: responsiveHeight(4),

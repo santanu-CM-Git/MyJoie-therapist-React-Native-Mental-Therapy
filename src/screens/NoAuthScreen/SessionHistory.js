@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert, Platform } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert, Platform, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
@@ -16,6 +16,7 @@ import CustomHeader from '../../components/CustomHeader';
 import Toast from 'react-native-toast-message';
 
 const SessionHistory = ({ navigation }) => {
+    const [refreshing, setRefreshing] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([]);
     const [perPage, setPerPage] = useState(10);
     const [pageno, setPageno] = useState(1);
@@ -27,7 +28,9 @@ const SessionHistory = ({ navigation }) => {
     const [hasMore, setHasMore] = useState(true);
 
     const toggleModal = (session) => {
+        console.log(session, 'hhhhhhhhhh')
         setSelectedSession(session);
+        setSummaryData(session?.prescription_content)
         setModalVisible(!isModalVisible);
     };
 
@@ -82,6 +85,15 @@ const SessionHistory = ({ navigation }) => {
             fetchSessionHistory(1);
         }, [fetchSessionHistory])
     );
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTherapistSessionHistory([]);
+        setPageno(1);
+        setHasMore(true); // Reset hasMore on focus
+        fetchSessionHistory(1);
+        setRefreshing(false);
+    }, []);
 
     const handleLoadMore = () => {
         if (!loading && hasMore) {
@@ -138,16 +150,18 @@ const SessionHistory = ({ navigation }) => {
                 <View style={{ marginTop: responsiveHeight(1.5) }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={styles.paraIndex}>Session Summary :</Text>
-                        {item?.prescription_content ? null : (
+                        {/* {item?.prescription_content ? null : ( */}
+                        {
                             item?.status === 'completed' && isWithin24Hours && (
                                 <TouchableOpacity onPress={() => toggleModal(item)}>
-                                    <Text style={styles.editText}>Add Summary</Text>
+                                    <Text style={styles.editText}>Edit Summary</Text>
                                 </TouchableOpacity>
                             )
-                        )}
+                        }
+                        {/* )} */}
                     </View>
                     <Text style={styles.contentText}>
-                        {item?.prescription_content?item?.prescription_content:'No content yet'}
+                        {item?.prescription_content ? item?.prescription_content : 'No content yet'}
                     </Text>
                 </View>
             </View>
@@ -155,7 +169,7 @@ const SessionHistory = ({ navigation }) => {
     };
 
     const submitForm = () => {
-        if(summaryData == ''){
+        if (summaryData == '') {
             Toast.show({
                 type: 'error',
                 text1: 'Hello',
@@ -163,7 +177,7 @@ const SessionHistory = ({ navigation }) => {
                 position: 'top',
                 topOffset: Platform.OS == 'ios' ? 55 : 20
             });
-        }else{
+        } else {
             const option = {
                 "slot_booked_id": selectedSession?.id,
                 "summary": summaryData
@@ -218,7 +232,7 @@ const SessionHistory = ({ navigation }) => {
                     });
             });
         }
-        
+
     }
 
     if (isLoading) {
@@ -240,6 +254,9 @@ const SessionHistory = ({ navigation }) => {
                     onEndReached={handleLoadMore}
                     onEndReachedThreshold={0.5}
                     ListFooterComponent={renderFooter}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#417AA4" colors={['#417AA4']} />
+                    }
                 />
             </View>
             <Modal
@@ -325,7 +342,7 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans-Medium',
         fontSize: responsiveFontSize(1.7)
     },
-    contentText:{ color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 },
+    contentText: { color: '#746868', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), marginTop: 5 },
     editText: {
         color: '#5C9ECF',
         fontFamily: 'DMSans-Medium',

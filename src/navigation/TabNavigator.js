@@ -19,6 +19,7 @@ import ChatScreen from '../screens/NoAuthScreen/ChatScreen';
 import EarningScreen from '../screens/NoAuthScreen/EarningScreen';
 import ScheduleScreen from '../screens/NoAuthScreen/ScheduleScreen';
 import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
+import { earningFillImg, earningNotFillImg, homeFillImg, homeImg, profileFillImg, profileNotFillImg, scheduleFillImg, scheduleNotFillImg } from '../utils/Images';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -135,7 +136,7 @@ const TabNavigator = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <Ionicons name="home-outline" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
+              <Image source={focused ? homeFillImg : homeImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -157,7 +158,7 @@ const TabNavigator = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <FontAwesome name="rupee-sign" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
+              <Image source={focused ? earningFillImg : earningNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -179,7 +180,7 @@ const TabNavigator = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <AntDesign name="calendar" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
+              <Image source={focused ? scheduleFillImg : scheduleNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -201,7 +202,7 @@ const TabNavigator = () => {
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <FontAwesome name="user" color={color} size={size} style={{ marginTop: responsiveHeight(1.2) }} />
+              <Image source={focused ? profileFillImg : profileNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (

@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   SafeAreaView,
   ScrollView,
   Image,
-  TextInput,
+  RefreshControl,
   TouchableOpacity,
   TouchableWithoutFeedback,
   FlatList,
@@ -42,6 +42,7 @@ export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { data: products, status } = useSelector(state => state.products)
   const { userInfo } = useContext(AuthContext)
+  const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
   const [isModalLoading, setIsModalLoading] = useState(false);
   const [value, setValue] = useState('1');
@@ -122,6 +123,8 @@ export default function HomeScreen({ navigation }) {
       fetchSessionHistory(data.pid)
       //const currentDateTime = currentDateTime;
       //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      const currentDateTime = moment().toDate();
+      console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
       const endDateTime = new Date(`${item.date}T${item.end_time}`);
       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
@@ -191,19 +194,13 @@ export default function HomeScreen({ navigation }) {
 
   const updateButtonState = () => {
     if (sortData.length > 0) {
-      const bookingDateTime = moment(`${sortData.date}T${sortData.start_time}`).toDate();
-      const endDateTime = moment(`${sortData.date}T${sortData.end_time}`).toDate();
+      const currentDateTime = moment().toDate();
+      console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      const bookingDateTime = new Date(`${sortData.date}T${sortData.start_time}`);
+      const endDateTime = new Date(`${sortData.date}T${sortData.end_time}`);
       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-
-      console.log("Current DateTime:", currentDateTime);
-      console.log("Booking DateTime:", bookingDateTime);
-      console.log("End DateTime:", endDateTime);
-      console.log("Two Minutes Before Booking:", twoMinutesBefore);
-
       const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-      console.log("Is Button Enabled:", isButtonEnabled);
-
-      setisButtonEnabled(isButtonEnabled);
+      setisButtonEnabled(isButtonEnabled)
     }
   };
 
@@ -240,13 +237,13 @@ export default function HomeScreen({ navigation }) {
 
         console.log(sortedData[0], 'first booking data');
         setSortData(sortedData[0]);
-  
-        // //const currentDateTime = moment().toDate();
-        // const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
-        // const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
-        // const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-        // const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-        // setisButtonEnabled(isButtonEnabled);
+
+        const currentDateTime = moment().toDate();
+        const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
+        const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
+        const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+        const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+        setisButtonEnabled(isButtonEnabled);
 
         // Group by date
         const groupedData = sortedData.reduce((acc, slot) => {
@@ -520,6 +517,14 @@ export default function HomeScreen({ navigation }) {
     }, [])
   )
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchUpcomingSlot()
+    fetchTherapistEarning('4')
+
+    setRefreshing(false);
+  }, []);
+
   const fetchSessionHistory = async (patientId) => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -613,7 +618,9 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.Container}>
       <CustomHeader commingFrom={'Home'} onPress={() => navigation.navigate('Notification')} onPressProfile={() => navigation.navigate('Profile')} />
-      <ScrollView>
+      <ScrollView refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#417AA4" colors={['#417AA4']} />
+      }>
         <View style={{ marginBottom: 10 }}>
           <View style={styles.earningView}>
             <Text style={styles.earningText}>Earned this month</Text>
@@ -680,7 +687,7 @@ export default function HomeScreen({ navigation }) {
                   <Text style={styles.headerText}>{date}</Text>
                 </View>
                 {groupedSlots[date].map(slot => (
-                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                  <TouchableOpacity onPress={() => toggleModal({ id: slot?.id, userType: slot?.repeat_user, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
                     <View key={slot.id}>
                       <View style={styles.itemnameView}>
                         <Text style={styles.itemnameText}>{slot.patient?.name}</Text>
@@ -764,8 +771,10 @@ export default function HomeScreen({ navigation }) {
                 <View style={styles.flexStyle}>
                   <View style={{ flexDirection: 'column' }}>
                     <Text style={styles.insidemodalName}>{savePatientDetails?.pname}</Text>
-                    <View style={styles.insidemodalTagView}>
-                      <Text style={styles.insidemodalTagtext}>New</Text>
+                    <View style={[styles.insidemodalTagView, {
+                      backgroundColor: savePatientDetails?.userType === 'no' ? '#FF9E45' : '#128807'
+                    }]}>
+                      <Text style={styles.insidemodalTagtext}>{savePatientDetails?.userType === 'no' ? 'New' : 'Repeat'}</Text>
                     </View>
                   </View>
                   <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
@@ -1159,7 +1168,6 @@ const styles = StyleSheet.create({
   insidemodalTagView: {
     paddingHorizontal: 15,
     paddingVertical: 5,
-    backgroundColor: '#FF9E45',
     borderRadius: 15,
     width: responsiveWidth(20),
     justifyContent: 'center',

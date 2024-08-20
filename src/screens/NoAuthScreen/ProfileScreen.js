@@ -80,6 +80,9 @@ const dataMonth = [
 ];
 
 const ProfileScreen = ({ navigation, route }) => {
+
+  const [isFormChanged, setIsFormChanged] = useState(false);
+
   const [firstname, setFirstname] = useState('');
   const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('')
@@ -121,6 +124,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [selectedItemsType, setSelectedItemsType] = useState([]);
   const multiSelectRefType = useRef(null);
   const onSelectedItemsChangeType = selectedItems => {
+    setIsFormChanged(true);
     setSelectedItemsType(selectedItems);
   };
 
@@ -129,6 +133,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
   const multiSelectRefLanguage = useRef(null);
   const onSelectedItemsChangeLanguage = selectedItems => {
+    setIsFormChanged(true);
     setSelectedItemsLanguage(selectedItems);
   };
   // Qualification dropdown
@@ -136,12 +141,16 @@ const ProfileScreen = ({ navigation, route }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
+    setIsFormChanged(true);
     setSelectedItems(selectedItems);
   };
 
   const toggleModal = () => {
     //setModalVisible(!isModalVisible);
     setAccountChangeRequest(!accountChangeRequest)
+
+    setIsFormChanged(true);
+
   };
 
   const changeAccountNo = (text) => {
@@ -150,13 +159,16 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const changeCity = (text) => {
     setCity(text)
+    setIsFormChanged(true);
   }
   const changeState = (text) => {
     setState(text)
+    setIsFormChanged(true);
   }
 
 
   const pickDocument = async (forwhat) => {
+    setIsFormChanged(true);
     try {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
@@ -190,59 +202,6 @@ const ProfileScreen = ({ navigation, route }) => {
     setCancelCheque(null)
   }
 
-  // const fetchUserData = () => {
-  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
-  //     console.log(usertoken, 'usertoken')
-  //     axios.post(`${API_URL}/therapist/profile`, {}, {
-  //       headers: {
-  //         "Authorization": `Bearer ${usertoken}`,
-  //         "Content-Type": 'application/json'
-  //       },
-  //     })
-  //       .then(res => {
-  //         let userInfo = res.data.data;
-  //         console.log(userInfo, 'user data from profile api ')
-  //         setFirstname(userInfo?.name)
-  //         setEmail(userInfo?.email)
-  //         setPhoneno(userInfo?.mobile)
-  //         setdob(userInfo?.dob)
-  //         setGender(userInfo?.gender)
-  //         setPanno(userInfo?.therapist_details1?.pan_no)
-  //         setAadhar(userInfo?.therapist_details1?.addhar_no)
-  //         const type_therapis = userInfo?.therapist_type;
-  //         const therapyTypeIds = type_therapis.map(item => item.therapy_type_id);
-  //         console.log(therapyTypeIds)
-  //         setSelectedItemsType(therapyTypeIds)
-  //         const language = userInfo?.therapist_languages;
-  //         const languageIds = language.map(item => item.language_id);
-  //         console.log(languageIds)
-  //         setSelectedItemsLanguage(languageIds)
-  //         const qualification = userInfo?.therapist_qualification;
-  //         const qualificationIds = qualification.map(item => item.qualification_id);
-  //         console.log(qualificationIds)
-  //         setSelectedItems(qualificationIds)
-  //         setCity(userInfo?.city)
-  //         setState(userInfo?.state)
-  //         setAccountno(userInfo?.therapist_details1?.bank_ac_no)
-  //         const experience = userInfo?.therapist_details1?.experience;
-  //         const parts = experience.toString().split('.');
-  //         if (experience) {
-  //           setYearValue(parts[0])
-  //           setMonthValue(parts[1])
-  //         } else {
-  //           setYearValue(null)
-  //           setMonthValue(null)
-  //         }
-  //         setAllDocument(userInfo?.therapist_documents)
-  //         setPickedDocument(userInfo?.profile_pic)
-  //         setIsLoading(false)
-  //       })
-  //       .catch(e => {
-  //         console.log(`Profile error ${e}`)
-  //         setIsLoading(false)
-  //       });
-  //   });
-  // }
   const fetchUserData = async () => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -734,6 +693,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 onChange={item => {
                   setYearValue(item.value);
                   setYearIsFocus(false);
+                  setIsFormChanged(true);
                 }}
               />
               <Dropdown
@@ -755,6 +715,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 onChange={item => {
                   setMonthValue(item.value);
                   setMonthIsFocus(false);
+                  setIsFormChanged(true);
                 }}
               />
             </View>
@@ -856,12 +817,14 @@ const ProfileScreen = ({ navigation, route }) => {
           </View>
 
         </View>
-        <View style={styles.buttonwrapper}>
-          <CustomButton label={"Submit For Review"}
-            // onPress={() => { login() }}
-            onPress={() => { submitForm() }}
-          />
-        </View>
+        {isFormChanged && (
+          <View style={styles.buttonwrapper}>
+            <CustomButton label={"Submit For Review"}
+              // onPress={() => { login() }}
+              onPress={() => { submitForm() }}
+            />
+          </View>
+        )}
       </KeyboardAwareScrollView>
       <Modal
         isVisible={isModalVisible}

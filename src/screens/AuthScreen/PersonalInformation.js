@@ -51,7 +51,7 @@ import { CountryPicker } from "react-native-country-codes-picker";
 //   { id: '3', content: 'Gujrati' },
 // ];
 const dataYear = [
-  { label: '01', value: '1' },{ label: '02', value: '2' },{ label: '03', value: '3' },{ label: '04', value: '4' },{ label: '05', value: '5' },{ label: '06', value: '6' },{ label: '07', value: '7' },{ label: '08', value: '8' },{ label: '09', value: '9' },{ label: '10', value: '10' },
+  { label: '01', value: '1' }, { label: '02', value: '2' }, { label: '03', value: '3' }, { label: '04', value: '4' }, { label: '05', value: '5' }, { label: '06', value: '6' }, { label: '07', value: '7' }, { label: '08', value: '8' }, { label: '09', value: '9' }, { label: '10', value: '10' },
   { label: '11', value: '11' },
   { label: '12', value: '12' },
   { label: '13', value: '13' },
@@ -94,12 +94,21 @@ const PersonalInformation = ({ navigation, route }) => {
   const { login, userToken } = useContext(AuthContext);
 
   // Qualification dropdown
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherQualification, setOtherQualification] = useState('')
   const [qualificationitems, setqualificationitems] = useState([])
   const [selectedItems, setSelectedItems] = useState([]);
   const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
     setSelectedItems(selectedItems);
+    if (selectedItems.includes('others')) {
+      setShowOtherInput(true);
+    } else {
+      setShowOtherInput(false);
+      setOtherQualification('')
+    }
   };
+
 
   // Type dropdown
   const [qualificationitemsType, setqualificationitemsType] = useState([])
@@ -189,6 +198,12 @@ const PersonalInformation = ({ navigation, route }) => {
     })
       .then(res => {
         let qualificationInfo = res.data.data;
+        // console.log(qualificationInfo,'qualificationInfoqualificationInfo');
+        // Append "Others" option
+        qualificationInfo.push({
+          id: 'others',
+          content: 'Others'
+        });
         setqualificationitems(qualificationInfo)
         setIsLoading(false);
       })
@@ -226,7 +241,7 @@ const PersonalInformation = ({ navigation, route }) => {
       setEmailError('Please enter Email Id')
     } else if (!phoneno) {
       setPhonenoError('Please enter Mobile No')
-    }else if(!countryCode){
+    } else if (!countryCode) {
       setPhonenoError('Please enter Country Code.')
     } else if (selectedItemsType && selectedItemsType.length == 0) {
       setSelectedItemError('Please select type of therapist')
@@ -259,6 +274,7 @@ const PersonalInformation = ({ navigation, route }) => {
         "therapy_types": selectedItemsType,
         "languages": selectedItemsLanguage,
         "qualifications": selectedItems,
+        // "other_qualification" : otherQualification,
         "experience": experienceValue,
       }
       console.log(option, 'kkkkkkkkk')
@@ -504,6 +520,16 @@ const PersonalInformation = ({ navigation, route }) => {
                 //hideSubmitButton
                 />
               </View>
+              {showOtherInput && (
+                <InputField
+                  label={'Others Qualification'}
+                  keyboardType=" "
+                  value={otherQualification}
+                  //helperText={firstNameError}
+                  inputType={'others'}
+                  onChangeText={(text) => setOtherQualification(text)}
+                />
+              )}
               <View style={{ marginVertical: responsiveHeight(2) }}>
                 {multiSelectRef.current && multiSelectRef.current.getSelectedItemsExt(selectedItems)}
               </View>

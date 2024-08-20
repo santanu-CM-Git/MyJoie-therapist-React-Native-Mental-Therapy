@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, Platform, Alert, FlatList } from 'react-native'
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, RefreshControl, Image, Platform, Alert, FlatList } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -24,6 +24,7 @@ const data = [
 ];
 
 const EarningScreen = ({ navigation }) => {
+    const [refreshing, setRefreshing] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState('1');
     const [isFocus, setIsFocus] = useState(false);
@@ -50,6 +51,12 @@ const EarningScreen = ({ navigation }) => {
             fetchData("1")
         }, [])
     )
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setValue('1')
+        fetchData("1")
+        setRefreshing(false);
+    }, []);
 
     const toggleCalendarModal = () => {
         setCalendarModalVisible(!isCalendarModalVisible);
@@ -237,7 +244,9 @@ const EarningScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Earnings'} onPress={() => navigation.goBack()} title={'Earnings'} />
-            <ScrollView style={styles.wrapper}>
+            <ScrollView style={styles.wrapper} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#417AA4" colors={['#417AA4']} />
+            }>
                 <View style={{ alignItems: 'center', marginBottom: responsiveHeight(3) }}>
                     <View style={styles.outerView}>
                         <View style={styles.insideView}>
@@ -300,10 +309,10 @@ const EarningScreen = ({ navigation }) => {
                                         <Text style={styles.earningItemText}>Earning (excluding GST)</Text>
                                         <Text style={styles.earningItemText}>₹ {payableSum}</Text>
                                     </View>
-                                    <View style={styles.earningItemView}>
+                                    {/* <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>Wallet Amount</Text>
                                         <Text style={styles.earningItemText}>₹ {walletAmount}</Text>
-                                    </View>
+                                    </View> */}
                                     <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>TDS</Text>
                                         <Text style={styles.earningItemText}>₹ {tdsAmount}</Text>

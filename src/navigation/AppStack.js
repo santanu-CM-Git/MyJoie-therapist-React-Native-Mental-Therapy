@@ -1,7 +1,7 @@
 import React from 'react';
-import {Image} from 'react-native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import { homeImg, helpImg,SessionIcon, PolicyIcon, availabilityBlackImg, earningBlackImg} from '../utils/Images';
+import { Image } from 'react-native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { homeImg, helpImg, SessionIcon, PolicyIcon, availabilityBlackImg, earningBlackImg } from '../utils/Images';
 import CustomDrawer from '../components/CustomDrawer';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -10,7 +10,8 @@ import CustomerSupport from '../screens/NoAuthScreen/CustomerSupport';
 
 import TabNavigator from './TabNavigator';
 import PrivacyPolicy from '../screens//NoAuthScreen/PrivacyPolicy';
-
+import CancellationPolicy from '../screens//NoAuthScreen/CancellationPolicy';
+import Termsofuse from '../screens//NoAuthScreen/Termsofuse';
 import SessionHistory from '../screens/NoAuthScreen/SessionHistory';
 import NoNotification from '../screens/NoAuthScreen/NoNotification';
 import UploadSessionSummary from '../screens/NoAuthScreen/UploadSessionSummary';
@@ -41,9 +42,9 @@ const AuthStack = () => {
         name="Home"
         component={TabNavigator}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={homeImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={homeImg} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
@@ -51,19 +52,19 @@ const AuthStack = () => {
         name="Availability"
         component={ScheduleScreen}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={availabilityBlackImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={availabilityBlackImg} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
-       <Drawer.Screen
+      <Drawer.Screen
         name="Earning"
         component={EarningScreen}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={earningBlackImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={earningBlackImg} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
@@ -71,19 +72,19 @@ const AuthStack = () => {
         name="Session History"
         component={SessionHistory}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="home-outline" size={22} color={color} />
-            <Image source={SessionIcon} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={SessionIcon} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
-       <Drawer.Screen
+      <Drawer.Screen
         name="Customer Support"
         component={CustomerSupport}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={helpImg} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={helpImg} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
@@ -91,13 +92,32 @@ const AuthStack = () => {
         name="Privacy Policy"
         component={PrivacyPolicy}
         options={{
-          drawerIcon: ({color}) => (
+          drawerIcon: ({ color }) => (
             // <Ionicons name="settings-outline" size={22} color={color} />
-            <Image source={PolicyIcon} style={{ width: 25,height: 25,marginRight:5}} color={color}/>
+            <Image source={PolicyIcon} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
           ),
         }}
       />
-
+      <Drawer.Screen
+        name="Cancellation Policy"
+        component={CancellationPolicy}
+        options={{
+          drawerIcon: ({ color }) => (
+            // <Ionicons name="settings-outline" size={22} color={color} />
+            <Image source={PolicyIcon} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Terms of use"
+        component={Termsofuse}
+        options={{
+          drawerIcon: ({ color }) => (
+            // <Ionicons name="settings-outline" size={22} color={color} />
+            <Image source={PolicyIcon} style={{ width: 25, height: 25, marginRight: 5 }} color={color} />
+          ),
+        }}
+      />
       {/* <Drawer.Screen
         name="  testtttt"
         component={TestPage}

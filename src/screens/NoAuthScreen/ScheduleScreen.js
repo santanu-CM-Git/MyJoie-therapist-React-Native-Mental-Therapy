@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button, Pressable, TouchableOpacity, FlatList } from 'react-native'
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, RefreshControl, Pressable, TouchableOpacity, FlatList } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
@@ -39,6 +39,7 @@ const ScheduleScreen = ({ navigation }) => {
             [day]: value,
         }));
     };
+    const [refreshing, setRefreshing] = useState(false);
     const [isModalLoading, setIsModalLoading] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
     const [sortData, setSortData] = useState([])
@@ -1333,6 +1334,13 @@ const ScheduleScreen = ({ navigation }) => {
         }, [])
     )
 
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchUpcomingSlot()
+        fetchAvailability()
+        setRefreshing(false);
+    }, []);
+
     const cancelBooking = (id) => {
         Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
             {
@@ -1482,7 +1490,9 @@ const ScheduleScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Schedule'} onPress={() => navigation.goBack()} title={'Schedule'} />
-            <ScrollView style={styles.wrapper}>
+            <ScrollView style={styles.wrapper} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#417AA4" colors={['#417AA4']} />
+            }>
                 <View style={{ marginBottom: responsiveHeight(3) }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <TouchableOpacity onPress={() => toggleTab('Calender')}>
@@ -1514,7 +1524,7 @@ const ScheduleScreen = ({ navigation }) => {
                                             <Text style={styles.upcomingCardDateText}>{date}</Text>
                                         </View>
                                         {groupedSlots[date].map(slot => (
-                                            <Pressable onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                                            <Pressable onPress={() => toggleModal({ id: slot?.id, userType: slot?.repeat_user, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
                                                 <View >
                                                     <View style={styles.headerTextView}>
                                                         <Text style={styles.headerText}>{slot.patient?.name}</Text>
@@ -2057,8 +2067,10 @@ const ScheduleScreen = ({ navigation }) => {
                                 <View style={styles.flexStyle}>
                                     <View style={{ flexDirection: 'column' }}>
                                         <Text style={styles.insidemodalName}>{savePatientDetails?.pname}</Text>
-                                        <View style={styles.insidemodalTagView}>
-                                            <Text style={styles.insidemodalTagtext}>New</Text>
+                                        <View style={[styles.insidemodalTagView, {
+                                            backgroundColor: savePatientDetails?.userType === 'no' ? '#FF9E45' : '#128807'
+                                        }]}>
+                                            <Text style={styles.insidemodalTagtext}>{savePatientDetails?.userType === 'no' ? 'New' : 'Repeat'}</Text>
                                         </View>
                                     </View>
                                     <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
@@ -2378,7 +2390,6 @@ const styles = StyleSheet.create({
     insidemodalTagView: {
         paddingHorizontal: 15,
         paddingVertical: 5,
-        backgroundColor: '#FF9E45',
         borderRadius: 15,
         width: responsiveWidth(20),
         justifyContent: 'center',
