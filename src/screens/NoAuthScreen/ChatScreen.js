@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
 import AgoraUIKit, { StreamFallbackOptions, PropsInterface, VideoRenderMode, RenderModeType } from 'agora-rn-uikit';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 // console.log(RenderModeType.RenderModeFit,'kkkkkkkkkkk')
 import {
   ClientRoleType,
@@ -119,8 +120,40 @@ const ChatScreen = ({ navigation, route }) => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  // const requestPermissions = async () => {
+  //   try {
+  //     if (Platform.OS === 'android') {
+  //       // Request audio and camera permissions for Android
+  //       const audioPermission = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+  //       const cameraPermission = await request(PERMISSIONS.ANDROID.CAMERA);
+
+  //       if (audioPermission === RESULTS.GRANTED && cameraPermission === RESULTS.GRANTED) {
+  //         console.log('Audio and camera permissions granted');
+  //       } else {
+  //         console.log('Audio and camera permissions not granted');
+  //         Alert.alert('Permissions Required', 'Audio and camera permissions are required for this feature.');
+  //       }
+  //     } else if (Platform.OS === 'ios') {
+  //       // Request audio and camera permissions for iOS
+  //       const audioPermission = await request(PERMISSIONS.IOS.MICROPHONE);
+  //       const cameraPermission = await request(PERMISSIONS.IOS.CAMERA);
+
+  //       if (audioPermission === RESULTS.GRANTED && cameraPermission === RESULTS.GRANTED) {
+  //         console.log('Audio and camera permissions granted');
+  //       } else {
+  //         console.log('Audio and camera permissions not granted');
+  //         Alert.alert('Permissions Required', 'Audio and camera permissions are required for this feature.');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Permission request error:', error);
+  //   }
+  // };
+
   useEffect(() => {
     // //receivedMsg()
+    //requestPermissions();
+    setupVideoSDKEngine();
     KeepAwake.activate();
     console.log(route?.params?.details, 'details from home page')
     fetchSessionHistory()
@@ -157,18 +190,23 @@ const ChatScreen = ({ navigation, route }) => {
         setEndTime(endTime); // Set the end time
 
         const mode = route?.params?.details?.mode_of_conversation;
-        if (mode === 'chat') {
-          setActiveTab('chat');
-          setVideoCall(false);
-          await leave();
-        } else if (mode === 'audio') {
-          await join();
-          setActiveTab('audio');
-          setVideoCall(false);
-        } else if (mode === 'video') {
-          setActiveTab('video');
-          setVideoCall(true);
-          //await leave();
+
+        switch (mode) {
+          case 'chat':
+            setActiveTab('chat');
+            setVideoCall(false);
+            await leave();
+            break;
+          case 'audio':
+            await join();
+            setActiveTab('audio');
+            setVideoCall(false);
+            break;
+          case 'video':
+            await setupVideoSDKEngine()
+            setActiveTab('video');
+            setVideoCall(true);
+            break;
         }
 
         setIsLoading(false);
@@ -486,9 +524,9 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
-  useEffect(() => {
-    setupVideoSDKEngine();
-  });
+  // useEffect(() => {
+  //   setupVideoSDKEngine();
+  // });
 
   const setupVideoSDKEngine = async () => {
     try {
@@ -556,41 +594,85 @@ const ChatScreen = ({ navigation, route }) => {
   };
 
   // Define the join method called after clicking the join channel button
-  const join = async () => {
-    if (isJoined) {
-      return;
+  // const join = async () => {
+  //   if (isJoined) {
+  //     return;
+  //   }
+  //   try {
+  //     // Set the channel profile type to communication after joining the channel
+  //     await agoraEngineRef.current?.setChannelProfile(
+  //       ChannelProfileType.ChannelProfileCommunication,
+  //     );
+  //     // Call the joinChannel method to join the channel
+  //     await agoraEngineRef.current?.joinChannel(token, channelName, uid, {
+  //       // Set the user role to broadcaster
+  //       clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+// Define the join method called after clicking the join channel button
+const join = async () => {
+  if (isJoined) {
+    console.log('Already joined the channel');
+    return;
+  }
+  try {
+    if (!agoraEngineRef.current) {
+      throw new Error('Agora engine is not initialized');
     }
-    try {
-      // Set the channel profile type to communication after joining the channel
-      await agoraEngineRef.current?.setChannelProfile(
-        ChannelProfileType.ChannelProfileCommunication,
-      );
-      // Call the joinChannel method to join the channel
-      await agoraEngineRef.current?.joinChannel(token, channelName, uid, {
-        // Set the user role to broadcaster
-        clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
+
+    console.log('Setting channel profile...');
+    await agoraEngineRef.current.setChannelProfile(
+      ChannelProfileType.ChannelProfileCommunication
+    );
+
+    console.log('Joining channel...');
+    await agoraEngineRef.current.joinChannel(token, channelName, uid, {
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    });
+
+    setIsJoined(true);
+    console.log('Joined the channel successfully');
+  } catch (e) {
+    console.error('Failed to join the channel:', e);
+  }
+};
   // Define the leave method called after clicking the leave channel button 
-  const leave = async () => {
-    try {
-      await agoraEngineRef.current?.leaveChannel();
-      setRemoteUid(0);
-      setIsJoined(false);
-      showMessage('Left the channel');
-    } catch (e) {
-      console.log(e);
+  // const leave = async () => {
+  //   try {
+  //     await agoraEngineRef.current?.leaveChannel();
+  //     setRemoteUid(0);
+  //     setIsJoined(false);
+  //     showMessage('Left the channel');
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+// Define the leave method called after clicking the leave channel button
+const leave = async () => {
+  try {
+    if (!agoraEngineRef.current) {
+      throw new Error('Agora engine is not initialized');
     }
-  };
+
+    console.log('Leaving channel...');
+    await agoraEngineRef.current.leaveChannel();
+    setRemoteUid(0);
+    setIsJoined(false);
+    console.log('Left the channel successfully');
+  } catch (e) {
+    console.error('Failed to leave the channel:', e);
+  }
+};
 
   const goingToactiveTab = async (name) => {
     if (name === 'audio') {
+      setVideoCall(false);
       await join();
       setActiveTab('audio');
-      setVideoCall(false);
     } else if (name === 'video') {
       await leave();
       setActiveTab('video');
@@ -601,6 +683,38 @@ const ChatScreen = ({ navigation, route }) => {
       setVideoCall(false);
     }
   };
+
+  // const goingToactiveTab = async (name) => {
+  //   console.log(`Switching to ${name} tab...`);
+  
+  //   // Avoid redundant actions if already on the desired tab
+  //   if (name === activeTab) return;
+  
+  //   try {
+  //     // Only leave the channel if we are in a different channel
+  //     if (activeTab === 'video' || activeTab === 'audio' || activeTab === 'chat') {
+  //       console.log(`Leaving ${activeTab} channel...`);
+  //       await leave(); // Ensure the leave operation completes
+  //     }
+  
+  //     // Update active tab state
+  //     setActiveTab(name);
+  
+  //     // Join the new channel/tab if applicable
+  //     if (name === 'audio' || name === 'video') {
+  //       console.log(`Joining ${name} channel...`);
+  //       await join(); // Ensure the join operation completes
+  //     }
+  
+  //     if (name === 'video') {
+  //       setVideoCall(true);
+  //     } else if (name === 'audio') {
+  //       setVideoCall(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error while switching tabs:', error);
+  //   }
+  // };
 
   const customPropsStyle = {
     localBtnStyles: {
@@ -890,13 +1004,13 @@ const ChatScreen = ({ navigation, route }) => {
                   {micOn ?
                     <TouchableOpacity onPress={() => toggleMic()}>
                       <Image
-                        source={audiooffIcon}
+                        source={audioonIcon}
                         style={styles.iconStyle}
                       />
                     </TouchableOpacity> :
                     <TouchableOpacity onPress={() => toggleMic()}>
                       <Image
-                        source={audioonIcon}
+                        source={audiooffIcon}
                         style={styles.iconStyle}
                       />
                     </TouchableOpacity>}
@@ -952,19 +1066,22 @@ const ChatScreen = ({ navigation, route }) => {
         {/* <TouchableWithoutFeedback onPress={() => setIsFocus(false)} style={{  }}> */}
         <View style={{ height: '52%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
           <View style={{ paddingVertical: 10 }}>
-            <FlatList
-              data={therapistSessionHistory}
-              renderItem={renderSessionHistory}
-              keyExtractor={(item) => item.id.toString()}
-              maxToRenderPerBatch={10}
-              windowSize={5}
-              initialNumToRender={10}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              getItemLayout={(therapistSessionHistory, index) => (
-                { length: 50, offset: 50 * index, index }
-              )}
-            />
+            {therapistSessionHistory.length > 0 ?
+              <FlatList
+                data={therapistSessionHistory}
+                renderItem={renderSessionHistory}
+                keyExtractor={(item) => item.id.toString()}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                initialNumToRender={10}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                getItemLayout={(therapistSessionHistory, index) => (
+                  { length: 50, offset: 50 * index, index }
+                )}
+              /> :
+              <Text style={[styles.therapistName, { alignSelf: 'center', paddingTop: responsiveHeight(20) }]}>No previous session summary</Text>
+            }
 
           </View>
         </View>
