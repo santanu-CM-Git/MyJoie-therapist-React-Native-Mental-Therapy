@@ -282,16 +282,15 @@ const EarningScreen = ({ navigation }) => {
                         </View>
                         <Text style={styles.priceText}>₹ {earningSum}</Text>
                         <View style={styles.priceBreakdownView}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={styles.earningText}>Earning Breakdown</Text>
-                                <TouchableOpacity onPress={() => setBreakdownVisibility(!breakdownVisibility)}>
+                            <TouchableOpacity onPress={() => setBreakdownVisibility(!breakdownVisibility)}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Text style={styles.earningText}>Earning Breakdown</Text>
                                     <Image
                                         source={breakdownVisibility ? ArrowUp : ArrowDown}
                                         style={{ height: 15, width: 15, resizeMode: 'contain' }}
                                     />
-                                </TouchableOpacity>
-                            </View>
-
+                                </View>
+                            </TouchableOpacity>
                             {breakdownVisibility ?
                                 <>
                                     <View

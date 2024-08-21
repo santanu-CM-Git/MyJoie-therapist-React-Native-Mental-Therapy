@@ -174,10 +174,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRanges)
         let filteredEvents = timeRanges.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents, 'Monday time')
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("monday", extractedTimes, "1")
@@ -266,10 +275,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesTuesday)
         let filteredEvents = timeRangesTuesday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents, 'Tuesday time')
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes, 'tuesday time');
         beforetimeEntryRespectOfDay("tuesday", extractedTimes, "1")
@@ -355,10 +373,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesWednesday)
         let filteredEvents = timeRangesWednesday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("wednessday", extractedTimes, "1")
@@ -444,10 +471,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesThursday)
         let filteredEvents = timeRangesThursday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("thursday", extractedTimes, "1")
@@ -534,10 +570,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesFriday)
         let filteredEvents = timeRangesFriday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("friday", extractedTimes, "1")
@@ -623,10 +668,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSaturday)
         let filteredEvents = timeRangesSaturday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("saturday", extractedTimes, "1")
@@ -713,10 +767,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSunday)
         let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("sunday", extractedTimes, "1")
@@ -761,9 +824,12 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const dateRangeSearch = () => {
-        console.log(startDay)
-        console.log(endDay)
-        toggleCalendarModal()
+        console.log(startDay);
+        console.log(endDay);
+        // If endDay is null, set it to startDay
+        const finalEndDay = endDay || startDay;
+        toggleCalendarModal();
+        fetchUpcomingSlotForSearch(startDay, finalEndDay);
     }
 
     const fetchSessionHistory = async (patientId) => {
@@ -946,7 +1012,7 @@ const ScheduleScreen = ({ navigation }) => {
             "data": time,
             "status": status,
         }
-        console.log(option)
+        console.log(option, '/therapist/set-availabilities')
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/set-availabilities`, option, {
                 headers: {
@@ -1263,6 +1329,77 @@ const ScheduleScreen = ({ navigation }) => {
     const fetchUpcomingSlot = () => {
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/upcomming-slots`, {}, {
+                headers: {
+                    'Accept': 'application/json',
+                    "Authorization": 'Bearer ' + usertoken,
+                    //'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(res => {
+                    console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+                    if (res.data.response == true) {
+                        const sortedData = res.data.data.sort((a, b) => {
+                            const dateA = new Date(a.date);
+                            const dateB = new Date(b.date);
+                            if (dateA < dateB) return -1;
+                            if (dateA > dateB) return 1;
+
+                            const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+                            const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+                            return timeA - timeB;
+                        });
+                        setSortData(sortedData)
+                        // Group by date
+                        const groupedData = sortedData.reduce((acc, slot) => {
+                            const date = moment(slot.date).format('DD-MM-YYYY');
+                            if (!acc[date]) {
+                                acc[date] = [];
+                            }
+                            acc[date].push(slot);
+                            return acc;
+                        }, {});
+
+                        setGroupedSlots(groupedData);
+                        setIsLoading(false);
+
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
+    const fetchUpcomingSlotForSearch = (sdate, edate) => {
+        setIsLoading(true);
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            const option = {
+                "sdate": sdate,
+                "edate": edate
+            }
+            console.log(option, 'hhhh');
+
+            axios.post(`${API_URL}/therapist/upcomming-slots`, option, {
                 headers: {
                     'Accept': 'application/json',
                     "Authorization": 'Bearer ' + usertoken,

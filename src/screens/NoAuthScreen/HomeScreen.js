@@ -485,7 +485,7 @@ export default function HomeScreen({ navigation }) {
       if (response.data.response === true) {
         const res = response.data.data;
         setIsLoading(false);
-        setEarningSum((res.earnings_sum).toFixed(2));
+        setEarningSum((res.total_incluissive_gst).toFixed(2));
       } else {
         console.log('not okk');
         setIsLoading(false);
