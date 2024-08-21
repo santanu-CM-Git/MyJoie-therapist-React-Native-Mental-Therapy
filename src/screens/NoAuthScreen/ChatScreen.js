@@ -96,26 +96,6 @@ const ChatScreen = ({ navigation, route }) => {
     }
   }, [routepage]);
 
-  // useEffect(() => {
-  //   // If timer is 0, return early
-  //   if (timer === 0) return;
-
-  //   // Create an interval that decrements the timer value every second
-  //   const interval = setInterval(() => {
-  //     setTimer((timer) => timer - 1);
-  //   }, 1000);
-
-  //   // Clear the interval if the component is unmounted or timer reaches 0
-  //   return () => clearInterval(interval);
-  // }, [timer]);
-
-  // const formatTime = (totalSeconds) => {
-  //   const minutes = Math.floor(totalSeconds / 60);
-  //   const seconds = totalSeconds % 60;
-  //   // Format the time to ensure it always shows two digits for minutes and seconds
-  //   return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  // };
-
   useEffect(() => {
     if (endTime) {
       intervalRef.current = BackgroundTimer.setInterval(() => {
@@ -188,7 +168,7 @@ const ChatScreen = ({ navigation, route }) => {
         } else if (mode === 'video') {
           setActiveTab('video');
           setVideoCall(true);
-          await leave();
+          //await leave();
         }
 
         setIsLoading(false);
@@ -230,56 +210,6 @@ const ChatScreen = ({ navigation, route }) => {
       { cancelable: false }
     );
   };
-
-  // const handleTimerEnd = async () => {
-  //   console.log('Timer has ended. Execute your function here.');
-  //   const currentTime = moment().format('HH:mm:ss');
-  //   const option = {
-  //     "booked_slot_id": route?.params?.details?.id,
-  //     "time": currentTime
-  //   }
-  //   console.log(option)
-  //   AsyncStorage.getItem('userToken', (err, usertoken) => {
-  //     axios.post(`${API_URL}/therapist/slot-complete`, option, {
-  //       headers: {
-  //         Accept: 'application/json',
-  //         "Authorization": 'Bearer ' + usertoken,
-  //       },
-  //     })
-  //       .then(res => {
-  //         console.log(res.data)
-  //         if (res.data.response == true) {
-  //           setVideoCall(false)
-  //           leave()
-  //           navigation.navigate('UploadSessionSummary', { bookedId: route?.params?.details?.id, pname: route?.params?.details?.patient?.name })
-  //         } else {
-  //           console.log('not okk')
-  //           setIsLoading(false)
-  //           Alert.alert('Oops..', "Something went wrong", [
-  //             {
-  //               text: 'Cancel',
-  //               onPress: () => console.log('Cancel Pressed'),
-  //               style: 'cancel',
-  //             },
-  //             { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //           ]);
-  //         }
-  //       })
-  //       .catch(e => {
-  //         setIsLoading(false)
-  //         console.log(`user update error ${e}`)
-  //         console.log(e.response.data?.response.records)
-  //         Alert.alert('Oops..', e.response?.data?.message, [
-  //           {
-  //             text: 'Cancel',
-  //             onPress: () => console.log('Cancel Pressed'),
-  //             style: 'cancel',
-  //           },
-  //           { text: 'OK', onPress: () => console.log('OK Pressed') },
-  //         ]);
-  //       });
-  //   });
-  // };
 
   const handleTimerEnd = async () => {
     console.log('Timer has ended. Execute your function here.');
