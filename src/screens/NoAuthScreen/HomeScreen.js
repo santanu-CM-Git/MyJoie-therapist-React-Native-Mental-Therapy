@@ -674,10 +674,10 @@ export default function HomeScreen({ navigation }) {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
             {/* <TouchableOpacity onPress={() => toggleCalendarModal()}> */}
-            <Image
+            {/* <Image
               source={dateIcon}
               style={styles.datetimeIcon}
-            />
+            /> */}
             {/* </TouchableOpacity> */}
           </View>
           {sortData.length !== 0 ?

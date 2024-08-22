@@ -82,6 +82,7 @@ const dataMonth = [
 const ProfileScreen = ({ navigation, route }) => {
 
   const [isFormChanged, setIsFormChanged] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
 
   const [firstname, setFirstname] = useState('');
   const [email, setEmail] = useState('');
@@ -124,8 +125,10 @@ const ProfileScreen = ({ navigation, route }) => {
   const [selectedItemsType, setSelectedItemsType] = useState([]);
   const multiSelectRefType = useRef(null);
   const onSelectedItemsChangeType = selectedItems => {
-    setIsFormChanged(true);
-    setSelectedItemsType(selectedItems);
+    if (isEditable) {
+      setIsFormChanged(true);
+      setSelectedItemsType(selectedItems);
+    }
   };
 
   // Language dropdown
@@ -133,16 +136,20 @@ const ProfileScreen = ({ navigation, route }) => {
   const [selectedItemsLanguage, setSelectedItemsLanguage] = useState([]);
   const multiSelectRefLanguage = useRef(null);
   const onSelectedItemsChangeLanguage = selectedItems => {
-    setIsFormChanged(true);
-    setSelectedItemsLanguage(selectedItems);
+    if (isEditable) {
+      setIsFormChanged(true);
+      setSelectedItemsLanguage(selectedItems);
+    }
   };
   // Qualification dropdown
   const [qualificationitems, setqualificationitems] = useState([])
   const [selectedItems, setSelectedItems] = useState([]);
   const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
-    setIsFormChanged(true);
-    setSelectedItems(selectedItems);
+    if (isEditable) {
+      setIsFormChanged(true);
+      setSelectedItems(selectedItems);
+    }
   };
 
   const toggleModal = () => {
@@ -537,6 +544,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
+                  disabled={!isEditable}
                 //hideSubmitButton
                 />
               </View>
@@ -576,6 +584,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
+                  disabled={!isEditable}
                 //hideSubmitButton
                 />
               </View>
@@ -615,6 +624,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   submitButtonColor="#417AA4"
                   submitButtonText="Submit"
                   styleIndicator={{ marginTop: -6, marginRight: - responsiveWidth(6) }}
+                  disabled={!isEditable}
                 //hideSubmitButton
                 />
               </View>
@@ -632,7 +642,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 keyboardType=" "
                 value={city}
                 //helperText={'Please enter lastname'}
-                inputType={'others'}
+                inputType={'nonedit'}
                 onChangeText={(text) => changeCity(text)}
               />
             </View>
@@ -666,7 +676,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 keyboardType=" "
                 value={state}
                 //helperText={'Please enter lastname'}
-                inputType={'others'}
+                inputType={'nonedit'}
                 onChangeText={(text) => changeState(text)}
               />
             </View>
@@ -692,9 +702,10 @@ const ProfileScreen = ({ navigation, route }) => {
                 onBlur={() => setYearIsFocus(false)}
                 onChange={item => {
                   setYearValue(item.value);
-                  setYearIsFocus(false);
+                  setYearIsFocus(false); 
                   setIsFormChanged(true);
                 }}
+                disable={!isEditable}
               />
               <Dropdown
                 style={[styles.dropdownHalf, isMonthFocus && { borderColor: '#DDD' }]}
@@ -717,13 +728,14 @@ const ProfileScreen = ({ navigation, route }) => {
                   setMonthIsFocus(false);
                   setIsFormChanged(true);
                 }}
+                disable={!isEditable}
               />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={styles.header}>Bank Account</Text>
-              <TouchableOpacity onPress={() => toggleModal()}>
+              {/* <TouchableOpacity onPress={() => toggleModal()}>
                 <Text style={{ fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7), color: '#444343', marginBottom: responsiveHeight(1), }}>{accountChangeRequest ? 'Cancel' : 'Change'}</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <View style={styles.inputView}>
               <InputField
@@ -804,12 +816,12 @@ const ProfileScreen = ({ navigation, route }) => {
                 <View>
                   <Image source={{ uri: pickedDocument }} style={{ height: responsiveHeight(18), width: responsiveWidth(40), borderRadius: 10 }} />
                   <View style={{ position: 'absolute', right: 15, top: 7 }}>
-                    <TouchableOpacity onPress={() => deleteProfileImg()}>
+                    {/* <TouchableOpacity onPress={() => deleteProfileImg()}>
                       <Image
                         source={deleteRoundImg}
                         style={{ height: 25, width: 25 }}
                       />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                 </View>
               }
@@ -817,14 +829,19 @@ const ProfileScreen = ({ navigation, route }) => {
           </View>
 
         </View>
-        {isFormChanged && (
+        {/* {isFormChanged && (
           <View style={styles.buttonwrapper}>
             <CustomButton label={"Submit For Review"}
               // onPress={() => { login() }}
               onPress={() => { submitForm() }}
             />
           </View>
-        )}
+        )} */}
+        <View style={styles.buttonwrapper}>
+          <Text style={{ fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2), color: '#808080', }}>
+            *If you want any update/change in profile then please write a mail to the support team
+          </Text>
+        </View>
       </KeyboardAwareScrollView>
       <Modal
         isVisible={isModalVisible}

@@ -272,7 +272,7 @@ const SessionHistory = ({ navigation }) => {
                         inputType={'address'}
                         onChangeText={(text) => setSummaryData(text)} // Change as needed
                     />
-                    <CustomButton label={"Upload"} onPress={() => submitForm()} />
+                    <CustomButton label={"Update"} onPress={() => submitForm()} />
                 </View>
             </Modal>
         </SafeAreaView>
