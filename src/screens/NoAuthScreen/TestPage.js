@@ -1,49 +1,47 @@
-// Import React Hooks
-import React, { useRef, useState, useEffect } from 'react';
-// Import user interface elements
+import React, { useState, useEffect, useRef } from 'react';
 import {
     SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
     View,
+    Text,
+    Button,
+    StyleSheet,
+    PermissionsAndroid,
+    Platform,
 } from 'react-native';
-// Import components for obtaining Android device permissions
-import { PermissionsAndroid, Platform } from 'react-native';
-// Import Agora SDK
 import {
     ClientRoleType,
     createAgoraRtcEngine,
-    IRtcEngine,
     ChannelProfileType,
+    RtcSurfaceView
 } from 'react-native-agora';
 
-// Define basic information
-const appId = '975e09acde854ac38b3304da072c111e';
-const token = '007eJxTYMif9fyV2Yeos/msk1S39//JCW60/+vpUzL1ks+LuXa/J0YoMFiam6YaWCYmp6RamJokJhtbJBkbG5ikJBqYGyUbGhqm+j8qTmsIZGTocvZiYmSAQBCfhaEktbiEgQEA4NAg+A==';
-const channelName = 'test';
-const uid = 0; // Local user UID, no need to modify
+const appId = '65f24fadce1247f98c8f7c77a232ec8e';
+const channelName = 'testChannel';
+const token = '007eJxTYJhVtlH76s/3ao1JOg/6nolv+XLKOfs+t7JXZEbea/6dPx0VGMxM04xM0hJTklMNjUzM0ywtki3SzJPNzRONjI1Sky1Sj147ltYQyMgQW32IhZEBAkF8boaS1OIS54zEvLzUHAYGAO/KJOM=';
+const uid = 0;
 
 const TestPage = () => {
-    const agoraEngineRef = useRef(<IRtcEngine></IRtcEngine>); // IRtcEngine instance
-    const [isJoined, setIsJoined] = useState(false); // Whether the local user has joined the channel
-    const [remoteUid, setRemoteUid] = useState(0); // Remote user UID
-    const [message, setMessage] = useState(''); // User prompt message
+    const agoraEngineRef = useRef(null);
+    const [isJoined, setIsJoined] = useState(false);
+    const [remoteUid, setRemoteUid] = useState(null);
+    const [message, setMessage] = useState('');
+    const [isVideoEnabled, setIsVideoEnabled] = useState(false);
 
-    // Initialize the engine when starting the App
     useEffect(() => {
         setupVideoSDKEngine();
-    });
+        return () => {
+            agoraEngineRef.current?.destroy();
+        };
+    }, []);
+
     const setupVideoSDKEngine = async () => {
         try {
-            // Create RtcEngine after checking and obtaining device permissions
             if (Platform.OS === 'android') {
                 await getPermission();
             }
             agoraEngineRef.current = createAgoraRtcEngine();
             const agoraEngine = agoraEngineRef.current;
 
-            // Register event callbacks
             agoraEngine.registerEventHandler({
                 onJoinChannelSuccess: () => {
                     showMessage('Successfully joined the channel: ' + channelName);
@@ -55,10 +53,10 @@ const TestPage = () => {
                 },
                 onUserOffline: (_connection, Uid) => {
                     showMessage('Remote user ' + Uid + ' has left the channel');
-                    setRemoteUid(0);
+                    setRemoteUid(null);
                 },
             });
-            // Initialize the engine
+
             agoraEngine.initialize({
                 appId: appId,
             });
@@ -67,98 +65,124 @@ const TestPage = () => {
         }
     };
 
-    // Define the join method called after clicking the join channel button
-    const join = async () => {
-        if (isJoined) {
-            return;
-        }
+    const getPermission = async () => {
         try {
-            // Set the channel profile type to communication after joining the channel
-            agoraEngineRef.current?.setChannelProfile(
-                ChannelProfileType.ChannelProfileCommunication,
-            );
-            // Call the joinChannel method to join the channel
-            agoraEngineRef.current?.joinChannel(token, channelName, uid, {
-                // Set the user role to broadcaster
-                clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-            });
-        } catch (e) {
-            console.log(e);
-        }
-    };
-    // Define the leave method called after clicking the leave channel button
-    const leave = () => {
-        try {
-            // Call the leaveChannel method to leave the channel
-            agoraEngineRef.current?.leaveChannel();
-            setRemoteUid(0);
-            setIsJoined(false);
-            showMessage('Left the channel');
-        } catch (e) {
-            console.log(e);
+            const granted = await PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+            ]);
+            return granted;
+        } catch (err) {
+            console.warn(err);
         }
     };
 
-    // Render the user interface
+    const joinChannel = async () => {
+        const agoraEngine = agoraEngineRef.current;
+        agoraEngine?.setChannelProfile(ChannelProfileType.ChannelProfileCommunication);
+        agoraEngine?.startPreview();
+        agoraEngine?.joinChannel(token, channelName, uid, {
+            clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+        });
+    };
+
+    const leaveChannel = () => {
+        const agoraEngine = agoraEngineRef.current;
+        agoraEngine?.leaveChannel();
+        setRemoteUid(null);
+        setIsJoined(false);
+        setIsVideoEnabled(false);
+        showMessage('You left the channel');
+    };
+
+    const startVideoCall = async () => {
+        const agoraEngine = agoraEngineRef.current;
+        agoraEngine?.enableVideo();
+        setIsVideoEnabled(true);
+    };
+
+    const startAudioCall = async () => {
+        const agoraEngine = agoraEngineRef.current;
+        agoraEngine?.disableVideo();
+        setIsVideoEnabled(false);
+    };
+
+    const showMessage = (msg) => {
+        setMessage(msg);
+        console.log(msg);
+    };
+
     return (
-        <SafeAreaView style={styles.main}>
-            <Text style={styles.head}>Agora Voice Call Quick Start</Text>
-            <View style={styles.btnContainer}>
-                <Text onPress={join} style={styles.button}>
-                    Join Channel
-                </Text>
-                <Text onPress={leave} style={styles.button}>
-                    Leave Channel
-                </Text>
-            </View>
-            <ScrollView
-                style={styles.scroll}
-                contentContainerStyle={styles.scrollContainer}>
+        <SafeAreaView style={styles.container}>
+            <Text style={styles.header}>Agora Audio/Video Call</Text>
+            <View style={styles.buttonContainer}>
                 {isJoined ? (
-                    <Text>Local user UID: {uid}</Text>
+                    <>
+                        <Button
+                            title={isVideoEnabled ? 'Switch to Audio' : 'Switch to Video'}
+                            onPress={isVideoEnabled ? startAudioCall : startVideoCall}
+                        />
+                        <Button title="Leave Channel" onPress={leaveChannel} />
+                    </>
                 ) : (
-                    <Text>Join a channel</Text>
+                    <Button title="Join Channel" onPress={joinChannel} />
                 )}
-                {isJoined && remoteUid !== 0 ? (
-                    <Text>Remote user UID: {remoteUid}</Text>
-                ) : (
-                    <Text>Waiting for remote users to join</Text>
-                )}
-                <Text>{message}</Text>
-            </ScrollView>
+            </View>
+
+            {isVideoEnabled && (
+                <View style={styles.videoContainer}>
+                    {/* Replace with correct Agora video view component */}
+                    {/* Example placeholder components */}
+                    {/* <View style={styles.localVideo}>
+                        <Text>Local Video</Text>
+                    </View> */}
+                    <RtcSurfaceView canvas={{ uid: 0 }} style={styles.localVideo} />
+                    {remoteUid !== null && (
+                        // <View style={styles.remoteVideo}>
+                        //     {/* Replace with RtcRemoteView.SurfaceView */}
+                        //     <Text>Remote Video</Text>
+                        // </View>
+                        <RtcSurfaceView
+                            canvas={{ uid: remoteUid }}
+                            style={styles.remoteVideo}
+                        />
+
+                    )}
+                </View>
+            )}
         </SafeAreaView>
     );
-
-    // Display message
-    function showMessage(msg) {
-        setMessage(msg);
-    }
 };
 
-// Define user interface styles
 const styles = StyleSheet.create({
-    button: {
-        paddingHorizontal: 25,
-        paddingVertical: 4,
-        fontWeight: 'bold',
-        color: '#ffffff',
-        backgroundColor: '#0055cc',
-        margin: 5,
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    main: { flex: 1, alignItems: 'center' },
-    scroll: { flex: 1, backgroundColor: '#ddeeff', width: '100%' },
-    scrollContainer: { alignItems: 'center' },
-    videoView: { width: '90%', height: 200 },
-    btnContainer: { flexDirection: 'row', justifyContent: 'center' },
-    head: { fontSize: 20 },
+    header: {
+        fontSize: 24,
+        marginBottom: 20,
+    },
+    buttonContainer: {
+        marginVertical: 10,
+    },
+    videoContainer: {
+        width: '100%',
+        height: 400,
+        backgroundColor: '#ccc',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    localVideo: {
+        width: '100%',
+        height: 400,
+    },
+    remoteVideo: {
+        width: '100%',
+        height: 200,
+        marginTop: 10,
+    },
 });
-
-const getPermission = async () => {
-    if (Platform.OS === 'android') {
-        await PermissionsAndroid.requestMultiple([
-            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        ]);
-    }
-};
 
 export default TestPage;
