@@ -111,9 +111,9 @@ const ChatScreen = ({ navigation, route }) => {
       sessionStart();
     };
     initialize();
-    // return () => {
-    //   agoraEngineRef.current?.destroy();
-    // };
+    return () => {
+      agoraEngineRef.current?.destroy();
+    };
   }, []);
 
   const sessionStart = async () => {
@@ -474,26 +474,29 @@ const ChatScreen = ({ navigation, route }) => {
     setMessage(msg);
   }
 
-  useEffect(() => {
-    setupVideoSDKEngine();
-    // return () => {
-    //   agoraEngineRef.current?.destroy();
-    // };
-  }, []);
+  // useEffect(() => {
+  //   setupVideoSDKEngine();
+  //   return () => {
+  //     agoraEngineRef.current?.destroy();
+  //   };
+  // }, []);
 
   const setupVideoSDKEngine = async () => {
     try {
       if (Platform.OS === 'android') {
-        await getPermission();
+        await getPermission(); // Await for permission request
       }
-      agoraEngineRef.current = createAgoraRtcEngine();
+
+      agoraEngineRef.current = await createAgoraRtcEngine(); // Await for engine creation
       const agoraEngine = agoraEngineRef.current;
+
       if (agoraEngine) {
         console.log('Agora engine created successfully');
       } else {
         console.log('Failed to create Agora engine');
       }
-      agoraEngine.registerEventHandler({
+
+      await agoraEngine.registerEventHandler({
         onJoinChannelSuccess: () => {
           console.log('Successfully joined the channel: ' + channelName);
           setIsJoined(true);
@@ -508,9 +511,9 @@ const ChatScreen = ({ navigation, route }) => {
         },
       });
 
-      agoraEngine.initialize({
+      await agoraEngine.initialize({
         appId: appId,
-      });
+      }); // Await for initialization
     } catch (e) {
       console.log(e);
     }
@@ -568,7 +571,7 @@ const ChatScreen = ({ navigation, route }) => {
         console.error('Agora engine not initialized');
         return;
       }
-  
+
       if (cameraOn) {
         agoraEngine.switchCamera(); // Switch between front and rear cameras
         console.log('Camera switched');
@@ -579,7 +582,7 @@ const ChatScreen = ({ navigation, route }) => {
       console.log('Error switching camera:', e);
     }
   };
-  
+
   const toggleCamera = () => {
     try {
       const agoraEngine = agoraEngineRef.current;
@@ -587,7 +590,7 @@ const ChatScreen = ({ navigation, route }) => {
         console.error('Agora engine not initialized');
         return;
       }
-  
+
       if (cameraOn) {
         agoraEngine.stopPreview(); // Stop the local video preview
         agoraEngine.muteLocalVideoStream(true); // Mute local video stream
@@ -597,14 +600,14 @@ const ChatScreen = ({ navigation, route }) => {
         agoraEngine.muteLocalVideoStream(false); // Unmute local video stream
         console.log('Camera turned on');
       }
-  
+
       setCameraOn(!cameraOn); // Toggle camera state
     } catch (e) {
       console.log('Error toggling camera:', e);
       showMessage('Error toggling camera');
     }
   };
-  
+
 
   // Define the join method called after clicking the join channel button
   const joinChannel = async () => {
@@ -617,11 +620,11 @@ const ChatScreen = ({ navigation, route }) => {
 
     try {
       // Set channel profile
-      agoraEngine.setChannelProfile(ChannelProfileType.ChannelProfileCommunication);
+      await agoraEngine.setChannelProfile(ChannelProfileType.ChannelProfileCommunication);
 
       // Start video preview
-      agoraEngine.startPreview();
-      agoraEngine.muteLocalVideoStream(false)
+      await agoraEngine.startPreview();
+      await agoraEngine.muteLocalVideoStream(false)
       // Join the channel
       await agoraEngine.joinChannel(token, channelName, uid, {
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
@@ -638,7 +641,7 @@ const ChatScreen = ({ navigation, route }) => {
 
   const leaveChannel = async () => {
     const agoraEngine = agoraEngineRef.current;
-    agoraEngine?.leaveChannel();
+    await agoraEngine?.leaveChannel();
     setRemoteUid(null);
     setIsJoined(false);
     setIsVideoEnabled(false);
@@ -649,13 +652,13 @@ const ChatScreen = ({ navigation, route }) => {
 
   const startVideoCall = async () => {
     const agoraEngine = agoraEngineRef.current;
-    agoraEngine?.enableVideo();
+    await agoraEngine?.enableVideo();
     setIsVideoEnabled(true);
   };
 
   const startAudioCall = async () => {
     const agoraEngine = agoraEngineRef.current;
-    agoraEngine?.disableVideo();
+    await agoraEngine?.disableVideo();
     setIsVideoEnabled(false);
   };
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -930,7 +933,7 @@ const ChatScreen = ({ navigation, route }) => {
               {isVideoEnabled ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80),borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
                     <>
                       {/* Remote Video View */}
                       {remoteUid !== null && (
