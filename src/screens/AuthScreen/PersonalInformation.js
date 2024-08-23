@@ -174,6 +174,14 @@ const PersonalInformation = ({ navigation, route }) => {
     }
   }
 
+  const handleChangeOthersfield = (text) => {
+    // Regex to match only letters, numbers, and spaces
+    const regex = /^[a-zA-Z0-9\s]*$/;
+    if (regex.test(text)) {
+      setOtherQualification(text);
+    }
+  };
+
   const fetchLanguage = () => {
     axios.get(`${API_URL}/languages`, {
       headers: {
@@ -266,6 +274,10 @@ const PersonalInformation = ({ navigation, route }) => {
         var experienceValue = '';
       }
 
+      let array = selectedItems;
+      array.push(otherQualification);
+      //console.log(array);
+
       const option = {
         "name": firstname,
         "email": email,
@@ -273,8 +285,8 @@ const PersonalInformation = ({ navigation, route }) => {
         "country_code": countryCode,
         "therapy_types": selectedItemsType,
         "languages": selectedItemsLanguage,
-        "qualifications": selectedItems,
-        // "other_qualification" : otherQualification,
+        "qualifications": array,
+         //"other_qualification" : otherQualification,
         "experience": experienceValue,
       }
       console.log(option, 'kkkkkkkkk')
@@ -527,7 +539,7 @@ const PersonalInformation = ({ navigation, route }) => {
                   value={otherQualification}
                   //helperText={firstNameError}
                   inputType={'others'}
-                  onChangeText={(text) => setOtherQualification(text)}
+                  onChangeText={handleChangeOthersfield}
                 />
               )}
               <View style={{ marginVertical: responsiveHeight(2) }}>
