@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert, BackHandler } from 'react-native'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GreenTick, RedCross, YellowTck, audioBgImg, audiooffIcon, audioonIcon, callIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, userPhoto, videoIcon } from '../../utils/Images'
+import { GreenTick, RedCross, YellowTck, audioBgImg, audiooffIcon, audioonIcon, callIcon, cameraoffIcon, cameraonIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, switchcameraIcon, userPhoto, videoIcon } from '../../utils/Images'
 import { GiftedChat, InputToolbar, Bubble, Send, Composer } from 'react-native-gifted-chat'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import KeepAwake from 'react-native-keep-awake';
@@ -468,6 +468,7 @@ const ChatScreen = ({ navigation, route }) => {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [micOn, setMicOn] = useState(true);
   const [speakerOn, setSpeakerOn] = useState(true);
+  const [cameraOn, setCameraOn] = useState(true);
 
   function showMessage(msg) {
     setMessage(msg);
@@ -560,6 +561,45 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const toggleSwitchCamera = () => {
+    try {
+      const agoraEngine = agoraEngineRef.current;
+
+      if (cameraOn) {
+        agoraEngine?.switchCamera(); // Switch between front and rear cameras
+        console.log('Camera switched');
+      } else {
+        console.log('Camera is off, cannot switch');
+      }
+    } catch (e) {
+      console.log('Error switching camera:', e);
+    }
+  };
+
+  const toggleCamera = () => {
+    try {
+      const agoraEngine = agoraEngineRef.current;
+
+      if (cameraOn) {
+        agoraEngine?.stopPreview(); // Stop the local video preview
+        agoraEngine?.muteLocalVideoStream(true); // Mute local video stream
+        showMessage('Camera turned off');
+      } else {
+        agoraEngine?.startPreview(); // Start the local video preview
+        agoraEngine?.muteLocalVideoStream(false); // Unmute local video stream
+        showMessage('Camera turned on');
+      }
+
+      setCameraOn(!cameraOn); // Toggle camera state
+    } catch (e) {
+      console.log('Error toggling camera:', e);
+      showMessage('Error toggling camera');
+    }
+  };
+
+
+
+
   // Define the join method called after clicking the join channel button
   const joinChannel = async () => {
     const agoraEngine = agoraEngineRef.current;
@@ -580,7 +620,7 @@ const ChatScreen = ({ navigation, route }) => {
       await agoraEngine.joinChannel(token, channelName, uid, {
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
-
+      setCameraOn(true);
       showMessage('Successfully joined the channel: ' + channelName);
     } catch (error) {
       console.log('Error joining channel:', error);
@@ -927,6 +967,18 @@ const ChatScreen = ({ navigation, route }) => {
                             style={styles.iconStyle}
                           />
                         </TouchableOpacity>}
+                      <TouchableOpacity onPress={() => toggleSwitchCamera()}>
+                        <Image
+                          source={switchcameraIcon}
+                          style={styles.iconStyle}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={toggleCamera}>
+                        <Image
+                          source={cameraOn ? cameraoffIcon : cameraonIcon}
+                          style={styles.iconStyle}
+                        />
+                      </TouchableOpacity>
                     </View>
                   </View>
 
