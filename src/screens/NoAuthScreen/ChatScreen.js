@@ -633,11 +633,13 @@ const ChatScreen = ({ navigation, route }) => {
       await agoraEngine.joinChannel(token, channelName, uid, {
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
+      setIsVideLoading(false)
       setCameraOn(true);
       console.log('Successfully joined the channel: ' + channelName);
     } catch (error) {
       console.log('Error joining channel:', error);
       console.log('Failed to join the channel. Please try again.');
+      setIsVideLoading(false)
     }
   };
 
