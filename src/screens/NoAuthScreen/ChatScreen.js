@@ -143,7 +143,7 @@ const ChatScreen = ({ navigation, route }) => {
 
       // Handle API response
       if (res.data.response === true) {
-
+        setCameraOn(true)
         const endTime = route?.params?.details?.end_time;
         setEndTime(endTime); // Set the end time
 
@@ -495,15 +495,15 @@ const ChatScreen = ({ navigation, route }) => {
       }
       agoraEngine.registerEventHandler({
         onJoinChannelSuccess: () => {
-          showMessage('Successfully joined the channel: ' + channelName);
+          console.log('Successfully joined the channel: ' + channelName);
           setIsJoined(true);
         },
         onUserJoined: (_connection, Uid) => {
-          showMessage('Remote user ' + Uid + ' has joined');
+          console.log('Remote user ' + Uid + ' has joined');
           setRemoteUid(Uid);
         },
         onUserOffline: (_connection, Uid) => {
-          showMessage('Remote user ' + Uid + ' has left the channel');
+          console.log('Remote user ' + Uid + ' has left the channel');
           setRemoteUid(null);
         },
       });
@@ -564,9 +564,13 @@ const ChatScreen = ({ navigation, route }) => {
   const toggleSwitchCamera = () => {
     try {
       const agoraEngine = agoraEngineRef.current;
-
+      if (!agoraEngine) {
+        console.error('Agora engine not initialized');
+        return;
+      }
+  
       if (cameraOn) {
-        agoraEngine?.switchCamera(); // Switch between front and rear cameras
+        agoraEngine.switchCamera(); // Switch between front and rear cameras
         console.log('Camera switched');
       } else {
         console.log('Camera is off, cannot switch');
@@ -575,37 +579,39 @@ const ChatScreen = ({ navigation, route }) => {
       console.log('Error switching camera:', e);
     }
   };
-
+  
   const toggleCamera = () => {
     try {
       const agoraEngine = agoraEngineRef.current;
-
-      if (cameraOn) {
-        agoraEngine?.stopPreview(); // Stop the local video preview
-        agoraEngine?.muteLocalVideoStream(true); // Mute local video stream
-        showMessage('Camera turned off');
-      } else {
-        agoraEngine?.startPreview(); // Start the local video preview
-        agoraEngine?.muteLocalVideoStream(false); // Unmute local video stream
-        showMessage('Camera turned on');
+      if (!agoraEngine) {
+        console.error('Agora engine not initialized');
+        return;
       }
-
+  
+      if (cameraOn) {
+        agoraEngine.stopPreview(); // Stop the local video preview
+        agoraEngine.muteLocalVideoStream(true); // Mute local video stream
+        console.log('Camera turned off');
+      } else {
+        agoraEngine.startPreview(); // Start the local video preview
+        agoraEngine.muteLocalVideoStream(false); // Unmute local video stream
+        console.log('Camera turned on');
+      }
+  
       setCameraOn(!cameraOn); // Toggle camera state
     } catch (e) {
       console.log('Error toggling camera:', e);
       showMessage('Error toggling camera');
     }
   };
-
-
-
+  
 
   // Define the join method called after clicking the join channel button
   const joinChannel = async () => {
     const agoraEngine = agoraEngineRef.current;
 
     if (!agoraEngine) {
-      showMessage('Agora engine is not initialized');
+      console.log('Agora engine is not initialized');
       return;
     }
 
@@ -615,16 +621,16 @@ const ChatScreen = ({ navigation, route }) => {
 
       // Start video preview
       agoraEngine.startPreview();
-
+      agoraEngine.muteLocalVideoStream(false)
       // Join the channel
       await agoraEngine.joinChannel(token, channelName, uid, {
         clientRoleType: ClientRoleType.ClientRoleBroadcaster,
       });
       setCameraOn(true);
-      showMessage('Successfully joined the channel: ' + channelName);
+      console.log('Successfully joined the channel: ' + channelName);
     } catch (error) {
       console.log('Error joining channel:', error);
-      showMessage('Failed to join the channel. Please try again.');
+      console.log('Failed to join the channel. Please try again.');
     }
   };
 
@@ -638,7 +644,7 @@ const ChatScreen = ({ navigation, route }) => {
     setIsVideoEnabled(false);
     setMicOn(true); // Ensure mic is on when leaving the channel
     setSpeakerOn(true); // Ensure speaker is on when leaving the channel
-    showMessage('You left the channel');
+    console.log('You left the channel');
   };
 
   const startVideoCall = async () => {
@@ -688,7 +694,7 @@ const ChatScreen = ({ navigation, route }) => {
       });
 
       const { data } = response.data;
-      console.log(JSON.stringify(data), 'fetch session history');
+      //console.log(JSON.stringify(data), 'fetch session history');
       setTherapistSessionHistory(data)
 
     } catch (error) {
@@ -924,7 +930,7 @@ const ChatScreen = ({ navigation, route }) => {
               {isVideoEnabled ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80) }}>
+                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80),borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
                     <>
                       {/* Remote Video View */}
                       {remoteUid !== null && (
@@ -973,12 +979,12 @@ const ChatScreen = ({ navigation, route }) => {
                           style={styles.iconStyle}
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={toggleCamera}>
+                      {/* <TouchableOpacity onPress={toggleCamera}>
                         <Image
-                          source={cameraOn ? cameraoffIcon : cameraonIcon}
+                          source={cameraOn ? cameraonIcon : cameraoffIcon}
                           style={styles.iconStyle}
                         />
-                      </TouchableOpacity>
+                      </TouchableOpacity> */}
                     </View>
                   </View>
 
@@ -1059,9 +1065,9 @@ const styles = StyleSheet.create({
   AudioBackground: { width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' },
   buttonImage: { height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) },
   audioSectionTherapistName: { color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) },
-  audioButtonSection: { backgroundColor: '#000', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
-  videoButtonSection: { backgroundColor: 'red', height: responsiveHeight(9), width: responsiveWidth(50), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 60, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center' },
-  iconStyle: { height: 50, width: 50 },
+  audioButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(40), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
+  videoButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(60), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center' },
+  iconStyle: { height: 40, width: 40 },
   messageContainer: {
     backgroundColor: 'red',
     height: responsiveHeight(70)
