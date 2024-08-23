@@ -461,7 +461,7 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   // audio call 
-  const agoraEngineRef = useRef(null); // IRtcEngine instance
+  const agoraEngineRef = useRef(<IRtcEngine></IRtcEngine>); // IRtcEngine instance
   const [isJoined, setIsJoined] = useState(false);
   const [remoteUid, setRemoteUid] = useState(null);
   const [message, setMessage] = useState('');
@@ -469,17 +469,18 @@ const ChatScreen = ({ navigation, route }) => {
   const [micOn, setMicOn] = useState(true);
   const [speakerOn, setSpeakerOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
+  const [isVideLoading, setIsVideLoading] = useState(true);
 
   function showMessage(msg) {
     setMessage(msg);
   }
 
-  // useEffect(() => {
-  //   setupVideoSDKEngine();
-  //   return () => {
-  //     agoraEngineRef.current?.destroy();
-  //   };
-  // }, []);
+  useEffect(() => {
+    setupVideoSDKEngine();
+    // return () => {
+    //   agoraEngineRef.current?.destroy();
+    // };
+  }, [remoteUid]);
 
   const setupVideoSDKEngine = async () => {
     try {
@@ -490,23 +491,26 @@ const ChatScreen = ({ navigation, route }) => {
       agoraEngineRef.current = await createAgoraRtcEngine(); // Await for engine creation
       const agoraEngine = agoraEngineRef.current;
 
-      if (agoraEngine) {
-        console.log('Agora engine created successfully');
-      } else {
-        console.log('Failed to create Agora engine');
-      }
+      // if (agoraEngine) {
+      //   console.log('Agora engine created successfully');
+      // } else {
+      //   console.log('Failed to create Agora engine');
+      // }
 
       await agoraEngine.registerEventHandler({
         onJoinChannelSuccess: () => {
           console.log('Successfully joined the channel: ' + channelName);
+          alert('Successfully joined the channel: ' + channelName)
           setIsJoined(true);
         },
         onUserJoined: (_connection, Uid) => {
           console.log('Remote user ' + Uid + ' has joined');
+          alert('Remote user ' + Uid + ' has joined')
           setRemoteUid(Uid);
         },
         onUserOffline: (_connection, Uid) => {
           console.log('Remote user ' + Uid + ' has left the channel');
+          alert('Remote user ' + Uid + ' has left the channel')
           setRemoteUid(null);
         },
       });
@@ -930,7 +934,9 @@ const ChatScreen = ({ navigation, route }) => {
 
             :
             <>
-              {isVideoEnabled ? (
+               {isVideLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />  // Display loading indicator while joining
+              ) : isVideoEnabled ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
                   <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
