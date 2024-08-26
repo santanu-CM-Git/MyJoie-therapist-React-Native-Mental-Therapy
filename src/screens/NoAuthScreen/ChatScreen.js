@@ -632,14 +632,18 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   const leaveChannel = async () => {
-    const agoraEngine = agoraEngineRef.current;
-    await agoraEngine?.leaveChannel();
-    setRemoteUid(null);
-    setIsJoined(false);
-    setIsVideoEnabled(false);
-    setMicOn(true); // Ensure mic is on when leaving the channel
-    setSpeakerOn(true); // Ensure speaker is on when leaving the channel
-    console.log('You left the channel');
+    try {
+      const agoraEngine = agoraEngineRef.current;
+      await agoraEngine?.leaveChannel();
+      setRemoteUid(null);
+      setIsJoined(false);
+      setIsVideoEnabled(false);
+      setMicOn(true); // Ensure mic is on when leaving the channel
+      setSpeakerOn(true); // Ensure speaker is on when leaving the channel
+      console.log('You left the channel');
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const startVideoCall = async () => {
