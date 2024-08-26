@@ -464,23 +464,13 @@ const ChatScreen = ({ navigation, route }) => {
   const agoraEngineRef = useRef(<IRtcEngine></IRtcEngine>); // IRtcEngine instance
   const [isJoined, setIsJoined] = useState(false);
   const [remoteUid, setRemoteUid] = useState(null);
-  const [message, setMessage] = useState('');
+  const [localUid, setLocalUid] = useState(null);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [micOn, setMicOn] = useState(true);
   const [speakerOn, setSpeakerOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [isVideLoading, setIsVideLoading] = useState(true);
 
-  function showMessage(msg) {
-    setMessage(msg);
-  }
-
-  useEffect(() => {
-    setupVideoSDKEngine();
-    // return () => {
-    //   agoraEngineRef.current?.destroy();
-    // };
-  }, [remoteUid]);
 
   const setupVideoSDKEngine = async () => {
     try {
@@ -498,9 +488,10 @@ const ChatScreen = ({ navigation, route }) => {
       // }
 
       await agoraEngine.registerEventHandler({
-        onJoinChannelSuccess: () => {
+        onJoinChannelSuccess: (connection, localUid, elapsed) => {
           console.log('Successfully joined the channel: ' + channelName);
           alert('Successfully joined the channel: ' + channelName)
+          setLocalUid(localUid);
           setIsJoined(true);
         },
         onUserJoined: (_connection, Uid) => {
@@ -541,10 +532,8 @@ const ChatScreen = ({ navigation, route }) => {
       const agoraEngine = agoraEngineRef.current;
       if (micOn) {
         agoraEngine?.muteLocalAudioStream(true);
-        showMessage('Microphone muted');
       } else {
         agoraEngine?.muteLocalAudioStream(false);
-        showMessage('Microphone unmuted');
       }
       setMicOn(!micOn);
     } catch (e) {
@@ -557,10 +546,8 @@ const ChatScreen = ({ navigation, route }) => {
       const agoraEngine = agoraEngineRef.current;
       if (speakerOn) {
         agoraEngine?.setEnableSpeakerphone(false);
-        showMessage('Speaker disabled');
       } else {
         agoraEngine?.setEnableSpeakerphone(true);
-        showMessage('Speaker enabled');
       }
       setSpeakerOn(!speakerOn);
     } catch (e) {
@@ -608,7 +595,6 @@ const ChatScreen = ({ navigation, route }) => {
       setCameraOn(!cameraOn); // Toggle camera state
     } catch (e) {
       console.log('Error toggling camera:', e);
-      showMessage('Error toggling camera');
     }
   };
 
@@ -936,7 +922,7 @@ const ChatScreen = ({ navigation, route }) => {
 
             :
             <>
-               {isVideLoading ? (
+              {isVideLoading ? (
                 <ActivityIndicator size="large" color="#0000ff" />  // Display loading indicator while joining
               ) : isVideoEnabled ? (
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -953,48 +939,27 @@ const ChatScreen = ({ navigation, route }) => {
 
                       {/* Local Video View */}
                       <RtcSurfaceView
-                        canvas={{ uid: 0 }}
+                        canvas={{ uid: localUid }}
                         style={styles.localVideo}
                       />
                     </>
                     <View style={styles.videoButtonSection}>
-                      {micOn ?
-                        <TouchableOpacity onPress={() => toggleMic()}>
-                          <Image
-                            source={audioonIcon}
-                            style={styles.iconStyle}
-                          />
-                        </TouchableOpacity> :
-                        <TouchableOpacity onPress={() => toggleMic()}>
-                          <Image
-                            source={audiooffIcon}
-                            style={styles.iconStyle}
-                          />
-                        </TouchableOpacity>}
-                      {speakerOn ?
-                        <TouchableOpacity onPress={() => toggleSpeaker()}>
-                          <Image
-                            source={speakeronIcon}
-                            style={styles.iconStyle}
-                          />
-                        </TouchableOpacity> :
-                        <TouchableOpacity onPress={() => toggleSpeaker()}>
-                          <Image
-                            source={speakeroffIcon}
-                            style={styles.iconStyle}
-                          />
-                        </TouchableOpacity>}
-                      <TouchableOpacity onPress={() => toggleSwitchCamera()}>
-                        <Image
-                          source={switchcameraIcon}
-                          style={styles.iconStyle}
-                        />
+                      {/* Control Buttons */}
+                      {/* Mic Toggle */}
+                      <TouchableOpacity onPress={toggleMic}>
+                        <Image source={micOn ? audioonIcon : audiooffIcon} style={styles.iconStyle} />
                       </TouchableOpacity>
+                      {/* Speaker Toggle */}
+                      <TouchableOpacity onPress={toggleSpeaker}>
+                        <Image source={speakerOn ? speakeronIcon : speakeroffIcon} style={styles.iconStyle} />
+                      </TouchableOpacity>
+                      {/* Switch Camera */}
+                      <TouchableOpacity onPress={toggleSwitchCamera}>
+                        <Image source={switchcameraIcon} style={styles.iconStyle} />
+                      </TouchableOpacity>
+                      {/* Camera Toggle */}
                       {/* <TouchableOpacity onPress={toggleCamera}>
-                        <Image
-                          source={cameraOn ? cameraonIcon : cameraoffIcon}
-                          style={styles.iconStyle}
-                        />
+                        <Image source={cameraOn ? cameraonIcon : cameraoffIcon} style={styles.iconStyle} />
                       </TouchableOpacity> */}
                     </View>
                   </View>

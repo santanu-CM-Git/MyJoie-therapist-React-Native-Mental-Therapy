@@ -275,7 +275,9 @@ const PersonalInformation = ({ navigation, route }) => {
       }
 
       let array = selectedItems;
-      array.push(otherQualification);
+      if (otherQualification.trim() !== '') {
+        array.push(otherQualification);
+    }
       //console.log(array);
 
       const option = {
