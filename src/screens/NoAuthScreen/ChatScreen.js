@@ -461,7 +461,7 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   // audio call 
-  const agoraEngineRef = useRef(<IRtcEngine></IRtcEngine>); // IRtcEngine instance
+  const agoraEngineRef = useRef(null); // IRtcEngine instance
   const [isJoined, setIsJoined] = useState(false);
   const [remoteUid, setRemoteUid] = useState(null);
   const [localUid, setLocalUid] = useState(null);
@@ -478,7 +478,7 @@ const ChatScreen = ({ navigation, route }) => {
         await getPermission(); // Await for permission request
       }
 
-      agoraEngineRef.current = await createAgoraRtcEngine(); // Await for engine creation
+      agoraEngineRef.current = createAgoraRtcEngine(); // Await for engine creation
       const agoraEngine = agoraEngineRef.current;
 
       // if (agoraEngine) {
@@ -486,6 +486,10 @@ const ChatScreen = ({ navigation, route }) => {
       // } else {
       //   console.log('Failed to create Agora engine');
       // }
+
+      await agoraEngine.initialize({
+        appId: appId,
+      }); // Await for initialization
 
       await agoraEngine.registerEventHandler({
         onJoinChannelSuccess: (connection, localUid, elapsed) => {
@@ -505,10 +509,6 @@ const ChatScreen = ({ navigation, route }) => {
           setRemoteUid(null);
         },
       });
-
-      await agoraEngine.initialize({
-        appId: appId,
-      }); // Await for initialization
     } catch (e) {
       console.log(e);
     }
@@ -940,7 +940,7 @@ const ChatScreen = ({ navigation, route }) => {
                       {/* Local Video View */}
                       <RtcSurfaceView
                         canvas={{ uid: localUid }}
-                        style={styles.localVideo}
+                        style={styles.localVideo} 
                       />
                     </>
                     <View style={styles.videoButtonSection}>
@@ -1184,6 +1184,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
+    zIndex: 10,
   },
   remoteVideo: {
     width: '100%',
