@@ -946,7 +946,7 @@ const ChatScreen = ({ navigation, route }) => {
                       {/* Local Video View */}
                       <RtcSurfaceView
                         canvas={{ uid: 0 }}
-                        style={styles.localVideo} 
+                        style={[styles.localVideo,{ zIndex: 1000, elevation: 5 }]} 
                       />
                     </>
                     <View style={styles.videoButtonSection}>
@@ -1190,7 +1190,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    zIndex: 100,
   },
   remoteVideo: {
     width: '100%',
