@@ -64,7 +64,7 @@ const ChatScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    console.log(routepage.name);
+    // console.log(routepage.name);
     if (routepage.name === 'ChatScreen') {
       const backAction = () => {
         // Prevent the default back button action
@@ -109,7 +109,7 @@ const ChatScreen = ({ navigation, route }) => {
     const initialize = async () => {
       await setupVideoSDKEngine();
       KeepAwake.activate();
-      console.log(route?.params?.details, 'details from home page');
+      // console.log(route?.params?.details, 'details from home page');
       fetchSessionHistory()
       sessionStart();
     };
@@ -127,7 +127,7 @@ const ChatScreen = ({ navigation, route }) => {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime,
     };
-    console.log('Request Payload:', option);
+    // console.log('Request Payload:', option);
 
     try {
       // Retrieve user token
@@ -170,7 +170,7 @@ const ChatScreen = ({ navigation, route }) => {
 
         setIsLoading(false);
       } else {
-        console.log('API Response Error:', res.data);
+        // console.log('API Response Error:', res.data);
         Alert.alert('Oops..', "Something went wrong", [
           { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
           { text: 'OK', onPress: () => console.log('OK Pressed') },
@@ -209,13 +209,13 @@ const ChatScreen = ({ navigation, route }) => {
   };
 
   const handleTimerEnd = async () => {
-    console.log('Timer has ended. Execute your function here.');
+    // console.log('Timer has ended. Execute your function here.');
     const currentTime = moment().format('HH:mm:ss');
     const option = {
       "booked_slot_id": route?.params?.details?.id,
       "time": currentTime
     }
-    console.log(option);
+    // console.log(option);
 
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -238,7 +238,7 @@ const ChatScreen = ({ navigation, route }) => {
           pname: route?.params?.details?.patient?.name
         });
       } else {
-        console.log('not ok');
+        // console.log('not ok');
         setIsLoading(false);
         Alert.alert('Oops..', "Something went wrong", [
           {
@@ -443,7 +443,7 @@ const ChatScreen = ({ navigation, route }) => {
   }, [])
 
   const onSend = (messageArray) => {
-    console.log(messageArray)
+    // console.log(messageArray)
     const msg = messageArray[0]
     const mymsg = {
       ...msg,
@@ -496,19 +496,19 @@ const ChatScreen = ({ navigation, route }) => {
 
       await agoraEngine.registerEventHandler({
         onJoinChannelSuccess: (connection, localUid, elapsed) => {
-          console.log('Successfully joined the channel: ' + channelName);
-          alert('Successfully joined the channel: ' + channelName)
+          //console.log('Successfully joined the channel: ' + channelName);
+          //alert('Successfully joined the channel: ' + channelName)
           setLocalUid(0);
           setIsJoined(true);
         },
         onUserJoined: (_connection, Uid) => {
-          console.log('Remote user ' + Uid + ' has joined');
-          alert('Remote user ' + Uid + ' has joined')
+          // console.log('Remote user ' + Uid + ' has joined');
+          // alert('Remote user ' + Uid + ' has joined')
           setRemoteUid(Uid);
         },
         onUserOffline: (_connection, Uid) => {
-          console.log('Remote user ' + Uid + ' has left the channel');
-          alert('Remote user ' + Uid + ' has left the channel')
+          // console.log('Remote user ' + Uid + ' has left the channel');
+          // alert('Remote user ' + Uid + ' has left the channel')
           setRemoteUid(null);
         },
       });
@@ -568,7 +568,7 @@ const ChatScreen = ({ navigation, route }) => {
 
       if (cameraOn) {
         agoraEngine.switchCamera(); // Switch between front and rear cameras
-        console.log('Camera switched');
+        // console.log('Camera switched');
       } else {
         console.log('Camera is off, cannot switch');
       }
@@ -588,11 +588,11 @@ const ChatScreen = ({ navigation, route }) => {
       if (cameraOn) {
         agoraEngine.stopPreview(); // Stop the local video preview
         agoraEngine.muteLocalVideoStream(true); // Mute local video stream
-        console.log('Camera turned off');
+        // console.log('Camera turned off');
       } else {
         agoraEngine.startPreview(); // Start the local video preview
         agoraEngine.muteLocalVideoStream(false); // Unmute local video stream
-        console.log('Camera turned on');
+        // console.log('Camera turned on');
       }
 
       setCameraOn(!cameraOn); // Toggle camera state
@@ -607,7 +607,7 @@ const ChatScreen = ({ navigation, route }) => {
     const agoraEngine = agoraEngineRef.current;
 
     if (!agoraEngine) {
-      console.log('Agora engine is not initialized');
+      // console.log('Agora engine is not initialized');
       return;
     }
 
@@ -643,7 +643,7 @@ const ChatScreen = ({ navigation, route }) => {
       setIsVideoEnabled(false);
       setMicOn(true); // Ensure mic is on when leaving the channel
       setSpeakerOn(true); // Ensure speaker is on when leaving the channel
-      console.log('You left the channel');
+      // console.log('You left the channel');
     } catch (e) {
       console.log(e);
     }
@@ -685,7 +685,7 @@ const ChatScreen = ({ navigation, route }) => {
       "booked_slot_id": route?.params?.details?.id,
       "flag": name
     };
-    console.log(option);
+    // console.log(option);
     try {
       const userToken = await AsyncStorage.getItem('userToken');
       if (!userToken) {
@@ -697,12 +697,12 @@ const ChatScreen = ({ navigation, route }) => {
           "Authorization": 'Bearer ' + userToken,
         },
       });
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data.response === true) {
         setIsLoading(false);
         await goingToactiveTab(name);
       } else {
-        console.log('Response not OK');
+        // console.log('Response not OK');
         setIsLoading(false);
         Alert.alert('Oops..', "Something went wrong", [
           {
@@ -765,7 +765,7 @@ const ChatScreen = ({ navigation, route }) => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
       if (!userToken) {
-        console.log('No user token found');
+        // console.log('No user token found');
         //setIsLoading(false);
         return;
       }
@@ -784,7 +784,7 @@ const ChatScreen = ({ navigation, route }) => {
       setTherapistSessionHistory(data)
 
     } catch (error) {
-      console.log(`Fetch upcoming slot error: ${error}`);
+      // console.log(`Fetch upcoming slot error: ${error}`);
       Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
         {
           text: 'Cancel',
