@@ -16,7 +16,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import messaging from '@react-native-firebase/messaging';
 import {
   ClientRoleType,
   createAgoraRtcEngine,
@@ -662,8 +661,6 @@ const ChatScreen = ({ navigation, route }) => {
   };
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-
-
   const goingToactiveTab = async (name) => {
     if (name === 'audio') {
       await startAudioCall();
@@ -678,88 +675,6 @@ const ChatScreen = ({ navigation, route }) => {
       setIsVideoEnabled(false);
     }
   };
-
-  const requestToTabSwitch = async (name) => {
-    setIsLoading(true);
-    const option = {
-      "booked_slot_id": route?.params?.details?.id,
-      "flag": name
-    };
-    console.log(option);
-    try {
-      const userToken = await AsyncStorage.getItem('userToken');
-      if (!userToken) {
-        throw new Error('User token is missing');
-      }
-      const res = await axios.post(`${API_URL}/notification/tab-switch`, option, {
-        headers: {
-          Accept: 'application/json',
-          "Authorization": 'Bearer ' + userToken,
-        },
-      });
-      console.log(res.data);
-      if (res.data.response === true) {
-        setIsLoading(false);
-        await goingToactiveTab(name);
-      } else {
-        console.log('Response not OK');
-        setIsLoading(false);
-        Alert.alert('Oops..', "Something went wrong", [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ]);
-      }
-    } catch (e) {
-      setIsLoading(false);
-      console.error('Error during handleTimerEnd:', e);
-      const errorMessage = e.response?.data?.message || 'An unexpected error occurred';
-      Alert.alert('Oops..', errorMessage, [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-    }
-  }
-  useEffect(() => {
-    if (Platform.OS == 'android') {
-      /* this is app foreground notification */
-      const unsubscribe = messaging().onMessage(async remoteMessage => {
-        // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-        // console.log('Received background message:', JSON.stringify(remoteMessage));
-        if (remoteMessage?.data?.screen === 'ChatScreen') {
-          Alert.alert(
-            'Hello',
-            `The patient wants to switch to ${remoteMessage?.data?.flag}. Do you agree?`,
-            [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('cancel pressed'),
-                style: 'cancel',
-              },
-              {
-                text: 'OK',
-                onPress: () => goingToactiveTab(remoteMessage?.data?.flag),
-              },
-            ],
-            {
-              cancelable: true,
-              onDismiss: () =>
-                console.log('cancel')
-            },
-          );
-
-        }
-      });
-      return unsubscribe;
-    }
-  }, [])
 
   const fetchSessionHistory = async () => {
     try {
@@ -872,7 +787,7 @@ const ChatScreen = ({ navigation, route }) => {
       <View style={styles.TabSection}>
         {activeTab == 'chat' ?
           <>
-            <TouchableOpacity onPress={() => requestToTabSwitch('audio')}>
+            <TouchableOpacity onPress={() => goingToactiveTab('audio')}>
               <View style={styles.ButtonView}>
                 <Image
                   source={callIcon}
@@ -881,7 +796,7 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={styles.ButtonText}>Switch to Audio Call</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => requestToTabSwitch('video')}>
+            <TouchableOpacity onPress={() => goingToactiveTab('video')}>
               <View style={styles.ButtonView}>
                 <Image
                   source={videoIcon}
@@ -893,7 +808,7 @@ const ChatScreen = ({ navigation, route }) => {
           </>
           : activeTab == 'audio' ?
             <>
-              <TouchableOpacity onPress={() => requestToTabSwitch('chat')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('chat')}>
                 <View style={styles.ButtonView}>
                   <Image
                     source={chatImg}
@@ -902,7 +817,7 @@ const ChatScreen = ({ navigation, route }) => {
                   <Text style={styles.ButtonText}>Switch to Chat</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => requestToTabSwitch('video')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('video')}>
                 <View style={styles.ButtonView}>
                   <Image
                     source={videoIcon}
@@ -914,7 +829,7 @@ const ChatScreen = ({ navigation, route }) => {
             </>
             :
             <>
-              <TouchableOpacity onPress={() => requestToTabSwitch('chat')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('chat')}>
                 <View style={styles.ButtonView}>
                   <Image
                     source={chatImg}
@@ -923,7 +838,7 @@ const ChatScreen = ({ navigation, route }) => {
                   <Text style={styles.ButtonText}>Switch to Chat</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => requestToTabSwitch('audio')}>
+              <TouchableOpacity onPress={() => goingToactiveTab('audio')}>
                 <View style={styles.ButtonView}>
                   <Image
                     source={callIcon}
