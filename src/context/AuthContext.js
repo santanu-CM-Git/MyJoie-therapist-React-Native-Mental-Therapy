@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = (token) => {
         console.log(token)
+        console.log(API_URL);
+        
         setIsLoading(true);
         axios.post(`${API_URL}/therapist/profile`,{}, {
             headers: {

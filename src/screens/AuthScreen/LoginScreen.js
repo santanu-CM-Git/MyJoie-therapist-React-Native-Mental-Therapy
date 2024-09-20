@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
   const [mobileError, setMobileError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [show, setShow] = useState(false);
-  const [countryCode, setCountryCode] = useState('+91');
+  const [countryCode, setCountryCode] = useState('+91'); 
 
   const { login, userToken } = useContext(AuthContext);
 
@@ -90,6 +90,7 @@ const LoginScreen = ({ navigation }) => {
     } else {
       // navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
       setIsLoading(true)
+      
       AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
         console.log(fcmToken, 'firebase token')
         //console.log(deviceId, 'device id')
