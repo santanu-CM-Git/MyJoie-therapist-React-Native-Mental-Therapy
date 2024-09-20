@@ -9,6 +9,7 @@ import {
     StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions';
 
 const SplashScreen = ({ navigation }) => {
     const moveAnim = useRef(new Animated.Value(0)).current;
@@ -80,8 +81,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     image: {
-        width: 100,
-        height: 100,
+        width: responsiveWidth(90),
+        height: responsiveHeight(7),
         resizeMode:'contain'
     },
     logoContainer: {

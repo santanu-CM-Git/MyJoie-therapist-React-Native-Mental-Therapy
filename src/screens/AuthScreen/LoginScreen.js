@@ -83,7 +83,7 @@ const LoginScreen = ({ navigation }) => {
     const phoneRegex = /^\d{10}$/;
     if (!phone) {
       setMobileError('Please enter Mobile no.')
-    }else if(!countryCode){
+    } else if (!countryCode) {
       setMobileError('Please enter Country Code.')
     } else if (!phoneRegex.test(phone)) {
       setMobileError('Please enter a 10-digit number.')
@@ -118,7 +118,7 @@ const LoginScreen = ({ navigation }) => {
               });
               //alert(res.data?.otp)
               // login(res.data.token)
-              navigation.navigate('Otp', {countrycode:countryCode, phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name })
+              navigation.navigate('Otp', { countrycode: countryCode, phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name })
             } else {
               console.log('not okk')
               setIsLoading(false)
@@ -184,7 +184,7 @@ const LoginScreen = ({ navigation }) => {
               </TouchableOpacity>
               <CountryPicker
                 show={show}
-                initialState={'+91'}
+                initialState={''}
                 pickerButtonOnPress={(item) => {
                   setCountryCode(item.dial_code);
                   setShow(false);
@@ -192,6 +192,12 @@ const LoginScreen = ({ navigation }) => {
                 style={{
                   modal: {
                     height: responsiveHeight(60),
+                  },
+                  textInput: {
+                    color: '#808080'
+                  },
+                  dialCode: {
+                    color: '#808080'
                   },
                 }}
               />

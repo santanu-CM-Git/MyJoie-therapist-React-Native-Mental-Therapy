@@ -314,7 +314,7 @@ const EarningScreen = ({ navigation }) => {
                                     </View> */}
                                     <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>TDS</Text>
-                                        <Text style={styles.earningItemText}>₹ {tdsAmount}</Text>
+                                        <Text style={styles.earningItemText}>- ₹ {tdsAmount}</Text>
                                     </View>
                                     <View style={styles.earningItemView}>
                                         <Text style={styles.earningItemText}>Net Payable</Text>

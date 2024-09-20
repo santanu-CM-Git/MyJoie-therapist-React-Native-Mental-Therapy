@@ -402,7 +402,7 @@ const PersonalInformation = ({ navigation, route }) => {
                 </TouchableOpacity>
                 <CountryPicker
                   show={show}
-                  initialState={'+91'}
+                  initialState={''}
                   pickerButtonOnPress={(item) => {
                     setCountryCode(item.dial_code);
                     setShow(false);
@@ -410,6 +410,12 @@ const PersonalInformation = ({ navigation, route }) => {
                   style={{
                     modal: {
                       height: responsiveHeight(60),
+                    },
+                    textInput: {
+                      color: '#808080'
+                    },
+                    dialCode: {
+                      color: '#808080'
                     },
                   }}
                 />
