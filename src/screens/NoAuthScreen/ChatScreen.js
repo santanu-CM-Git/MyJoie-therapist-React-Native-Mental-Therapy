@@ -667,13 +667,19 @@ const ChatScreen = ({ navigation, route }) => {
   const goingToactiveTab = async (name) => {
     if (name === 'audio') {
       await startAudioCall();
+      const agoraEngine = agoraEngineRef.current;
+      agoraEngine?.muteLocalAudioStream(false);
       setActiveTab('audio');
       setIsVideoEnabled(false);
     } else if (name === 'video') {
       await startVideoCall();
+      const agoraEngine = agoraEngineRef.current;
+      agoraEngine?.muteLocalAudioStream(false);
       setActiveTab('video');
       setIsVideoEnabled(true);
     } else if (name === 'chat') {
+      const agoraEngine = agoraEngineRef.current;
+      agoraEngine?.muteLocalAudioStream(true);
       setActiveTab('chat');
       setIsVideoEnabled(false);
     }
@@ -997,13 +1003,13 @@ const ChatScreen = ({ navigation, route }) => {
                   {speakerOn ?
                     <TouchableOpacity onPress={() => toggleSpeaker()}>
                       <Image
-                        source={speakeroffIcon}
+                        source={speakeronIcon}
                         style={styles.iconStyle}
                       />
                     </TouchableOpacity> :
                     <TouchableOpacity onPress={() => toggleSpeaker()}>
                       <Image
-                        source={speakeronIcon}
+                        source={speakeroffIcon}
                         style={styles.iconStyle}
                       />
                     </TouchableOpacity>}
