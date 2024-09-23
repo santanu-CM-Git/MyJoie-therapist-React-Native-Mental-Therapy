@@ -10,6 +10,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import com.corbt.keepawake.KCKeepAwakePackage; // for keep awake
+import com.facebook.reactnative.androidsdk.FBSDKPackage; // for facebook
 
 public class MainApplication extends Application implements ReactApplication {
 

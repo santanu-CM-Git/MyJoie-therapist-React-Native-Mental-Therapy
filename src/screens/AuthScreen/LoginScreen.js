@@ -90,6 +90,7 @@ const LoginScreen = ({ navigation }) => {
     } else {
       // navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
       setIsLoading(true)
+      console.log(API_URL);
       
       AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
         console.log(fcmToken, 'firebase token')

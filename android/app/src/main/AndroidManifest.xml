@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+   
 
     <application
       android:name=".MainApplication"
@@ -43,5 +44,7 @@
        <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyAL3Pc5eDmrlddtdgFRGFqpFk9RtfmZMo0"/>
+         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
     </application>
 </manifest>
