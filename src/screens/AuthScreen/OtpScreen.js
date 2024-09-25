@@ -125,9 +125,13 @@ const OtpScreen = ({ navigation, route }) => {
     const resendOtp = () => {
         setIsLoading(true)
         const option = {
+            "country_code":  route?.params?.countrycode,
             "mobile": route?.params?.phone,
+            "firebase_token": route?.params?.fcmToken,
         }
-        axios.post(`${API_URL}/patient/login`, option, {
+        console.log(option);
+        
+        axios.post(`${API_URL}/therapist/login`, option, {
             headers: {
                 'Accept': 'application/json',
                 //'Content-Type': 'multipart/form-data',

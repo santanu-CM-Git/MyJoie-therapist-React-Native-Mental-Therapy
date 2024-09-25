@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
   const [mobileError, setMobileError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [show, setShow] = useState(false);
-  const [countryCode, setCountryCode] = useState('+91'); 
+  const [countryCode, setCountryCode] = useState('+91');
 
   const { login, userToken } = useContext(AuthContext);
 
@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation }) => {
       // navigation.navigate('Otp', {phone: phone, otp: '2345', token: 'sfsdfdsf', name: 'name'})
       setIsLoading(true)
       console.log(API_URL);
-      
+
       AsyncStorage.getItem('fcmToken', (err, fcmToken) => {
         console.log(fcmToken, 'firebase token')
         //console.log(deviceId, 'device id')
@@ -120,7 +120,7 @@ const LoginScreen = ({ navigation }) => {
               });
               //alert(res.data?.otp)
               // login(res.data.token)
-              navigation.navigate('Otp', { countrycode: countryCode, phone: phone, otp: res.data?.otp, token: res.data?.token, name: res.data?.data?.name })
+              navigation.navigate('Otp', { countrycode: countryCode, phone: phone, otp: res.data?.otp, token: res.data?.token, fcmToken: fcmToken, name: res.data?.data?.name })
             } else {
               console.log('not okk')
               setIsLoading(false)
