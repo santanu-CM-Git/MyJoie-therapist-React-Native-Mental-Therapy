@@ -80,6 +80,7 @@ const OtpScreen = ({ navigation, route }) => {
     }
 
     const goToNextPage = (code) => {
+        return
         setIsLoading(true)
         //console.log(`Code is ${code}, you are good to go!`)
         //navigation.navigate('PersonalInformation', { phoneno: 2454545435, usertoken: 'sdfwr32432423424' })
@@ -246,6 +247,7 @@ export default OtpScreen;
 
 const styles = StyleSheet.create({
     container: {
+        flex:1,
         justifyContent: 'center',
         backgroundColor: '#FFFFFF',
         height: responsiveHeight(100)
