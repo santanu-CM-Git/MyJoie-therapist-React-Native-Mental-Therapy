@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback, memo } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -73,7 +73,6 @@ export default function HomeScreen({ navigation }) {
       const nowIST = new Date(nowUTC.getTime() + offsetIST);
       console.log("IST Time:", nowIST);
       setCurrentDateTime(nowIST);
-      //setCurrentDateTime(moment().toDate());
     }, 60000); // Update every minute
 
     return () => clearInterval(timer);
@@ -231,7 +230,7 @@ export default function HomeScreen({ navigation }) {
         });
 
         console.log(sortedData[0], 'first booking data');
-        setSortData(sortedData);
+        setSortData(sortedData[0]);
 
         const currentDateTime = moment().toDate();
         const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
@@ -604,66 +603,6 @@ export default function HomeScreen({ navigation }) {
     </>
   )
 
-  const UpcomingBookingItem = memo(({ item }) => {
-
-    //const currentDateTime = moment().toDate();
-    console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
-    const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
-    const endDateTime = new Date(`${item.date}T${item.end_time}`);
-    const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-    const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-
-    return (
-      <View style={styles.upcomingView}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {item?.patient?.profile_pic ?
-            <Image
-              source={{ uri: item?.patient?.profile_pic }}
-              style={styles.userImg}
-            /> :
-            <Image
-              source={userPhoto}
-              style={styles.userImg}
-            />
-          }
-          <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
-            <Text style={styles.userText}> {item?.patient?.name}</Text>
-            <Text style={styles.userSubText}> Patient</Text>
-          </View>
-          <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
-            onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: item })}
-            disabled={!isButtonEnabled}
-          >
-            {/* <TouchableOpacity style={[styles.joinButtonView]}
-                  onPress={() => navigation.navigate('ChatScreen', { details: sortData })}
-                >  */}
-            <Text style={styles.joinButtonText}>Join Now</Text>
-          </TouchableOpacity>
-
-        </View>
-        <View style={styles.dateTimeView}>
-          <View style={styles.dateView1}>
-            <Image
-              source={dateIcon}
-              style={styles.datetimeIcon}
-            />
-            <Text style={styles.dateTimeText}>{moment(item?.date).format("ddd, DD MMM YYYY")}</Text>
-          </View>
-          {/* <View style={styles.dividerLine} /> */}
-          <View style={styles.dateView2}>
-            <Image
-              source={timeIcon}
-              style={styles.datetimeIcon}
-            />
-            <Text style={styles.dateTimeText}>{moment(item?.start_time, 'HH:mm:ss').format('hh:mm A')} - {moment(item?.end_time, 'HH:mm:ss').format('hh:mm A')}</Text>
-          </View>
-        </View>
-      </View>
-    )
-  })
-  // renderUpcomigBooking function
-  const renderUpcomingBooking = ({ item }) => <UpcomingBookingItem item={item} />;
-
   if (isLoading) {
     return (
       <Loader />
@@ -683,24 +622,49 @@ export default function HomeScreen({ navigation }) {
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
           {sortData.length !== 0 ?
-            <FlatList
-              data={sortData}
-              renderItem={renderUpcomingBooking}
-              keyExtractor={(item) => item.id.toString()}
-              maxToRenderPerBatch={10}
-              windowSize={5}
-              initialNumToRender={10}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              getItemLayout={(sortData, index) => (
-                { length: 50, offset: 50 * index, index }
-              )}
-            />
-            :
+            <View style={styles.upcomingView}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                <Image
+                  source={userPhoto}
+                  style={styles.userImg}
+                />
+                <View style={{ flexDirection: 'column', marginLeft: responsiveWidth(3), width: responsiveWidth(45) }}>
+                  <Text style={styles.userText}> {sortData?.patient?.name}</Text>
+                  <Text style={styles.userSubText}> Patient</Text>
+                </View>
+                <TouchableOpacity style={[styles.joinButtonView, { opacity: isButtonEnabled ? 1 : 0.5 }]}
+                  onPress={() => isButtonEnabled && navigation.navigate('ChatScreen', { details: sortData })}
+                  disabled={!isButtonEnabled}
+                >
+                  {/* <TouchableOpacity style={[styles.joinButtonView]}
+                  onPress={() => navigation.navigate('ChatScreen', { details: sortData })}
+                >  */}
+                  <Text style={styles.joinButtonText}>Join Now</Text>
+                </TouchableOpacity>
+
+              </View>
+              <View style={styles.dateTimeView}>
+                <View style={styles.dateView1}>
+                  <Image
+                    source={dateIcon}
+                    style={styles.datetimeIcon}
+                  />
+                  <Text style={styles.dateTimeText}>{moment(sortData?.date).format("ddd, DD MMM YYYY")}</Text>
+                </View>
+                {/* <View style={styles.dividerLine} /> */}
+                <View style={styles.dateView2}>
+                  <Image
+                    source={timeIcon}
+                    style={styles.datetimeIcon}
+                  />
+                  <Text style={styles.dateTimeText}>{moment(sortData?.start_time, 'HH:mm:ss').format('hh:mm A')} - {moment(sortData?.end_time, 'HH:mm:ss').format('hh:mm A')}</Text>
+                </View>
+              </View>
+            </View> :
             <View style={styles.upcomingView}>
               <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), color: '#746868' }}>No upcoming appointment yet</Text>
             </View>}
-
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 15, marginTop: responsiveHeight(2) }}>
             <Text style={{ color: '#2D2D2D', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2) }}>Calender</Text>
             {/* <TouchableOpacity onPress={() => toggleCalendarModal()}> */}
@@ -951,13 +915,12 @@ const styles = StyleSheet.create({
   },
   upcomingView: {
     height: responsiveHeight(18),
-    width: responsiveWidth(92),
+    width: '92%',
     backgroundColor: '#FFF',
     marginHorizontal: 15,
     padding: 15,
     borderRadius: 20,
     marginTop: responsiveHeight(2),
-    marginBottom: responsiveHeight(1),
     elevation: 5
   },
   userImg: {
