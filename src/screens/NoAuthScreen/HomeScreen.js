@@ -73,7 +73,6 @@ export default function HomeScreen({ navigation }) {
       const nowIST = new Date(nowUTC.getTime() + offsetIST);
       console.log("IST Time:", nowIST);
       setCurrentDateTime(nowIST);
-      //setCurrentDateTime(moment().toDate());
     }, 60000); // Update every minute
 
     return () => clearInterval(timer);
@@ -606,13 +605,13 @@ export default function HomeScreen({ navigation }) {
 
   const UpcomingBookingItem = memo(({ item }) => {
 
-    //const currentDateTime = moment().toDate();
-    console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
-    const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
-    const endDateTime = new Date(`${item.date}T${item.end_time}`);
-    const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
-    const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
-
+    const currentDateTime = moment().toDate();
+      console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
+      const endDateTime = new Date(`${item.date}T${item.end_time}`);
+      const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
+      const isButtonEnabled = currentDateTime >= twoMinutesBefore && currentDateTime <= endDateTime;
+    
     return (
       <View style={styles.upcomingView}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -683,19 +682,19 @@ export default function HomeScreen({ navigation }) {
           </View>
           <Text style={styles.sectionHeader}>Upcoming Appointment</Text>
           {sortData.length !== 0 ?
-            <FlatList
-              data={sortData}
-              renderItem={renderUpcomingBooking}
-              keyExtractor={(item) => item.id.toString()}
-              maxToRenderPerBatch={10}
-              windowSize={5}
-              initialNumToRender={10}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              getItemLayout={(sortData, index) => (
-                { length: 50, offset: 50 * index, index }
-              )}
-            />
+              <FlatList
+                data={sortData}
+                renderItem={renderUpcomingBooking}
+                keyExtractor={(item) => item.id.toString()}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                initialNumToRender={10}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                getItemLayout={(sortData, index) => (
+                  { length: 50, offset: 50 * index, index }
+                )}
+              />
             :
             <View style={styles.upcomingView}>
               <Text style={{ alignSelf: 'center', fontFamily: 'DMSans-Bold', fontSize: responsiveFontSize(2), color: '#746868' }}>No upcoming appointment yet</Text>
