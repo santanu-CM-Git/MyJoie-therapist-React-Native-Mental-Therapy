@@ -204,7 +204,11 @@ const EarningScreen = ({ navigation }) => {
                         style={styles.imageStyle}
                     />
                     <Text style={styles.statusText}>
-                        {item?.status === 'completed' ? 'Completed' : item?.status === 'cancel' ? 'Cancel' : 'Scheduled'}
+                        {item?.status === 'cancel' ? 'Canceled' :
+                            item?.status === 'incomplete' ? 'Incomplete' :
+                                item?.status === 'processing' ? 'Processing' :
+                                    item?.status === 'completed' ? 'Completed' :
+                                        null}
                     </Text>
                 </View>
             </View>
