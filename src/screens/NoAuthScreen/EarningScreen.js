@@ -15,6 +15,7 @@ import axios from 'axios';
 import Loader from '../../utils/Loader';
 import { API_URL } from '@env'
 import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Yesterday', value: '2' },
@@ -24,6 +25,7 @@ const data = [
 ];
 
 const EarningScreen = ({ navigation }) => {
+    const { logout } = useContext(AuthContext);
     const [refreshing, setRefreshing] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [value, setValue] = useState('1');
@@ -185,8 +187,7 @@ const EarningScreen = ({ navigation }) => {
             setIsLoading(false);
             console.error('Fetch error:', e);
             Alert.alert('Oops..', e.response?.data?.message, [
-                { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                { text: 'OK', onPress: () => console.log('OK Pressed') },
+                { text: 'OK', onPress: () => e.response?.data?.message == 'Unauthorized' ? logout() : console.log('OK Pressed') },
             ]);
         }
     }

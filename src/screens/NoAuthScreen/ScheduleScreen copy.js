@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, Button, Pressable, TouchableOpacity, FlatList } from 'react-native'
+import React, { useContext, useState, useEffect, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, Switch, Image, Platform, Alert, RefreshControl, Pressable, TouchableOpacity, FlatList } from 'react-native'
 import CustomHeader from '../../components/CustomHeader'
 import CustomButton from '../../components/CustomButton';
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
@@ -23,7 +23,24 @@ const data = [
 
 const ScheduleScreen = ({ navigation }) => {
 
+    const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
+    const [isButtonLoader, setIsButtonLoader] = useState({
+        sunday: false,
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+    });
+    const toggleLoader = (day, value) => {
+        setIsButtonLoader(prevState => ({
+            ...prevState,
+            [day]: value,
+        }));
+    };
+    const [refreshing, setRefreshing] = useState(false);
     const [isModalLoading, setIsModalLoading] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
     const [sortData, setSortData] = useState([])
@@ -116,6 +133,8 @@ const ScheduleScreen = ({ navigation }) => {
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
+            console.log(currentRanges,'gggggggg');
+            
             const newRanges = [...currentRanges];
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
@@ -132,7 +151,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRange].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -141,8 +160,6 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePicker();
     };
-
-
 
 
     const addNewTimeRange = () => {
@@ -157,10 +174,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRanges)
         let filteredEvents = timeRanges.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents, 'Monday time')
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("monday", extractedTimes, "1")
@@ -182,27 +208,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityTuesday(false);
     };
 
-    // const handleConfirmTuesday = (date) => {
-    //     console.log('hiiiii');
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesTuesday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeTuesday) {
-    //             newRanges[currentRangeTuesday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeTuesday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeTuesday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeTuesday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerTuesday();
-    // };
     const handleConfirmTuesday = (date) => {
         console.log('hiiiii');
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
@@ -225,7 +230,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeTuesday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -234,7 +239,6 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePickerTuesday();
     };
-
 
 
     const addNewTimeRangeTuesday = () => {
@@ -249,10 +253,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesTuesday)
         let filteredEvents = timeRangesTuesday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents, 'Tuesday time')
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes, 'tuesday time');
         beforetimeEntryRespectOfDay("tuesday", extractedTimes, "1")
@@ -274,26 +287,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityWednesday(false);
     };
 
-    // const handleConfirmWednesday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesWednesday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeWednesday) {
-    //             newRanges[currentRangeWednesday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeWednesday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeWednesday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeWednesday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerWednesday();
-    // };
     const handleConfirmWednesday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -315,7 +308,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeWednesday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -338,10 +331,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesWednesday)
         let filteredEvents = timeRangesWednesday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("wednessday", extractedTimes, "1")
@@ -363,26 +365,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityThursday(false);
     };
 
-    // const handleConfirmThursday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesThursday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeThursday) {
-    //             newRanges[currentRangeThursday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeThursday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeThursday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeThursday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerThursday();
-    // };
     const handleConfirmThursday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -404,7 +386,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeThursday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -427,10 +409,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesThursday)
         let filteredEvents = timeRangesThursday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("thursday", extractedTimes, "1")
@@ -450,27 +441,6 @@ const ScheduleScreen = ({ navigation }) => {
     const hideDatePickerFriday = () => {
         setDatePickerVisibilityFriday(false);
     };
-
-    // const handleConfirmFriday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesFriday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeFriday) {
-    //             newRanges[currentRangeFriday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeFriday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeFriday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeFriday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerFriday();
-    // };
 
     const handleConfirmFriday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
@@ -493,7 +463,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeFriday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -517,10 +487,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesFriday)
         let filteredEvents = timeRangesFriday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("friday", extractedTimes, "1")
@@ -542,26 +521,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySaturday(false);
     };
 
-    // const handleConfirmSaturday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesSaturday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeSaturday) {
-    //             newRanges[currentRangeSaturday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeSaturday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeSaturday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeSaturday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerSaturday();
-    // };
     const handleConfirmSaturday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -583,7 +542,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeSaturday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -606,10 +565,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSaturday)
         let filteredEvents = timeRangesSaturday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("saturday", extractedTimes, "1")
@@ -631,31 +599,10 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySunday(false);
     };
 
-    // const handleConfirmSunday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesSunday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeSunday) {
-    //             newRanges[currentRangeSunday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeSunday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeSunday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeSunday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerSunday();
-    // };
-
     const handleConfirmSunday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
-    
+
         setTimeRangesSunday(currentRanges => {
             const newRanges = [...currentRanges];
             if (isStartTimeSunday) {
@@ -665,15 +612,15 @@ const ScheduleScreen = ({ navigation }) => {
                 if (startTime) {
                     const startMoment = moment(startTime);
                     let endMoment = moment(dateInIST);
-    
+
                     // Check if the end time is exactly 12:00 AM
                     const isMidnight = timeOnly === '00:00:00';
-    
+
                     // Ensure end time is on the same day and greater than the start time or exactly 12:00 AM
                     if (isMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeSunday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -682,7 +629,7 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePickerSunday();
     };
-    
+
 
     const addNewTimeRangeSunday = () => {
         setTimeRangesSunday(currentRanges => [...currentRanges, { startTime: null, endTime: null }]);
@@ -696,10 +643,19 @@ const ScheduleScreen = ({ navigation }) => {
         console.log(timeRangesSunday)
         let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
         console.log(filteredEvents)
-        const extractedTimes = filteredEvents.map(item => ({
-            startTime: item.startTime.split(' ')[1],
-            endTime: item.endTime.split(' ')[1],
-        }));
+        // const extractedTimes = filteredEvents.map(item => ({
+        //     startTime: item.startTime.split(' ')[1],
+        //     endTime: item.endTime.split(' ')[1],
+        // }));
+        const extractedTimes = filteredEvents.map(item => {
+            let startTime = item.startTime.split(' ')[1];
+            let endTime = item.endTime.split(' ')[1];
+            // Check if the end time is 00:00:00 and adjust it to 12:59:59
+            if (endTime === '00:00:00') {
+                endTime = '23:59:59';
+            }
+            return { startTime, endTime };
+        });
         // Update state
         console.log(extractedTimes);
         beforetimeEntryRespectOfDay("sunday", extractedTimes, "1")
@@ -744,9 +700,12 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const dateRangeSearch = () => {
-        console.log(startDay)
-        console.log(endDay)
-        toggleModal()
+        console.log(startDay);
+        console.log(endDay);
+        // If endDay is null, set it to startDay
+        const finalEndDay = endDay || startDay;
+        toggleCalendarModal();
+        fetchUpcomingSlotForSearch(startDay, finalEndDay);
     }
 
     const fetchSessionHistory = async (patientId) => {
@@ -856,7 +815,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
-        setIsLoading(true)
+        toggleLoader(day, true);
         console.log(day, 'llllllllll')
         const option = {
             "day": day,
@@ -872,7 +831,7 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsLoading(false)
+                        toggleLoader(day, false);
 
                         if (res.data.status == 0) {
                             timeEntryinRespectOfDay(day, time, status)
@@ -893,7 +852,7 @@ const ScheduleScreen = ({ navigation }) => {
                         }
                     } else {
                         console.log('not okk')
-                        setIsLoading(false)
+                        toggleLoader(day, false);
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -905,7 +864,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsLoading(false)
+                    toggleLoader(day, false);
                     console.log(`user register error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -929,7 +888,7 @@ const ScheduleScreen = ({ navigation }) => {
             "data": time,
             "status": status,
         }
-        console.log(option)
+        console.log(option, '/therapist/set-availabilities')
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/set-availabilities`, option, {
                 headers: {
@@ -941,18 +900,18 @@ const ScheduleScreen = ({ navigation }) => {
                 .then(res => {
                     console.log(res.data)
                     if (res.data.response == true) {
-                        setIsLoading(false)
+                        toggleLoader(day, false);
                         Toast.show({
                             type: 'success',
                             text1: 'Hello',
-                            text2: "Time added successfully",
+                            text2: "The schedule has been set up successfully.",
                             position: 'top',
                             topOffset: Platform.OS == 'ios' ? 55 : 20
                         });
                         fetchAvailability()
                     } else {
                         console.log('not okk')
-                        setIsLoading(false)
+                        toggleLoader(day, false);
                         Alert.alert('Oops..', "Something went wrong", [
                             {
                                 text: 'Cancel',
@@ -964,7 +923,7 @@ const ScheduleScreen = ({ navigation }) => {
                     }
                 })
                 .catch(e => {
-                    setIsLoading(false)
+                    toggleLoader(day, false);
                     console.log(`set availibility error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
@@ -1307,6 +1266,77 @@ const ScheduleScreen = ({ navigation }) => {
                 });
         });
     }
+    const fetchUpcomingSlotForSearch = (sdate, edate) => {
+        setIsLoading(true);
+        AsyncStorage.getItem('userToken', (err, usertoken) => {
+            const option = {
+                "sdate": sdate,
+                "edate": edate
+            }
+            console.log(option, 'hhhh');
+
+            axios.post(`${API_URL}/therapist/upcomming-slots`, option, {
+                headers: {
+                    'Accept': 'application/json',
+                    "Authorization": 'Bearer ' + usertoken,
+                    //'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(res => {
+                    console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+                    if (res.data.response == true) {
+                        const sortedData = res.data.data.sort((a, b) => {
+                            const dateA = new Date(a.date);
+                            const dateB = new Date(b.date);
+                            if (dateA < dateB) return -1;
+                            if (dateA > dateB) return 1;
+
+                            const timeA = moment.utc(a.start_time, 'HH:mm:ss').toDate();
+                            const timeB = moment.utc(b.start_time, 'HH:mm:ss').toDate();
+                            return timeA - timeB;
+                        });
+                        setSortData(sortedData)
+                        // Group by date
+                        const groupedData = sortedData.reduce((acc, slot) => {
+                            const date = moment(slot.date).format('DD-MM-YYYY');
+                            if (!acc[date]) {
+                                acc[date] = [];
+                            }
+                            acc[date].push(slot);
+                            return acc;
+                        }, {});
+
+                        setGroupedSlots(groupedData);
+                        setIsLoading(false);
+
+                    } else {
+                        console.log('not okk')
+                        setIsLoading(false)
+                        Alert.alert('Oops..', "Something went wrong", [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+                })
+                .catch(e => {
+                    setIsLoading(false)
+                    console.log(`user register error ${e}`)
+                    console.log(e.response)
+                    Alert.alert('Oops..', e.response?.data?.message, [
+                        {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ]);
+                });
+        });
+    }
 
     useEffect(() => {
         fetchUpcomingSlot()
@@ -1317,6 +1347,13 @@ const ScheduleScreen = ({ navigation }) => {
             fetchUpcomingSlot()
         }, [])
     )
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchUpcomingSlot()
+        fetchAvailability()
+        setRefreshing(false);
+    }, []);
 
     const cancelBooking = (id) => {
         Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
@@ -1464,10 +1501,16 @@ const ScheduleScreen = ({ navigation }) => {
         )
     }
 
+    const toggleCalendarModal = () => {
+        setCalendarModalVisible(!isCalendarModalVisible);
+    }
+
     return (
         <SafeAreaView style={styles.Container}>
             <CustomHeader commingFrom={'Schedule'} onPress={() => navigation.goBack()} title={'Schedule'} />
-            <ScrollView style={styles.wrapper}>
+            <ScrollView style={styles.wrapper} refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#417AA4" colors={['#417AA4']} />
+            }>
                 <View style={{ marginBottom: responsiveHeight(3) }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <TouchableOpacity onPress={() => toggleTab('Calender')}>
@@ -1485,12 +1528,12 @@ const ScheduleScreen = ({ navigation }) => {
                         <>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: responsiveHeight(2) }}>
                                 <Text style={styles.headerText}>Calender</Text>
-                                {/* <TouchableOpacity onPress={toggleModal}> */}
-                                <Image
-                                    source={dateIcon}
-                                    style={styles.iconStyle}
-                                />
-                                {/* </TouchableOpacity> */}
+                                <TouchableOpacity onPress={toggleCalendarModal}>
+                                    <Image
+                                        source={dateIcon}
+                                        style={styles.iconStyle}
+                                    />
+                                </TouchableOpacity>
                             </View>
                             {sortData.length !== 0 ?
                                 Object.keys(groupedSlots).map(date => (
@@ -1499,7 +1542,7 @@ const ScheduleScreen = ({ navigation }) => {
                                             <Text style={styles.upcomingCardDateText}>{date}</Text>
                                         </View>
                                         {groupedSlots[date].map(slot => (
-                                            <Pressable onPress={() => toggleModal({ id: slot?.id, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
+                                            <Pressable onPress={() => toggleModal({ id: slot?.id, userType: slot?.repeat_user, pname: slot?.patient?.name, pid: slot?.patient?.id, date: date, time: `${formatISTTime(slot.start_time)} - ${formatISTTime(slot.end_time)}` }, slot)}>
                                                 <View >
                                                     <View style={styles.headerTextView}>
                                                         <Text style={styles.headerText}>{slot.patient?.name}</Text>
@@ -1592,7 +1635,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRange() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.monday} onPress={() => { saveTimeRange() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
@@ -1656,7 +1699,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeTuesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.tuesday} onPress={() => { saveTimeRangeTuesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleTuesday}
@@ -1720,7 +1763,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeWednesday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.wednesday} onPress={() => { saveTimeRangeWednesday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleWednesday}
@@ -1784,7 +1827,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeThursday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.thursday} onPress={() => { saveTimeRangeThursday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleThursday}
@@ -1848,7 +1891,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeFriday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.friday} onPress={() => { saveTimeRangeFriday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleFriday}
@@ -1912,7 +1955,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSaturday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.saturday} onPress={() => { saveTimeRangeSaturday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSaturday}
@@ -1976,7 +2019,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{ marginTop: responsiveHeight(2) }}>
-                                    <CustomButton buttonColor={'small'} label={"Save"} onPress={() => { saveTimeRangeSunday() }} />
+                                    <CustomButton buttonColor={'small'} label={"Save"} isButtonLoader={isButtonLoader.sunday} onPress={() => { saveTimeRangeSunday() }} />
                                 </View>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleSunday}
@@ -2042,8 +2085,10 @@ const ScheduleScreen = ({ navigation }) => {
                                 <View style={styles.flexStyle}>
                                     <View style={{ flexDirection: 'column' }}>
                                         <Text style={styles.insidemodalName}>{savePatientDetails?.pname}</Text>
-                                        <View style={styles.insidemodalTagView}>
-                                            <Text style={styles.insidemodalTagtext}>New</Text>
+                                        <View style={[styles.insidemodalTagView, {
+                                            backgroundColor: savePatientDetails?.userType === 'no' ? '#FF9E45' : '#128807'
+                                        }]}>
+                                            <Text style={styles.insidemodalTagtext}>{savePatientDetails?.userType === 'no' ? 'New' : 'Repeat'}</Text>
                                         </View>
                                     </View>
                                     <TouchableOpacity style={[{ opacity: isButtonEnabledForModal ? 1 : 0.5 }]}
@@ -2084,6 +2129,55 @@ const ScheduleScreen = ({ navigation }) => {
                     </View>
                 </View>
                 {/* </TouchableWithoutFeedback> */}
+            </Modal>
+            {/* calender modal */}
+            <Modal
+                isVisible={isCalendarModalVisible}
+                style={{
+                    margin: 0, // Add this line to remove the default margin
+                    justifyContent: 'flex-end',
+                }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', height: 50, width: 50, borderRadius: 25, position: 'absolute', bottom: '75%', left: '45%', right: '45%' }}>
+                    <Icon name="cross" size={30} color="#B0B0B0" onPress={toggleCalendarModal} />
+                </View>
+                <View style={{ height: '70%', backgroundColor: '#fff', position: 'absolute', bottom: 0, width: '100%' }}>
+                    <View style={{ padding: 20 }}>
+                        <View style={{ marginBottom: responsiveHeight(3) }}>
+                            <Text style={{ color: '#444', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(2) }}>Select your date</Text>
+                            <Calendar
+                                onDayPress={(day) => {
+                                    handleDayPress(day)
+                                }}
+                                //monthFormat={"yyyy MMM"}
+                                //hideDayNames={false}
+                                markingType={'period'}
+                                markedDates={markedDates}
+                                theme={{
+                                    selectedDayBackgroundColor: '#417AA4',
+                                    selectedDayTextColor: 'white',
+                                    monthTextColor: '#417AA4',
+                                    textMonthFontFamily: 'DMSans-Medium',
+                                    dayTextColor: 'black',
+                                    textMonthFontSize: 18,
+                                    textDayHeaderFontSize: 16,
+                                    arrowColor: '#2E2E2E',
+                                    dotColor: 'black'
+                                }}
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#E3EBF2',
+                                    borderRadius: 15,
+                                    height: responsiveHeight(50),
+                                    marginTop: 20,
+                                    marginBottom: 10
+                                }}
+                            />
+                            <View style={styles.buttonwrapper2}>
+                                <CustomButton label={"Ok"} onPress={() => { dateRangeSearch() }} />
+                            </View>
+                        </View>
+                    </View>
+                </View>
             </Modal>
         </SafeAreaView>
     )
@@ -2363,7 +2457,6 @@ const styles = StyleSheet.create({
     insidemodalTagView: {
         paddingHorizontal: 15,
         paddingVertical: 5,
-        backgroundColor: '#FF9E45',
         borderRadius: 15,
         width: responsiveWidth(20),
         justifyContent: 'center',
