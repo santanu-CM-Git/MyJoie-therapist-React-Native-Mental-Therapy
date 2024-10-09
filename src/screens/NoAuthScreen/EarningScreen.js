@@ -208,7 +208,7 @@ const EarningScreen = ({ navigation }) => {
                             item?.status === 'incomplete' ? 'Incomplete' :
                                 item?.status === 'processing' ? 'Processing' :
                                     item?.status === 'completed' ? 'Completed' :
-                                        null}
+                                        item?.status === 'scheduled' ? 'Scheduled' : null}
                     </Text>
                 </View>
             </View>

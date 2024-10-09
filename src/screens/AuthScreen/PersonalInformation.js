@@ -51,7 +51,7 @@ import { CountryPicker } from "react-native-country-codes-picker";
 //   { id: '3', content: 'Gujrati' },
 // ];
 const dataYear = [
-  { label: '01', value: '1' }, { label: '02', value: '2' }, { label: '03', value: '3' }, { label: '04', value: '4' }, { label: '05', value: '5' }, { label: '06', value: '6' }, { label: '07', value: '7' }, { label: '08', value: '8' }, { label: '09', value: '9' }, { label: '10', value: '10' },
+  { label: '00', value: '0' },{ label: '01', value: '1' }, { label: '02', value: '2' }, { label: '03', value: '3' }, { label: '04', value: '4' }, { label: '05', value: '5' }, { label: '06', value: '6' }, { label: '07', value: '7' }, { label: '08', value: '8' }, { label: '09', value: '9' }, { label: '10', value: '10' },
   { label: '11', value: '11' },
   { label: '12', value: '12' },
   { label: '13', value: '13' },
@@ -65,6 +65,7 @@ const dataYear = [
 
 ];
 const dataMonth = [
+  { label: '00', value: '0' },
   { label: '01', value: '1' },
   { label: '02', value: '2' },
   { label: '03', value: '3' },
@@ -97,10 +98,12 @@ const PersonalInformation = ({ navigation, route }) => {
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherQualification, setOtherQualification] = useState('')
   const [qualificationitems, setqualificationitems] = useState([])
+  const [qualificationError, setQualificationError] = useState('')
   const [selectedItems, setSelectedItems] = useState([]);
   const multiSelectRef = useRef(null);
   const onSelectedItemsChange = selectedItems => {
     setSelectedItems(selectedItems);
+    setQualificationError('')
     if (selectedItems.includes('others')) {
       setShowOtherInput(true);
     } else {
@@ -133,8 +136,9 @@ const PersonalInformation = ({ navigation, route }) => {
   // experience dropdown
   const [yearvalue, setYearValue] = useState(null);
   const [isYearFocus, setYearIsFocus] = useState(false);
+  const [experienceError, setExperienceError] = useState('')
 
-  const [monthvalue, setMonthValue] = useState(null);
+  const [monthvalue, setMonthValue] = useState('0');
   const [isMonthFocus, setMonthIsFocus] = useState(false);
 
 
@@ -244,17 +248,23 @@ const PersonalInformation = ({ navigation, route }) => {
   const submitForm = () => {
     //navigation.navigate('DocumentsUpload')
     if (!firstname) {
-      setFirstNameError('Please enter Name')
+      setFirstNameError('Please enter Name.')
     } else if (!email) {
-      setEmailError('Please enter Email Id')
+      setEmailError('Please enter Email Id.')
     } else if (!phoneno) {
-      setPhonenoError('Please enter Mobile No')
+      setPhonenoError('Please enter Mobile No.')
     } else if (!countryCode) {
       setPhonenoError('Please enter Country Code.')
     } else if (selectedItemsType && selectedItemsType.length == 0) {
-      setSelectedItemError('Please select type of therapist')
+      setSelectedItemError('Please select type of therapist.')
     } else if (selectedItemsLanguage && selectedItemsLanguage.length == 0) {
-      setSelectedItemLanguageError('Please select Language')
+      setSelectedItemLanguageError('Please select Language.')
+    } else if (selectedItems && selectedItems.length == 0) {
+      setQualificationError('Please select Qualification.')
+    }else if(!yearvalue){
+      setExperienceError('Please choose year of experience.')
+    }else if (!monthvalue){
+      setExperienceError('Please choose month of experience.')
     } else {
       //   const formData = new FormData();
       //   formData.append("name", firstname);
@@ -307,7 +317,7 @@ const PersonalInformation = ({ navigation, route }) => {
             Toast.show({
               type: 'success',
               text1: 'Hello',
-              text2: "Registration Successfull",
+              text2: "Registration Successfull.",
               position: 'top',
               topOffset: Platform.OS == 'ios' ? 55 : 20
             });
@@ -509,7 +519,9 @@ const PersonalInformation = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Qualification</Text>
+              <Text style={styles.requiredheader}>*</Text>
             </View>
+            {qualificationError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{qualificationError}</Text> : <></>}
             <View style={{ flex: 1, marginVertical: responsiveHeight(1) }}>
               <View style={{ paddingHorizontal: 5, borderColor: '#E0E0E0', borderWidth: 1, borderRadius: 8, width: responsiveWidth(88) }}>
                 <MultiSelect
@@ -556,7 +568,9 @@ const PersonalInformation = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.header}>Experience</Text>
+              <Text style={styles.requiredheader}>*</Text>
             </View>
+            {experienceError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{experienceError}</Text> : <></>}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Dropdown
                 style={[styles.dropdownHalf, isYearFocus && { borderColor: '#DDD' }]}
@@ -577,6 +591,7 @@ const PersonalInformation = ({ navigation, route }) => {
                 onChange={item => {
                   setYearValue(item.value);
                   setYearIsFocus(false);
+                  setExperienceError('')
                 }}
               />
               <Dropdown
@@ -598,6 +613,7 @@ const PersonalInformation = ({ navigation, route }) => {
                 onChange={item => {
                   setMonthValue(item.value);
                   setMonthIsFocus(false);
+                  setExperienceError('')
                 }}
               />
             </View>

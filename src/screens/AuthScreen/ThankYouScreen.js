@@ -43,7 +43,7 @@ const ThankYouScreen = ({ navigation }) => {
             source={acceptImg}
             style={{ height: 15, width: 15, resizeMode: 'contain' }}
           />
-          <Text style={{ color: '#2D2D2D', alignSelf: 'center', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5), marginLeft: 10 }}>Registration Successfully Done</Text>
+          <Text style={{ color: '#2D2D2D', alignSelf: 'center', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.5), marginLeft: 10 }}>Registration Successfully Completed.</Text>
         </View>
         <View style={{ flex: 0.7, justifyContent: 'center', alignItems: 'center' }}>
           <Thankyou

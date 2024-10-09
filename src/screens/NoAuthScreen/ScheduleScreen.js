@@ -133,6 +133,8 @@ const ScheduleScreen = ({ navigation }) => {
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
+            console.log(currentRanges,'gggggggg');
+            
             const newRanges = [...currentRanges];
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
@@ -149,7 +151,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRange].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -158,8 +160,6 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePicker();
     };
-
-
 
 
     const addNewTimeRange = () => {
@@ -208,27 +208,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityTuesday(false);
     };
 
-    // const handleConfirmTuesday = (date) => {
-    //     console.log('hiiiii');
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesTuesday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeTuesday) {
-    //             newRanges[currentRangeTuesday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeTuesday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeTuesday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeTuesday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerTuesday();
-    // };
     const handleConfirmTuesday = (date) => {
         console.log('hiiiii');
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
@@ -251,7 +230,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeTuesday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -260,7 +239,6 @@ const ScheduleScreen = ({ navigation }) => {
         });
         hideDatePickerTuesday();
     };
-
 
 
     const addNewTimeRangeTuesday = () => {
@@ -309,26 +287,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityWednesday(false);
     };
 
-    // const handleConfirmWednesday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesWednesday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeWednesday) {
-    //             newRanges[currentRangeWednesday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeWednesday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeWednesday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeWednesday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerWednesday();
-    // };
     const handleConfirmWednesday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -350,7 +308,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeWednesday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -407,26 +365,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityThursday(false);
     };
 
-    // const handleConfirmThursday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesThursday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeThursday) {
-    //             newRanges[currentRangeThursday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeThursday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeThursday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeThursday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerThursday();
-    // };
     const handleConfirmThursday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -448,7 +386,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeThursday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -504,27 +442,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilityFriday(false);
     };
 
-    // const handleConfirmFriday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesFriday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeFriday) {
-    //             newRanges[currentRangeFriday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeFriday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeFriday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeFriday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerFriday();
-    // };
-
     const handleConfirmFriday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -546,7 +463,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeFriday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -604,26 +521,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySaturday(false);
     };
 
-    // const handleConfirmSaturday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesSaturday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeSaturday) {
-    //             newRanges[currentRangeSaturday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeSaturday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeSaturday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeSaturday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerSaturday();
-    // };
     const handleConfirmSaturday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -645,7 +542,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isAfterMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeSaturday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -702,27 +599,6 @@ const ScheduleScreen = ({ navigation }) => {
         setDatePickerVisibilitySunday(false);
     };
 
-    // const handleConfirmSunday = (date) => {
-    //     const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Convert to IST and back to JS Date object
-
-    //     setTimeRangesSunday(currentRanges => {
-    //         const newRanges = [...currentRanges];
-    //         if (isStartTimeSunday) {
-    //             newRanges[currentRangeSunday].startTime = dateInIST;
-    //         } else {
-    //             //newRanges[currentRangeSunday].endTime = dateInIST;
-    //             const startTime = newRanges[currentRangeSunday].startTime;
-    //             if (startTime && moment(dateInIST).isBefore(moment(startTime))) {
-    //                 Alert.alert('Invalid Time', 'End time must be greater than start time.');
-    //                 return currentRanges; // Do not update state
-    //             }
-    //             newRanges[currentRangeSunday].endTime = dateInIST;
-    //         }
-    //         return newRanges;
-    //     });
-    //     hideDatePickerSunday();
-    // };
-
     const handleConfirmSunday = (date) => {
         const dateInIST = moment(date).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
@@ -744,7 +620,7 @@ const ScheduleScreen = ({ navigation }) => {
                     if (isMidnight || (endMoment.isSame(startMoment, 'day') && endMoment.isAfter(startMoment))) {
                         newRanges[currentRangeSunday].endTime = dateInIST;
                     } else {
-                        Alert.alert('Invalid Time', 'End time must be on the same day and greater than the start time.');
+                        Alert.alert('Invalid Time', 'End time must be on the same day and later than the start time.');
                         return currentRanges; // Do not update state
                     }
                 }
@@ -1028,7 +904,7 @@ const ScheduleScreen = ({ navigation }) => {
                         Toast.show({
                             type: 'success',
                             text1: 'Hello',
-                            text2: "Time added successfully",
+                            text2: "The schedule has been set up successfully.",
                             position: 'top',
                             topOffset: Platform.OS == 'ios' ? 55 : 20
                         });
