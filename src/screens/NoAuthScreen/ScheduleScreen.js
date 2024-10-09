@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import Loader from '../../utils/Loader';
 import { ActivityIndicator } from '@react-native-material/core';
 import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -23,6 +24,7 @@ const data = [
 
 const ScheduleScreen = ({ navigation }) => {
 
+    const { logout } = useContext(AuthContext);
     const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [isButtonLoader, setIsButtonLoader] = useState({
@@ -1256,12 +1258,7 @@ const ScheduleScreen = ({ navigation }) => {
                     console.log(`user register error ${e}`)
                     console.log(e.response)
                     Alert.alert('Oops..', e.response?.data?.message, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        { text: 'OK', onPress: () => e.response?.data?.message == 'Unauthorized' ? logout() : console.log('OK Pressed') },
                     ]);
                 });
         });
