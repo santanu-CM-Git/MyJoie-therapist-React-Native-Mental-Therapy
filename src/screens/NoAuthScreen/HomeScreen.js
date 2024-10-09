@@ -39,7 +39,6 @@ import { ActivityIndicator } from '@react-native-material/core';
 
 export default function HomeScreen({ navigation }) {
 
-  const { logout } = useContext(AuthContext);
   const dispatch = useDispatch();
   const { data: products, status } = useSelector(state => state.products)
   const { userInfo } = useContext(AuthContext)
@@ -268,7 +267,12 @@ export default function HomeScreen({ navigation }) {
     } catch (error) {
       console.log(`Fetch upcoming slot error: ${error}`);
       Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
-        { text: 'OK', onPress: () => error.response?.data?.message == 'Unauthorized' ? logout() : console.log('OK Pressed') },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     } finally {
       setIsLoading(false);

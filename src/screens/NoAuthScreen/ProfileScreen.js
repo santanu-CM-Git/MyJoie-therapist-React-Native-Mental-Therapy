@@ -81,7 +81,6 @@ const dataMonth = [
 
 const ProfileScreen = ({ navigation, route }) => {
 
-  const { logout } = useContext(AuthContext);
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
@@ -271,9 +270,6 @@ const ProfileScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log(`Profile error: ${error}`);
       setIsLoading(false);
-      Alert.alert('Oops..', error.response?.data?.message, [
-        { text: 'OK', onPress: () => error.response?.data?.message == 'Unauthorized' ? logout() : console.log('OK Pressed') },
-    ]);
     }
   };
 
