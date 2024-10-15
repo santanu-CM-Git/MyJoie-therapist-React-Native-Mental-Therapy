@@ -284,7 +284,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const cancelBooking = (id) => {
-    Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
+    Alert.alert('Hello', "Are you sure you want to cancel the appointment?", [
       {
         text: 'Cancel',
         onPress: () => setIsFocus(!isFocus),
@@ -502,7 +502,7 @@ export default function HomeScreen({ navigation }) {
     //fetchData();
     fetchUpcomingSlot()
     fetchTherapistEarning('4')
-  }, [])
+  }, [isButtonEnabled])
 
   useFocusEffect(
     React.useCallback(() => {

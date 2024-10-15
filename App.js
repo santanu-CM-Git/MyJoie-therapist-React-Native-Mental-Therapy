@@ -31,12 +31,16 @@ function App() {
         if (remoteMessage?.data?.screen === 'ScheduleScreen') {
           navigate('Schedule', { screen: 'ScheduleScreen' });
 
+        } else if (remoteMessage?.data?.screen === 'EarningScreen') {
+          navigate('Earning', { screen: 'EarningScreen' });
         }
       });
 
       messaging().getInitialNotification().then(remoteMessage => {
         if (remoteMessage?.data?.screen === 'ScheduleScreen') {
           navigate('Schedule', { screen: 'ScheduleScreen' });
+        } else if (remoteMessage?.data?.screen === 'EarningScreen') {
+          navigate('Earning', { screen: 'EarningScreen' });
         }
       });
 

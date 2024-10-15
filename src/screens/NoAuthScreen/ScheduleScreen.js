@@ -1356,7 +1356,7 @@ const ScheduleScreen = ({ navigation }) => {
     }, []);
 
     const cancelBooking = (id) => {
-        Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
+        Alert.alert('Hello', "Are you sure you want to cancel the appointment?", [
             {
                 text: 'Cancel',
                 onPress: () => setIsFocus(!isFocus),
