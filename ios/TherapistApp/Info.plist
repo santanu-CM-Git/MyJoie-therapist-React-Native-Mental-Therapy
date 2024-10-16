@@ -37,10 +37,19 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSDocumentPickerUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to access your Photo Library. MyJoie would like to access your photos for uploading the signature and PDF of user. Your privacy is important to us, and we will only use the Document Picker for its intended purpose.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Give $(PRODUCT_NAME) permission to access the camera for taking photos or videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to access your Photo Library. MyJoie would like to access your photos for uploading the signature and PDF of user. Your privacy is important to us, and we will only use the Document Picker for its intended purpose.</string>
+	<string>Give $(PRODUCT_NAME) permission to access your Photo Library to upload media.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Give $(PRODUCT_NAME) permission to access the microphone for audio recording during calls.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>$(PRODUCT_NAME) would like to send you notifications to keep you updated.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+	<string>audio</string>
+	<string>fetch</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DMSans-Black.ttf</string>
