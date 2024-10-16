@@ -1596,13 +1596,28 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRanges.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabled && !range.startTime && showDatePicker(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabled && showDatePicker(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+
+                                            onPress={() => isEnabled && !range.endTime && showDatePicker(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1660,13 +1675,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesTuesday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledTuesday && !range.startTime && showDatePickerTuesday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledTuesday && showDatePickerTuesday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledTuesday && !range.endTime && showDatePickerTuesday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1724,13 +1753,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesWednesday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledWednesday && !range.startTime && showDatePickerWednesday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledWednesday && showDatePickerWednesday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledWednesday && !range.endTime && showDatePickerWednesday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1788,13 +1831,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesThursday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledThursday && !range.startTime && showDatePickerThursday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledThursday && showDatePickerThursday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledThursday && !range.endTime && showDatePickerThursday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1852,13 +1909,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesFriday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledFriday && !range.startTime && showDatePickerFriday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledFriday && showDatePickerFriday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledFriday && !range.endTime && showDatePickerFriday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1916,13 +1987,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesSaturday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledSaturday && !range.startTime && showDatePickerSaturday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledSaturday && showDatePickerSaturday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledSaturday && !range.endTime && showDatePickerSaturday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>
@@ -1980,13 +2065,27 @@ const ScheduleScreen = ({ navigation }) => {
                                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}> */}
                                 {timeRangesSunday.map((range, index) => (
                                     <View key={index} style={styles.timeRangeContainer}>
-                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, true)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledSunday && !range.startTime && showDatePickerSunday(index, true)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.startTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.startTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.startTime ? moment(range.startTime).format('hh:mm A') : 'Start Time'}
                                             </Text>
                                             <Image source={timeIcon} style={styles.icon} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => isEnabledSunday && showDatePickerSunday(index, false)} style={styles.timePicker}>
+                                        <TouchableOpacity
+                                            onPress={() => isEnabledSunday && !range.endTime && showDatePickerSunday(index, false)}
+                                            style={[
+                                                styles.timePicker,
+                                                !!range.endTime && { backgroundColor: '#F4F5F5' } // Change background if disabled
+                                            ]}
+                                            disabled={!!range.endTime}
+                                        >
                                             <Text style={styles.timeText}>
                                                 {range.endTime ? moment(range.endTime).format('hh:mm A') : 'End Time'}
                                             </Text>

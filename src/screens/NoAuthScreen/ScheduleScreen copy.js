@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import Loader from '../../utils/Loader';
 import { ActivityIndicator } from '@react-native-material/core';
 import { useFocusEffect } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
 const data = [
     { label: 'Today', value: '1' },
     { label: 'Date Wise', value: '2' },
@@ -23,6 +24,7 @@ const data = [
 
 const ScheduleScreen = ({ navigation }) => {
 
+    const { logout } = useContext(AuthContext);
     const [isCalendarModalVisible, setCalendarModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [isButtonLoader, setIsButtonLoader] = useState({
@@ -133,8 +135,8 @@ const ScheduleScreen = ({ navigation }) => {
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
-            console.log(currentRanges,'gggggggg');
-            
+            console.log(currentRanges, 'gggggggg');
+
             const newRanges = [...currentRanges];
             if (isStartTime) {
                 newRanges[currentRange].startTime = dateInIST;
@@ -1026,17 +1028,12 @@ const ScheduleScreen = ({ navigation }) => {
                         ]);
                     }
                 })
-                .catch(e => {
+                .catch(error => {
                     setIsLoading(false)
-                    console.log(`user register error ${e}`)
-                    console.log(e.response)
-                    Alert.alert('Oops..', e.response?.data?.message, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    console.log(`user register error ${error}`)
+                    let myerror = error.response?.data?.message;
+                    Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+                        { text: 'OK', onPress: () => myerror == 'Unauthorized' ? logout() : console.log('OK Pressed') },
                     ]);
                 });
         });
@@ -1251,17 +1248,12 @@ const ScheduleScreen = ({ navigation }) => {
                         ]);
                     }
                 })
-                .catch(e => {
+                .catch(error => {
                     setIsLoading(false)
-                    console.log(`user register error ${e}`)
-                    console.log(e.response)
-                    Alert.alert('Oops..', e.response?.data?.message, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    console.log(`user register error ${error}`)
+                    let myerror = error.response?.data?.message;
+                    Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+                        { text: 'OK', onPress: () => myerror == 'Unauthorized' ? logout() : console.log('OK Pressed') },
                     ]);
                 });
         });
@@ -1356,7 +1348,7 @@ const ScheduleScreen = ({ navigation }) => {
     }, []);
 
     const cancelBooking = (id) => {
-        Alert.alert('Hello', "Are you sure you want to cancel the booking?", [
+        Alert.alert('Hello', "Are you sure you want to cancel the appointment?", [
             {
                 text: 'Cancel',
                 onPress: () => setIsFocus(!isFocus),
