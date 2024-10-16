@@ -81,6 +81,7 @@ const dataMonth = [
 
 const ProfileScreen = ({ navigation, route }) => {
 
+  const { logout } = useContext(AuthContext);
   const [isFormChanged, setIsFormChanged] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
@@ -270,6 +271,10 @@ const ProfileScreen = ({ navigation, route }) => {
     } catch (error) {
       console.log(`Profile error: ${error}`);
       setIsLoading(false);
+      let myerror = error.response?.data?.message;
+      Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
+        { text: 'OK', onPress: () => myerror == 'Unauthorized' ? logout() : console.log('OK Pressed') },
+      ]);
     }
   };
 
@@ -702,7 +707,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 onBlur={() => setYearIsFocus(false)}
                 onChange={item => {
                   setYearValue(item.value);
-                  setYearIsFocus(false); 
+                  setYearIsFocus(false);
                   setIsFormChanged(true);
                 }}
                 disable={!isEditable}

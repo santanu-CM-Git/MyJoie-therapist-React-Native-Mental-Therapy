@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useContext, useState, useEffect, useCallback } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, FlatList, Image, Alert, Platform, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,8 +14,10 @@ import CustomButton from '../../components/CustomButton';
 import { GreenTick, RedCross, YellowTck } from '../../utils/Images';
 import CustomHeader from '../../components/CustomHeader';
 import Toast from 'react-native-toast-message';
+import { AuthContext } from '../../context/AuthContext';
 
 const SessionHistory = ({ navigation }) => {
+    const { logout } = useContext(AuthContext);
     const [refreshing, setRefreshing] = useState(false);
     const [therapistSessionHistory, setTherapistSessionHistory] = useState([]);
     const [perPage, setPerPage] = useState(10);
@@ -61,12 +63,9 @@ const SessionHistory = ({ navigation }) => {
             }
         } catch (error) {
             console.log(`Fetch session history error: ${error}`);
+            let myerror = error.response?.data?.message;
             Alert.alert('Oops..', error.response?.data?.message || 'Something went wrong', [
-                {
-                    text: 'OK',
-                    onPress: () => console.log('OK Pressed'),
-                    style: 'cancel',
-                }
+                { text: 'OK', onPress: () => myerror == 'Unauthorized' ? logout() : console.log('OK Pressed') },
             ]);
         } finally {
             setIsLoading(false);
