@@ -1077,6 +1077,11 @@ const ChatScreen = ({ navigation, route }) => {
                   {/* Agora Video Component */}
                   <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
                     <>
+                    {remoteUid == null ?
+                      <View style={{ flex: 1, justifyContent:'center',alignItems:'center' }}>
+                        <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>waiting for the patient to join..</Text>
+                      </View>
+                      : null}
                       {/* Remote Video View */}
                       {remoteUid !== null && (
                         <RtcSurfaceView
