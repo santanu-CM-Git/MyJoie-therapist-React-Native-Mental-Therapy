@@ -19,12 +19,7 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
-    requestPermissions();
-    requestCameraAndAudioPermissions().then(granted => {
-      if (!granted) {
-        // Handle the case where permissions are not granted
-        return;
-      }
+    requestPermissions().then(() => {
       const unsubscribeForeground = setupNotificationHandlers(setNotifications, setnotifyStatus);
 
       messaging().onNotificationOpenedApp(remoteMessage => {
