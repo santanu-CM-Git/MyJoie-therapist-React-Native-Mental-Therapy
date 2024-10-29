@@ -1205,7 +1205,7 @@ const styles = StyleSheet.create({
   buttonImage: { height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) },
   audioSectionTherapistName: { color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) },
   audioButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(40), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
-  videoButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(60), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center' },
+  videoButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(60), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center',zIndex:30 },
   iconStyle: { height: 40, width: 40 },
   messageContainer: {
     backgroundColor: 'red',
