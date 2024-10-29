@@ -738,7 +738,7 @@ const ChatScreen = ({ navigation, route }) => {
     const option = {
       "booked_slot_id": route?.params?.details?.id,
       "flag": activeTab,
-      "screen" : activeTab
+      "screen": activeTab
     };
     // console.log(option);
     try {
@@ -787,7 +787,7 @@ const ChatScreen = ({ navigation, route }) => {
       const unsubscribe = messaging().onMessage(async remoteMessage => {
         // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
         // console.log('Received background message:', JSON.stringify(remoteMessage));
-        if(remoteMessage?.data?.screen === 'Cancel'){
+        if (remoteMessage?.data?.screen === 'Cancel') {
           goingToactiveTab(remoteMessage?.data?.flag)
         }
         if (remoteMessage?.data?.screen === 'ChatScreen') {
@@ -1077,23 +1077,33 @@ const ChatScreen = ({ navigation, route }) => {
                   {/* Agora Video Component */}
                   <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
                     <>
-                    {remoteUid == null ?
-                      <View style={{ flex: 1, justifyContent:'center',alignItems:'center' }}>
-                        <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>waiting for the patient to join..</Text>
-                      </View>
-                      : null}
+                      {remoteUid == null ?
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Waiting for the patient to join..</Text>
+                        </View>
+                        : null}
                       {/* Remote Video View */}
                       {remoteUid !== null && (
                         <RtcSurfaceView
                           canvas={{ uid: remoteUid }}
-                          style={styles.remoteVideo}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            zIndex: 10
+                          }}
                         />
                       )}
 
                       {/* Local Video View */}
                       <RtcSurfaceView
                         canvas={{ uid: 0 }}
-                        style={[styles.localVideo,{ zIndex: 1000, elevation: 5 }]} 
+                        style={{
+                          width: '30%',
+                          height: 200,
+                          position: 'absolute',
+                          top: 10,
+                          right: 10, zIndex: 1000, elevation: 5
+                        }}
                       />
                     </>
                     <View style={styles.videoButtonSection}>
