@@ -9,7 +9,7 @@ import OfflineNotice from './src/utils/OfflineNotice';
 import Toast from 'react-native-toast-message';
 import SplashScreen from 'react-native-splash-screen';
 import messaging from '@react-native-firebase/messaging';
-import { requestPermission, setupNotificationHandlers } from './src/utils/NotificationService';
+import { requestPermissions, setupNotificationHandlers } from './src/utils/NotificationService';
 import { navigate } from './src/navigation/NavigationService'; // Import the navigation function
 import { requestCameraAndAudioPermissions } from './src/utils/PermissionHandler';
 
@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
-    requestPermission();
+    requestPermissions();
     requestCameraAndAudioPermissions().then(granted => {
       if (!granted) {
         // Handle the case where permissions are not granted
