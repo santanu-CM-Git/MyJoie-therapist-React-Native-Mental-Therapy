@@ -556,7 +556,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
-				DEVELOPMENT_TEAM = LWU42H463Q;
+				DEVELOPMENT_TEAM = 634N3G2484;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_NO_COMMON_BLOCKS = NO;
@@ -573,7 +573,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.TherapistApp.therapist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.myjoie.therapist;
 				PRODUCT_NAME = TherapistApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -593,7 +593,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
-				DEVELOPMENT_TEAM = LWU42H463Q;
+				DEVELOPMENT_TEAM = 634N3G2484;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_NO_COMMON_BLOCKS = NO;
 				INFOPLIST_FILE = TherapistApp/Info.plist;
@@ -609,7 +609,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.TherapistApp.therapist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.myjoie.therapist;
 				PRODUCT_NAME = TherapistApp;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
