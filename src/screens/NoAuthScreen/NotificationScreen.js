@@ -14,7 +14,7 @@ const NotificationScreen = ({ navigation }) => {
   const [notifyStatus, setnotifyStatus] = useState(false)
 
   useEffect(() => {
-    if (Platform.OS == 'android') {
+    if (Platform.OS == 'android' || Platform.OS === 'ios') {
       const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
         Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
         console.log('Received foreground message:', JSON.stringify(remoteMessage));
