@@ -2153,7 +2153,7 @@ const ScheduleScreen = ({ navigation }) => {
                                 }
                             </Pressable>
                             {isFocus ?
-                                <View style={{ width: responsiveWidth(40), backgroundColor: '#fff', height: responsiveHeight(15), position: 'absolute', right: 0, top: 30, zIndex: 10, padding: 10, borderRadius: 15, justifyContent: 'center', elevation: 5 }}>
+                                <View style={styles.cancelModal}>
                                     <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
                                         <TouchableOpacity onPress={() => cancelBooking(savePatientDetails?.id)}>
                                             <Text style={{ color: '#746868', fontFamily: 'DMSans-Regular', fontSize: responsiveFontSize(2), marginVertical: responsiveHeight(1) }}>Cancel</Text>
@@ -2387,8 +2387,18 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
         borderRadius: 20,
         marginTop: responsiveHeight(2),
-        elevation: 5,
-        padding: 15
+        padding: 15,
+        ...Platform.select({
+            android: {
+              elevation: 5, // Only for Android
+            },
+            ios: {
+              shadowColor: '#000', // Only for iOS
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 5,
+            },
+          }),
     },
     headerText: {
         color: '#2D2D2D',
@@ -2406,7 +2416,17 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
         borderRadius: 20,
         marginTop: responsiveHeight(2),
-        elevation: 5
+        ...Platform.select({
+            android: {
+              elevation: 5, // Only for Android
+            },
+            ios: {
+              shadowColor: '#000', // Only for iOS
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 5,
+            },
+          }),
     },
     upcomingCardDate: {
         flexDirection: 'row',
@@ -2585,5 +2605,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    cancelModal: {
+        width: responsiveWidth(40),
+        backgroundColor: '#fff',
+        height: responsiveHeight(15),
+        position: 'absolute',
+        right: 0,
+        top: 30,
+        zIndex: 10,
+        padding: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        ...Platform.select({
+            android: {
+                elevation: 5, // Only for Android
+            },
+            ios: {
+                shadowColor: '#000', // Only for iOS
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 5,
+            },
+        }),
+    }
 
 });

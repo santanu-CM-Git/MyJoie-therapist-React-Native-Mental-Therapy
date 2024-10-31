@@ -20,7 +20,7 @@
 	<string>1.0.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
+	<!-- <key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLSchemes</key>
@@ -36,7 +36,7 @@
 	<key>FacebookClientToken</key>
 	<string>56789</string>
 	<key>FacebookDisplayName</key>
-	<string>MyJoie</string>
+	<string>MyJoie</string> -->
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert, BackHandler } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ImageBackground, Image, FlatList, PermissionsAndroid, Alert, BackHandler, Platform } from 'react-native'
 import { responsiveFontSize, responsiveHeight, responsiveWidth } from 'react-native-responsive-dimensions'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { GreenTick, RedCross, YellowTck, audioBgImg, audiooffIcon, audioonIcon, callIcon, cameraoffIcon, cameraonIcon, chatImg, defaultUserImg, filesendImg, sendImg, speakeroffIcon, speakeronIcon, summaryIcon, switchcameraIcon, userPhoto, videoIcon } from '../../utils/Images'
@@ -1108,7 +1108,18 @@ const ChatScreen = ({ navigation, route }) => {
                           height: 200,
                           position: 'absolute',
                           top: 10,
-                          right: 10, zIndex: 1000, elevation: 5
+                          right: 10, zIndex: 1000, 
+                          ...Platform.select({
+                            android: {
+                              elevation: 5, // Only for Android
+                            },
+                            ios: {
+                              shadowColor: '#000', // Only for iOS
+                              shadowOffset: { width: 0, height: 2 },
+                              shadowOpacity: 0.3,
+                              shadowRadius: 5,
+                            },
+                          }),
                         }}
                       />
                     </>

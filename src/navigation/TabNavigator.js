@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { Text, Image, View } from 'react-native';
+import { Text, Image, View, Platform } from 'react-native';
 
 import HomeScreen from '../screens/NoAuthScreen/HomeScreen';
 import ProfileScreen from '../screens/NoAuthScreen/ProfileScreen';
@@ -130,13 +130,16 @@ const TabNavigator = () => {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
             width: responsiveWidth(100),
-            height: responsiveHeight(8),
+            height: Platform.select({
+              android: responsiveHeight(8),
+              ios: responsiveHeight(11),
+            }),
             alignSelf: 'center',
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <Image source={focused ? homeFillImg : homeImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
+              <Image source={focused ? homeFillImg : homeImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4), resizeMode: 'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -152,13 +155,16 @@ const TabNavigator = () => {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
             width: responsiveWidth(100),
-            height: responsiveHeight(8),
+            height: Platform.select({
+              android: responsiveHeight(8),
+              ios: responsiveHeight(11),
+            }),
             alignSelf: 'center',
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <Image source={focused ? earningFillImg : earningNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
+              <Image source={focused ? earningFillImg : earningNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4), resizeMode: 'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -174,13 +180,16 @@ const TabNavigator = () => {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
             width: responsiveWidth(100),
-            height: responsiveHeight(8),
+            height: Platform.select({
+              android: responsiveHeight(8),
+              ios: responsiveHeight(11),
+            }),
             alignSelf: 'center',
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <Image source={focused ? scheduleFillImg : scheduleNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
+              <Image source={focused ? scheduleFillImg : scheduleNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4), resizeMode: 'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
@@ -196,13 +205,16 @@ const TabNavigator = () => {
             display: getTabBarVisibility(route),
             backgroundColor: '#FFFFFF',
             width: responsiveWidth(100),
-            height: responsiveHeight(8),
+            height: Platform.select({
+              android: responsiveHeight(8),
+              ios: responsiveHeight(11),
+            }),
             alignSelf: 'center',
           },
           tabBarIcon: ({ color, size, focused }) => (
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
               {focused && <View style={{ width: responsiveWidth(12), borderColor: color, backgroundColor: color, borderWidth: 2, borderBottomLeftRadius: 5, borderBottomRightRadius: 5 }} />}
-              <Image source={focused ? profileFillImg : profileNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4),resizeMode:'contain' }} />
+              <Image source={focused ? profileFillImg : profileNotFillImg} style={{ width: responsiveWidth(7), height: responsiveHeight(3.5), marginTop: responsiveHeight(1.4), resizeMode: 'contain' }} />
             </View>
           ),
           tabBarLabel: ({ color, focused }) => (
