@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { AuthProvider } from './src/context/AuthContext';
 import AppNav from './src/navigation/AppNav';
 import store from './src/store/store';
@@ -19,6 +19,10 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
+    
+    if(Platform.OS === 'ios'){
+      requestUserPermission()
+    }
     requestPermissions().then(() => {
       const unsubscribeForeground = setupNotificationHandlers(setNotifications, setnotifyStatus);
 
@@ -44,6 +48,14 @@ function App() {
       };
     });
   }, []);
+
+  async function requestUserPermission() {
+    const authorizationStatus = await messaging().requestPermission();
+  
+    if (authorizationStatus) {
+      console.log('Permission status:', authorizationStatus);
+    }
+  }
 
   return (
     <Provider store={store}>

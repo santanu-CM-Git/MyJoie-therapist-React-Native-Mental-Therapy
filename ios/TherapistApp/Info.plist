@@ -42,7 +42,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give $(PRODUCT_NAME) permission to access your Photo Library to upload media.</string>
 	<key>NSUserNotificationUsageDescription</key>
-	<string>$(PRODUCT_NAME) would like to send you notifications to keep you updated.</string>
+	<string>Give $(PRODUCT_NAME) would like to send you notifications to keep you updated.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>DMSans-Black.ttf</string>
