@@ -95,6 +95,25 @@
 		386F5A3B2CD37DA0001AC5C5 /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Medium.ttf"; path = "../src/assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		386F5A3C2CD37DA0001AC5C5 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		386F5A3D2CD37DA0001AC5C5 /* DMSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-SemiBoldItalic.ttf"; path = "../src/assets/fonts/DMSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		38E5A1302CD8B73600DACCB3 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
+		38E5A1312CD8B73600DACCB3 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
+		38E5A1322CD8B73600DACCB3 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
+		38E5A1332CD8B73600DACCB3 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
+		38E5A1342CD8B73600DACCB3 /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
+		38E5A1352CD8B73600DACCB3 /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
+		38E5A1362CD8B73600DACCB3 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = SimpleLineIcons.ttf; path = "../../../../Downloads/untitled folder/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		38E5A1372CD8B73600DACCB3 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
+		38E5A1382CD8B73600DACCB3 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
+		38E5A1392CD8B73600DACCB3 /* FontAwesome6_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome6_Regular.ttf; sourceTree = "<group>"; };
+		38E5A13A2CD8B73600DACCB3 /* Foundation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Foundation.ttf; sourceTree = "<group>"; };
+		38E5A13B2CD8B73600DACCB3 /* FontAwesome6_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome6_Brands.ttf; sourceTree = "<group>"; };
+		38E5A13C2CD8B73600DACCB3 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
+		38E5A13D2CD8B73600DACCB3 /* FontAwesome6_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome6_Solid.ttf; sourceTree = "<group>"; };
+		38E5A13E2CD8B73700DACCB3 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
+		38E5A13F2CD8B73700DACCB3 /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Feather.ttf; sourceTree = "<group>"; };
+		38E5A1402CD8B73700DACCB3 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
+		38E5A1412CD8B73700DACCB3 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
+		38E5A1422CD8B73700DACCB3 /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ionicons.ttf; sourceTree = "<group>"; };
 		3DB43F8FD63B210AC740ED0A /* Pods-TherapistApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TherapistApp.debug.xcconfig"; path = "Target Support Files/Pods-TherapistApp/Pods-TherapistApp.debug.xcconfig"; sourceTree = "<group>"; };
 		8082D60601DF6895FD2EAE22 /* Pods-TherapistApp-TherapistAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TherapistApp-TherapistAppTests.release.xcconfig"; path = "Target Support Files/Pods-TherapistApp-TherapistAppTests/Pods-TherapistApp-TherapistAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TherapistApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -229,6 +248,25 @@
 				386F5A3C2CD37DA0001AC5C5 /* DMSans-MediumItalic.ttf */,
 				386F5A262CD37D9F001AC5C5 /* DMSans-Regular.ttf */,
 				386F5A282CD37D9F001AC5C5 /* DMSans-SemiBold.ttf */,
+				38E5A1352CD8B73600DACCB3 /* AntDesign.ttf */,
+				38E5A1312CD8B73600DACCB3 /* Entypo.ttf */,
+				38E5A13C2CD8B73600DACCB3 /* EvilIcons.ttf */,
+				38E5A13F2CD8B73700DACCB3 /* Feather.ttf */,
+				38E5A1322CD8B73600DACCB3 /* FontAwesome.ttf */,
+				38E5A1332CD8B73600DACCB3 /* FontAwesome5_Brands.ttf */,
+				38E5A13E2CD8B73700DACCB3 /* FontAwesome5_Regular.ttf */,
+				38E5A1382CD8B73600DACCB3 /* FontAwesome5_Solid.ttf */,
+				38E5A13B2CD8B73600DACCB3 /* FontAwesome6_Brands.ttf */,
+				38E5A1392CD8B73600DACCB3 /* FontAwesome6_Regular.ttf */,
+				38E5A13D2CD8B73600DACCB3 /* FontAwesome6_Solid.ttf */,
+				38E5A1342CD8B73600DACCB3 /* Fontisto.ttf */,
+				38E5A13A2CD8B73600DACCB3 /* Foundation.ttf */,
+				38E5A1422CD8B73700DACCB3 /* Ionicons.ttf */,
+				38E5A1302CD8B73600DACCB3 /* MaterialCommunityIcons.ttf */,
+				38E5A1402CD8B73700DACCB3 /* MaterialIcons.ttf */,
+				38E5A1412CD8B73700DACCB3 /* Octicons.ttf */,
+				38E5A1362CD8B73600DACCB3 /* SimpleLineIcons.ttf */,
+				38E5A1372CD8B73600DACCB3 /* Zocial.ttf */,
 				386F5A3D2CD37DA0001AC5C5 /* DMSans-SemiBoldItalic.ttf */,
 				386F5A2A2CD37D9F001AC5C5 /* DMSans-Thin.ttf */,
 				386F5A302CD37D9F001AC5C5 /* DMSans-ThinItalic.ttf */,

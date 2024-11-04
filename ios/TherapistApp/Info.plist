@@ -20,23 +20,6 @@
 	<string>1.0.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<!-- <key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>974564787686868</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>10</string>
-	<key>FacebookAppID</key>
-	<string>974564787686868</string>
-	<key>FacebookClientToken</key>
-	<string>56789</string>
-	<key>FacebookDisplayName</key>
-	<string>MyJoie</string> -->
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -90,6 +73,25 @@
 		<string>Outfit-Regular.ttf</string>
 		<string>Outfit-SemiBold.ttf</string>
 		<string>Outfit-Thin.ttf</string>
+		<string>AntDesign.ttf</string>
+		<string>Entypo.ttf</string>
+		<string>EvilIcons.ttf</string>
+		<string>Feather.ttf</string>
+		<string>FontAwesome.ttf</string>
+		<string>FontAwesome5_Brands.ttf</string>
+		<string>FontAwesome5_Regular.ttf</string>
+		<string>FontAwesome5_Solid.ttf</string>
+		<string>FontAwesome6_Brands.ttf</string>
+		<string>FontAwesome6_Regular.ttf</string>
+		<string>FontAwesome6_Solid.ttf</string>
+		<string>Fontisto.ttf</string>
+		<string>Foundation.ttf</string>
+		<string>Ionicons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>MaterialIcons.ttf</string>
+		<string>Octicons.ttf</string>
+		<string>SimpleLineIcons.ttf</string>
+		<string>Zocial.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
