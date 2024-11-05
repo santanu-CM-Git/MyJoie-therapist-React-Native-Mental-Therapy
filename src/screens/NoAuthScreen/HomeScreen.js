@@ -310,7 +310,7 @@ export default function HomeScreen({ navigation }) {
                   Toast.show({
                     type: 'success',
                     text1: 'Hello',
-                    text2: "Schedule cancel successfully",
+                    text2: "Schedule cancel successfully.",
                     position: 'top',
                     topOffset: Platform.OS == 'ios' ? 55 : 20
                   });

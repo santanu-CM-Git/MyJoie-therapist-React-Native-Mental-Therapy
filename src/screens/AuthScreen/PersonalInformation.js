@@ -248,19 +248,19 @@ const PersonalInformation = ({ navigation, route }) => {
   const submitForm = () => {
     //navigation.navigate('DocumentsUpload')
     if (!firstname) {
-      setFirstNameError('Please enter Name.')
+      setFirstNameError('Please enter name.')
     } else if (!email) {
-      setEmailError('Please enter Email Id.')
+      setEmailError('Please enter email id.')
     } else if (!phoneno) {
-      setPhonenoError('Please enter Mobile No.')
+      setPhonenoError('Please enter mobile no.')
     } else if (!countryCode) {
-      setPhonenoError('Please enter Country Code.')
+      setPhonenoError('Please enter country code.')
     } else if (selectedItemsType && selectedItemsType.length == 0) {
       setSelectedItemError('Please select type of therapist.')
     } else if (selectedItemsLanguage && selectedItemsLanguage.length == 0) {
-      setSelectedItemLanguageError('Please select Language.')
+      setSelectedItemLanguageError('Please select language.')
     } else if (selectedItems && selectedItems.length == 0) {
-      setQualificationError('Please select Qualification.')
+      setQualificationError('Please select qualification.')
     }else if(!yearvalue){
       setExperienceError('Please choose year of experience.')
     }else if (!monthvalue){
@@ -317,7 +317,7 @@ const PersonalInformation = ({ navigation, route }) => {
             Toast.show({
               type: 'success',
               text1: 'Hello',
-              text2: "Registration Successfull.",
+              text2: "Registration Successful.",
               position: 'top',
               topOffset: Platform.OS == 'ios' ? 55 : 20
             });
