@@ -105,7 +105,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
                             Toast.show({
                                 type: 'success',
                                 text1: 'Hello',
-                                text2: "Upload data Successfully",
+                                text2: "Data uploaded successfully.",
                                 position: 'top',
                                 topOffset: Platform.OS == 'ios' ? 55 : 20
                             });
