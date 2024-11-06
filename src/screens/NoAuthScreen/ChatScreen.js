@@ -115,7 +115,7 @@ const ChatScreen = ({ navigation, route }) => {
     };
     initialize();
     return () => {
-      agoraEngineRef.current?.destroy();
+      //agoraEngineRef.current?.destroy();
     };
   }, []);
 
@@ -1000,7 +1000,7 @@ const ChatScreen = ({ navigation, route }) => {
       </View>
       {route?.params?.details?.prescription_checked === 'yes' ?
         <TouchableOpacity onPress={() => toggleModal()}>
-          <View style={{ width: responsiveWidth(95), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
+          <View style={{ width: responsiveWidth(95), height: responsiveHeight(4), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginTop: responsiveHeight(1) }}>
             <Image
               source={summaryIcon}
               style={styles.ButtonImg}
@@ -1215,7 +1215,7 @@ const styles = StyleSheet.create({
   endButtonView: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#53A39F', borderRadius: 15, marginLeft: responsiveWidth(2) },
   endButtonText: { color: '#FFF', fontFamily: 'DMSans-Semibold', fontSize: responsiveFontSize(1.5) },
   TabSection: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 10 },
-  ButtonView: { width: responsiveWidth(45), height: responsiveHeight(6), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  ButtonView: { width: responsiveWidth(45), height: responsiveHeight(4), backgroundColor: '#fff', borderRadius: 10, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
   ButtonImg: { height: 20, width: 20, resizeMode: 'contain', marginRight: 5 },
   ButtonText: { color: '#2D2D2D', fontFamily: 'DMSans-Medium', fontSize: responsiveFontSize(1.7) },
   AudioBackground: { width: responsiveWidth(100), height: responsiveHeight(75), justifyContent: 'center', alignItems: 'center' },

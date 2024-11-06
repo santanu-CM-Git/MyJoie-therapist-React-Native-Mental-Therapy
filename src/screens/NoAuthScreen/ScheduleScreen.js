@@ -2318,7 +2318,14 @@ const styles = StyleSheet.create({
         fontSize: responsiveFontSize(1.7)
     },
     switchStyle: {
-        transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }]  // Adjust scale values as needed
+        ...Platform.select({
+            ios: {
+                transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]  // Adjust scale values as needed
+            },
+            android: {
+                transform: [{ scaleX: 1.3 }, { scaleY: 1.3 }]  // Adjust scale values as needed
+            }
+        })
     },
     activeButtonInsideView: {
         backgroundColor: '#FFF',
