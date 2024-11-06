@@ -115,7 +115,7 @@ const ChatScreen = ({ navigation, route }) => {
     };
     initialize();
     return () => {
-      //agoraEngineRef.current?.destroy();
+      agoraEngineRef.current?.destroy();
     };
   }, []);
 
