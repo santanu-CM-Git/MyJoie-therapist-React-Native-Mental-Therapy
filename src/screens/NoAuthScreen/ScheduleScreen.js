@@ -1376,7 +1376,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     Toast.show({
                                         type: 'success',
                                         text1: 'Hello',
-                                        text2: "Schedule cancel successfully",
+                                        text2: res?.data?.message,
                                         position: 'top',
                                         topOffset: Platform.OS == 'ios' ? 55 : 20
                                     });
@@ -2397,15 +2397,15 @@ const styles = StyleSheet.create({
         padding: 15,
         ...Platform.select({
             android: {
-              elevation: 5, // Only for Android
+                elevation: 5, // Only for Android
             },
             ios: {
-              shadowColor: '#000', // Only for iOS
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 5,
+                shadowColor: '#000', // Only for iOS
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 5,
             },
-          }),
+        }),
     },
     headerText: {
         color: '#2D2D2D',
@@ -2425,15 +2425,15 @@ const styles = StyleSheet.create({
         marginTop: responsiveHeight(2),
         ...Platform.select({
             android: {
-              elevation: 5, // Only for Android
+                elevation: 5, // Only for Android
             },
             ios: {
-              shadowColor: '#000', // Only for iOS
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 5,
+                shadowColor: '#000', // Only for iOS
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 5,
             },
-          }),
+        }),
     },
     upcomingCardDate: {
         flexDirection: 'row',
