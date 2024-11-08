@@ -304,7 +304,7 @@ export default function HomeScreen({ navigation }) {
               },
             })
               .then(res => {
-                console.log(JSON.stringify(res.data.data), 'cancel response')
+                //console.log(JSON.stringify(res.data.data), 'cancel response')
                 if (res.data.response == true) {
                   setIsLoading(false);
                   Toast.show({
