@@ -803,6 +803,11 @@ const ChatScreen = ({ navigation, route }) => {
       const unsubscribe = messaging().onMessage(async remoteMessage => {
         // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
         // console.log('Received background message:', JSON.stringify(remoteMessage));
+        if (remoteMessage?.data?.screen === 'EndCall') {
+          Alert.alert('', "The patient has disconnected the call.", [
+            { text: 'OK', onPress: () => handleTimerEnd() },
+          ]);
+        }
         if (remoteMessage?.data?.screen === 'Cancel') {
           goingToactiveTab(remoteMessage?.data?.flag)
         }
