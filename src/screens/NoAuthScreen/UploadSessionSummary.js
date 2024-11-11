@@ -80,7 +80,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
         if(summary == ''){
             Toast.show({
                 type: 'error',
-                text1: 'Hello',
+                text1: '',
                 text2: "Please write session summary",
                 position: 'top',
                 topOffset: Platform.OS == 'ios' ? 55 : 20
@@ -104,8 +104,8 @@ const UploadSessionSummary = ({ navigation, route }) => {
                             setIsLoading(false)
                             Toast.show({
                                 type: 'success',
-                                text1: 'Hello',
-                                text2: "Data uploaded successfully.",
+                                text1: '',
+                                text2: "Summary uploaded successfully.",
                                 position: 'top',
                                 topOffset: Platform.OS == 'ios' ? 55 : 20
                             });

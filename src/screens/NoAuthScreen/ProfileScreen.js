@@ -376,7 +376,7 @@ const ProfileScreen = ({ navigation, route }) => {
             setIsLoading(false)
             Toast.show({
               type: 'success',
-              text1: 'Hello',
+              text1: '',
               text2: "Update data Successfully",
               position: 'top',
               topOffset: Platform.OS == 'ios' ? 55 : 20

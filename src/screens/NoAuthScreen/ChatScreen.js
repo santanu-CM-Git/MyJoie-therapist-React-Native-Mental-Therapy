@@ -808,7 +808,7 @@ const ChatScreen = ({ navigation, route }) => {
         }
         if (remoteMessage?.data?.screen === 'ChatScreen') {
           Alert.alert(
-            'Hello',
+            '',
             `The patient wants to switch to ${remoteMessage?.data?.flag}. Do you agree?`,
             [
               {

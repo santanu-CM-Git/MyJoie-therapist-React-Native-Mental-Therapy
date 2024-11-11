@@ -171,7 +171,7 @@ const SessionHistory = ({ navigation }) => {
         if (summaryData == '') {
             Toast.show({
                 type: 'error',
-                text1: 'Hello',
+                text1: '',
                 text2: "Please write session summary.",
                 position: 'top',
                 topOffset: Platform.OS == 'ios' ? 55 : 20
