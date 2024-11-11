@@ -1095,7 +1095,7 @@ const ChatScreen = ({ navigation, route }) => {
                     <>
                       {remoteUid == null ?
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Waiting for the patient to join..</Text>
+                          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
                         </View>
                         : null}
                       {/* Remote Video View */}

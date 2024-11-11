@@ -195,8 +195,8 @@ const SessionHistory = ({ navigation }) => {
                             setIsLoading(false)
                             Toast.show({
                                 type: 'success',
-                                text1: 'Hello',
-                                text2: "Data uploaded successfully.",
+                                text1: '',
+                                text2: "Summary uploaded successfully.",
                                 position: 'top',
                                 topOffset: Platform.OS == 'ios' ? 55 : 20
                             });

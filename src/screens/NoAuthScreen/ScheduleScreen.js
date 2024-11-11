@@ -1447,7 +1447,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     Toast.show({
                                         type: 'success',
                                         text1: '',
-                                        text2: "Patient successfully blocked.",
+                                        text2: "Patient blocked successfully.",
                                         position: 'top',
                                         topOffset: Platform.OS == 'ios' ? 55 : 20
                                     });
