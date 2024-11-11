@@ -91,13 +91,13 @@ const OtpScreen = ({ navigation, route }) => {
         // }
         if (code == comingOTP) {
             setIsLoading(false)
-            Toast.show({
-                type: 'success',
-                text1: 'Hello',
-                text2: "The OTP has been successfully matched.",
-                position: 'top',
-                topOffset: Platform.OS == 'ios' ? 55 : 20
-            });
+            // Toast.show({
+            //     type: 'success',
+            //     text1: 'Hello',
+            //     text2: "The OTP has been successfully matched.",
+            //     position: 'top',
+            //     topOffset: Platform.OS == 'ios' ? 55 : 20
+            // });
             
             // if(route?.params?.name){
             //     login(route?.params?.token)
@@ -111,11 +111,6 @@ const OtpScreen = ({ navigation, route }) => {
             console.log('not correct')
             setIsLoading(false)
             Alert.alert('Oops..', "The OTP does not match. Please enter the correct OTP.", [
-                {
-                    text: 'Cancel',
-                    onPress: () => setOtp(''),
-                    style: 'cancel',
-                },
                 { text: 'OK', onPress: () => setOtp('') },
             ]);
             

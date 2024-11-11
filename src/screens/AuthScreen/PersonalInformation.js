@@ -314,13 +314,13 @@ const PersonalInformation = ({ navigation, route }) => {
           console.log(res.data)
           if (res.data.response == true) {
             setIsLoading(false)
-            Toast.show({
-              type: 'success',
-              text1: 'Hello',
-              text2: "Registration Successful.",
-              position: 'top',
-              topOffset: Platform.OS == 'ios' ? 55 : 20
-            });
+            // Toast.show({
+            //   type: 'success',
+            //   text1: 'Hello',
+            //   text2: "Registration Successful.",
+            //   position: 'top',
+            //   topOffset: Platform.OS == 'ios' ? 55 : 20
+            // });
             navigation.navigate('Thankyou')
           } else {
             console.log('not okk')
@@ -366,7 +366,7 @@ const PersonalInformation = ({ navigation, route }) => {
         <View style={styles.wrapper}>
 
           <Text style={styles.header1}>Registration Form</Text>
-          <Text style={styles.subheader}>Enter the details below so we can get to know and serve you better</Text>
+          <Text style={styles.subheader}>Enter the details below</Text>
 
           <View style={styles.textinputview}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>

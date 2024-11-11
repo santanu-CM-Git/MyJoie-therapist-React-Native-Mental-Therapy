@@ -839,7 +839,7 @@ const ScheduleScreen = ({ navigation }) => {
                             timeEntryinRespectOfDay(day, time, status)
                         } else {
                             if (res.data.booking == 'yes') {
-                                Alert.alert('Hello', res.data.message, [
+                                Alert.alert('', res.data.message, [
                                     {
                                         text: 'Cancel',
                                         onPress: () => console.log('Cancel Pressed'),
@@ -905,7 +905,7 @@ const ScheduleScreen = ({ navigation }) => {
                         toggleLoader(day, false);
                         Toast.show({
                             type: 'success',
-                            text1: 'Hello',
+                            text1: '',
                             text2: "The schedule has been set up successfully.",
                             position: 'top',
                             topOffset: Platform.OS == 'ios' ? 55 : 20
@@ -1060,7 +1060,7 @@ const ScheduleScreen = ({ navigation }) => {
                         if (res.data.status == 0) {
                             actionStatus(day)
                         } else {
-                            Alert.alert('Hello', res.data.message, [
+                            Alert.alert('', res.data.message, [
                                 {
                                     text: 'Cancel',
                                     onPress: () => console.log('Cancel Pressed'),
@@ -1163,7 +1163,7 @@ const ScheduleScreen = ({ navigation }) => {
                         setIsLoading(false)
                         Toast.show({
                             type: 'success',
-                            text1: 'Hello',
+                            text1: '',
                             text2: res.data.message,
                             position: 'top',
                             topOffset: Platform.OS == 'ios' ? 55 : 20
@@ -1348,7 +1348,7 @@ const ScheduleScreen = ({ navigation }) => {
     }, []);
 
     const cancelBooking = (id) => {
-        Alert.alert('Hello', "Are you sure you want to cancel the appointment?", [
+        Alert.alert('', "Are you sure you want to cancel the appointment?", [
             {
                 text: 'Cancel',
                 onPress: () => setIsFocus(!isFocus),
@@ -1375,7 +1375,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     setIsLoading(false);
                                     Toast.show({
                                         type: 'success',
-                                        text1: 'Hello',
+                                        text1: '',
                                         text2: res?.data?.message,
                                         position: 'top',
                                         topOffset: Platform.OS == 'ios' ? 55 : 20
@@ -1416,7 +1416,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const reportBlock = (patientid) => {
-        Alert.alert('Hello', "Are you sure you want to block this person?", [
+        Alert.alert('', "Are you sure you want to block this patient?", [
             {
                 text: 'Cancel',
                 onPress: () => setIsFocus(!isFocus),
@@ -1443,7 +1443,7 @@ const ScheduleScreen = ({ navigation }) => {
                                     setIsLoading(false);
                                     Toast.show({
                                         type: 'success',
-                                        text1: 'Hello',
+                                        text1: '',
                                         text2: "Patient successfully blocked.",
                                         position: 'top',
                                         topOffset: Platform.OS == 'ios' ? 55 : 20
@@ -2478,6 +2478,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         //backgroundColor:'red'
+        ...Platform.select({
+            android: {
+                zIndex: 10
+            },
+            ios: {
+                zIndex: 10
+            },
+        }),
     },
     itemTimeText: {
         color: '#969696',

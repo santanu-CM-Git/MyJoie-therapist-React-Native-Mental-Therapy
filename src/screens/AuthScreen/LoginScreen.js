@@ -111,25 +111,20 @@ const LoginScreen = ({ navigation }) => {
             console.log(res.data, 'response data from therapist login')
             if (res.data.response == true) {
               setIsLoading(false)
-              Toast.show({
-                type: 'success',
-                text1: 'Hello',
-                text2: "OTP sent to your mobile no.",
-                position: 'top',
-                topOffset: Platform.OS == 'ios' ? 55 : 20
-              });
+              // Toast.show({
+              //   type: 'success',
+              //   text1: 'Hello',
+              //   text2: "OTP sent to your mobile no.",
+              //   position: 'top',
+              //   topOffset: Platform.OS == 'ios' ? 55 : 20
+              // });
               //alert(res.data?.otp)
               // login(res.data.token)
               navigation.navigate('Otp', { countrycode: countryCode, phone: phone, otp: res.data?.otp, token: res.data?.token, fcmToken: fcmToken, name: res.data?.data?.name })
             } else {
               console.log('not okk')
               setIsLoading(false)
-              Alert.alert('Oops..', "Something went wrong.", [
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
+              Alert.alert('Oops..', res?.data?.message, [
                 { text: 'OK', onPress: () => console.log('OK Pressed') },
               ]);
             }
@@ -139,11 +134,6 @@ const LoginScreen = ({ navigation }) => {
             console.log(`user login error ${e}`)
             console.log(e.response)
             Alert.alert('Oops..', e.response?.data?.message, [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
               { text: 'OK', onPress: () => console.log('OK Pressed') },
             ]);
           });
@@ -176,7 +166,7 @@ const LoginScreen = ({ navigation }) => {
 
         <View style={styles.wrapper}>
           <View style={{ marginBottom: responsiveHeight(2) }}>
-            <Text style={styles.headerText}>Let’s get started! Enter your mobile number</Text>
+            <Text style={styles.headerText}>Enter your mobile number to sign-in</Text>
           </View>
           {mobileError ? <Text style={{ color: 'red', fontFamily: 'DMSans-Regular' }}>{mobileError}</Text> : <></>}
           <View style={styles.textinputview}>
@@ -218,7 +208,7 @@ const LoginScreen = ({ navigation }) => {
       </KeyboardAwareScrollView>
 
       <View style={styles.buttonwrapper}>
-        <CustomButton label={"Use OTP"}
+        <CustomButton label={"Send OTP"}
           onPress={() => handleSubmit()}
         //onPress={() => { navigation.push('Otp', { phoneno: phone }) }}
         />
