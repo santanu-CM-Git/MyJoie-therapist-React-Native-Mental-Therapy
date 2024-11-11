@@ -151,7 +151,7 @@ const ChatScreen = ({ navigation, route }) => {
         setEndTime(endTime); // Set the end time
 
         const mode = route?.params?.details?.mode_of_conversation;
-         const agoraEngine = agoraEngineRef.current;
+        const agoraEngine = agoraEngineRef.current;
         switch (mode) {
           case 'chat':
             agoraEngine?.muteLocalAudioStream(true);
@@ -1094,71 +1094,147 @@ const ChatScreen = ({ navigation, route }) => {
               {isVideLoading ? (
                 <ActivityIndicator size="large" color="#0000ff" />  // Display loading indicator while joining
               ) : isVideoEnabled ? (
+                // <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+                //   {/* Agora Video Component */}
+                //   <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+                //     <>
+                //       {remoteUid == null ?
+                //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                //           <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
+                //         </View>
+                //         : null}
+                //       {/* Remote Video View */}
+                //       {remoteUid !== null && (
+                //         <RtcSurfaceView
+                //           canvas={{ uid: remoteUid }}
+                //           style={{
+                //             width: '100%',
+                //             height: '100%',
+                //             zIndex: 10
+                //           }}
+                //         />
+                //       )}
+
+                //       {/* Local Video View */}
+                //       <RtcSurfaceView
+                //         canvas={{ uid: 0 }}
+                //         style={{
+                //           width: '30%',
+                //           height: 200,
+                //           position: 'absolute',
+                //           top: 10,
+                //           right: 10, zIndex: 1000, 
+                //           ...Platform.select({
+                //             android: {
+                //               elevation: 5, // Only for Android
+                //             },
+                //             ios: {
+                //               shadowColor: '#000', // Only for iOS
+                //               shadowOffset: { width: 0, height: 2 },
+                //               shadowOpacity: 0.3,
+                //               shadowRadius: 5,
+                //             },
+                //           }),
+                //         }}
+                //       />
+                //     </>
+                //     <View style={styles.videoButtonSection}>
+                //       {/* Control Buttons */}
+                //       {/* Mic Toggle */}
+                //       <TouchableOpacity onPress={toggleMic}>
+                //         <Image source={micOn ? audioonIcon : audiooffIcon} style={styles.iconStyle} />
+                //       </TouchableOpacity>
+                //       {/* Speaker Toggle */}
+                //       <TouchableOpacity onPress={toggleSpeaker}>
+                //         <Image source={speakerOn ? speakeronIcon : speakeroffIcon} style={styles.iconStyle} />
+                //       </TouchableOpacity>
+                //       {/* Switch Camera */}
+                //       <TouchableOpacity onPress={toggleSwitchCamera}>
+                //         <Image source={switchcameraIcon} style={styles.iconStyle} />
+                //       </TouchableOpacity>
+                //       {/* Camera Toggle */}
+                //       {/* <TouchableOpacity onPress={toggleCamera}>
+                //         <Image source={cameraOn ? cameraonIcon : cameraoffIcon} style={styles.iconStyle} />
+                //       </TouchableOpacity> */}
+                //     </View>
+                //   </View>
+
+                // </SafeAreaView>
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                   {/* Agora Video Component */}
-                  <View style={{ height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80), borderTopLeftRadius: 20, borderTopRightRadius: 20 }}>
+                  <View style={{
+                    height: route?.params?.details?.prescription_checked === 'yes' ? responsiveHeight(75) : responsiveHeight(80),
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20
+                  }}>
                     <>
-                      {remoteUid == null ?
+                      {remoteUid == null ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
+                          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold', textAlign: 'center' }}>
+                            Waiting for the patient to join. Please don't end the call..
+                          </Text>
                         </View>
-                        : null}
+                      ) : null}
+
                       {/* Remote Video View */}
                       {remoteUid !== null && (
-                        <RtcSurfaceView
-                          canvas={{ uid: remoteUid }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            zIndex: 10
-                          }}
-                        />
+                        <View style={{ position: 'relative', flex: 1 }}>
+                          <RtcSurfaceView
+                            canvas={{ uid: remoteUid }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              zIndex: 10,
+                            }}
+                          />
+                        </View>
                       )}
 
                       {/* Local Video View */}
-                      <RtcSurfaceView
-                        canvas={{ uid: 0 }}
-                        style={{
-                          width: '30%',
-                          height: 200,
-                          position: 'absolute',
-                          top: 10,
-                          right: 10, zIndex: 1000, 
-                          ...Platform.select({
-                            android: {
-                              elevation: 5, // Only for Android
-                            },
-                            ios: {
-                              shadowColor: '#000', // Only for iOS
-                              shadowOffset: { width: 0, height: 2 },
-                              shadowOpacity: 0.3,
-                              shadowRadius: 5,
-                            },
-                          }),
-                        }}
-                      />
+                      <View style={{
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        width: '30%',
+                        height: 200,
+                        zIndex: 100,
+                        ...Platform.select({
+                          android: { elevation: 5 },
+                          ios: {
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.3,
+                            shadowRadius: 5,
+                          },
+                        }),
+                      }}>
+                        <RtcSurfaceView
+                          canvas={{ uid: 0 }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                        />
+                      </View>
                     </>
+
+                    {/* Control Buttons */}
                     <View style={styles.videoButtonSection}>
-                      {/* Control Buttons */}
-                      {/* Mic Toggle */}
                       <TouchableOpacity onPress={toggleMic}>
                         <Image source={micOn ? audioonIcon : audiooffIcon} style={styles.iconStyle} />
                       </TouchableOpacity>
-                      {/* Speaker Toggle */}
                       <TouchableOpacity onPress={toggleSpeaker}>
                         <Image source={speakerOn ? speakeronIcon : speakeroffIcon} style={styles.iconStyle} />
                       </TouchableOpacity>
-                      {/* Switch Camera */}
                       <TouchableOpacity onPress={toggleSwitchCamera}>
                         <Image source={switchcameraIcon} style={styles.iconStyle} />
                       </TouchableOpacity>
-                      {/* Camera Toggle */}
+                      {/* Uncomment for Camera Toggle if needed */}
                       {/* <TouchableOpacity onPress={toggleCamera}>
-                        <Image source={cameraOn ? cameraonIcon : cameraoffIcon} style={styles.iconStyle} />
-                      </TouchableOpacity> */}
+        <Image source={cameraOn ? cameraonIcon : cameraoffIcon} style={styles.iconStyle} />
+      </TouchableOpacity> */}
                     </View>
                   </View>
-
                 </SafeAreaView>
               ) : (
                 <Text onPress={() => {
@@ -1237,7 +1313,7 @@ const styles = StyleSheet.create({
   buttonImage: { height: 150, width: 150, borderRadius: 150 / 2, marginTop: - responsiveHeight(20) },
   audioSectionTherapistName: { color: '#FFF', fontSize: responsiveFontSize(2.6), fontFamily: 'DMSans-Bold', marginTop: responsiveHeight(2), marginBottom: responsiveHeight(2) },
   audioButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(40), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
-  videoButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(60), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center',zIndex:30 },
+  videoButtonSection: { backgroundColor: '#000', height: responsiveHeight(8), width: responsiveWidth(60), borderRadius: 50, alignItems: 'center', position: 'absolute', bottom: 40, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', alignSelf: 'center', zIndex: 30 },
   iconStyle: { height: 40, width: 40 },
   messageContainer: {
     backgroundColor: 'red',
