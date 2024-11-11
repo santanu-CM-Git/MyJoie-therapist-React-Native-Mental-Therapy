@@ -1060,14 +1060,17 @@ const ScheduleScreen = ({ navigation }) => {
                         if (res.data.status == 0) {
                             actionStatus(day)
                         } else {
-                            Alert.alert('', res.data.message, [
-                                {
-                                    text: 'Cancel',
-                                    onPress: () => console.log('Cancel Pressed'),
-                                    style: 'cancel',
-                                },
-                                { text: 'OK', onPress: () => actionStatus(day) },
-                            ]);
+                            if (res.data.booking == 'yes') {
+                                Alert.alert('', res.data.message, [
+                                    {
+                                        text: 'Cancel',
+                                        onPress: () => console.log('Cancel Pressed'),
+                                        style: 'cancel',
+                                    },
+                                    { text: 'OK', onPress: () => actionStatus(day) },
+                                ]);
+                            }
+                            
                         }
                     } else {
                         console.log('not okk')
