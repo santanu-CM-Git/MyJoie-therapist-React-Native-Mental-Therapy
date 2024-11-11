@@ -1186,6 +1186,7 @@ const ChatScreen = ({ navigation, route }) => {
                               height: '100%',
                               zIndex: 10,
                             }}
+                            zOrderMediaOverlay={false}
                           />
                         </View>
                       )}
@@ -1214,6 +1215,7 @@ const ChatScreen = ({ navigation, route }) => {
                             width: '100%',
                             height: '100%',
                           }}
+                          zOrderMediaOverlay={true}
                         />
                       </View>
                     </>
