@@ -165,7 +165,7 @@ const ChatScreen = ({ navigation, route }) => {
             // agoraEngine?.muteLocalAudioStream(false);
             // agoraEngine?.stopPreview(); // Stop the local video preview
             // agoraEngine?.muteLocalVideoStream(true); // Mute local video stream
-            agoraEngine?.setEnableSpeakerphone(true);
+            await toggleSpeakerphone(true);
             setActiveTab('audio');
             setIsVideoEnabled(false);
             break;
@@ -174,7 +174,7 @@ const ChatScreen = ({ navigation, route }) => {
             // agoraEngine?.muteLocalAudioStream(false);
             // agoraEngine?.startPreview(); // Start the local video preview
             // agoraEngine?.muteLocalVideoStream(false); // Unmute local video stream
-            agoraEngine?.setEnableSpeakerphone(true);
+            await toggleSpeakerphone(true);
             setActiveTab('video');
             setIsVideoEnabled(true);
             break;
@@ -661,15 +661,26 @@ const ChatScreen = ({ navigation, route }) => {
     }
   };
 
+  const toggleSpeakerphone = async (enable) => {
+    const agoraEngine = agoraEngineRef.current;
+    try {
+      await agoraEngine?.setEnableSpeakerphone(enable);
+    } catch (error) {
+      console.error("Failed to toggle speakerphone:", error);
+    }
+  };
+
   const startVideoCall = async () => {
     const agoraEngine = agoraEngineRef.current;
     await agoraEngine?.enableVideo();
+    await toggleSpeakerphone(true);
     setIsVideoEnabled(true);
   };
 
   const startAudioCall = async () => {
     const agoraEngine = agoraEngineRef.current;
     await agoraEngine?.disableVideo();
+    await toggleSpeakerphone(true);
     setIsVideoEnabled(false);
   };
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
