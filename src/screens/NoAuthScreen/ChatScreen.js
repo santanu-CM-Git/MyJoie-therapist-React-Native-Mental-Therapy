@@ -152,6 +152,7 @@ const ChatScreen = ({ navigation, route }) => {
 
         const mode = route?.params?.details?.mode_of_conversation;
         const agoraEngine = agoraEngineRef.current;
+        await agoraEngine?.setDefaultAudioRouteToSpeakerphone(true);
         switch (mode) {
           case 'chat':
             agoraEngine?.muteLocalAudioStream(true);
@@ -665,6 +666,7 @@ const ChatScreen = ({ navigation, route }) => {
     const agoraEngine = agoraEngineRef.current;
     try {
       await agoraEngine?.setEnableSpeakerphone(enable);
+      console.log("speaker enableeeee",enable)
     } catch (error) {
       console.error("Failed to toggle speakerphone:", error);
     }
