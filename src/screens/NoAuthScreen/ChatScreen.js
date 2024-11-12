@@ -666,7 +666,11 @@ const ChatScreen = ({ navigation, route }) => {
     const agoraEngine = agoraEngineRef.current;
     try {
       await agoraEngine?.setEnableSpeakerphone(enable);
-      console.log("speaker enableeeee",enable)
+      // Set the default audio route to the speakerphone if `enable` is true
+      if (enable) {
+        await agoraEngine?.setDefaultAudioRouteToSpeakerphone(true);
+      }
+      console.log("speaker enableeeee", enable)
     } catch (error) {
       console.error("Failed to toggle speakerphone:", error);
     }
@@ -676,7 +680,6 @@ const ChatScreen = ({ navigation, route }) => {
     const agoraEngine = agoraEngineRef.current;
     await agoraEngine?.enableVideo();
     await toggleSpeakerphone(true);
-    await agoraEngine?.setDefaultAudioRouteToSpeakerphone(true);
     setIsVideoEnabled(true);
   };
 
@@ -684,7 +687,6 @@ const ChatScreen = ({ navigation, route }) => {
     const agoraEngine = agoraEngineRef.current;
     await agoraEngine?.disableVideo();
     await toggleSpeakerphone(true);
-    await agoraEngine?.setDefaultAudioRouteToSpeakerphone(true);
     setIsVideoEnabled(false);
   };
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
