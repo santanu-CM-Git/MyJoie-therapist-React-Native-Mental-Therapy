@@ -504,6 +504,7 @@ const ChatScreen = ({ navigation, route }) => {
       // } else {
       //   console.log('Failed to create Agora engine');
       // }
+      await toggleSpeakerphone(true);
 
       await agoraEngine.initialize({
         appId: appId,
