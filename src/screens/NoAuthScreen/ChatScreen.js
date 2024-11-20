@@ -207,7 +207,7 @@ const ChatScreen = ({ navigation, route }) => {
 
   const confirmEnd = () => {
     Alert.alert(
-      'Confirm End',
+      '',
       'Are you sure you want to end this session?',
       [
         {
