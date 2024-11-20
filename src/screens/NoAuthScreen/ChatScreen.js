@@ -315,6 +315,15 @@ const ChatScreen = ({ navigation, route }) => {
   }, [filePath, imagePath]);
 
   const customtInputToolbar = props => {
+    if (remoteUid == null) {
+      return (
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>
+          Waiting for the patient to join. Please don't end the call..
+          </Text>
+        </View>
+      );
+    }
     return (
       <InputToolbar
         {...props}
@@ -1080,6 +1089,11 @@ const ChatScreen = ({ navigation, route }) => {
                     style={styles.buttonImage}
                   />}
                 <Text style={styles.audioSectionTherapistName}>{route?.params?.details?.patient?.name}</Text>
+                {remoteUid == null ?
+                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: '#FFFFFF', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Waiting for the patient to join. Please don't end the call..</Text>
+                  </View>
+                  : null}
                 <View style={styles.audioButtonSection}>
                   {micOn ?
                     <TouchableOpacity onPress={() => toggleMic()}>
