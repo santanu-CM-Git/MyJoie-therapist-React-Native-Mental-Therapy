@@ -61,7 +61,7 @@ export default function HomeScreen({ navigation }) {
   const [groupedSlots, setGroupedSlots] = useState([]);
   const [savePatientDetails, setSavePatientDetails] = useState(null)
   const [modalDetails, setModalDetails] = useState(null)
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [currentDateTime, setCurrentDateTime] = useState(moment.tz(new Date(), 'Asia/Kolkata'));
   const [isButtonEnabled, setisButtonEnabled] = useState(false);
   const [therapistSessionHistory, setTherapistSessionHistory] = useState([])
   const [isButtonEnabledForModal, setisButtonEnabledForModal] = useState(null);
@@ -74,7 +74,8 @@ export default function HomeScreen({ navigation }) {
       const offsetIST = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
       const nowIST = new Date(nowUTC.getTime() + offsetIST);
       console.log("IST Time:", nowIST);
-      setCurrentDateTime(nowIST);
+      //setCurrentDateTime(nowIST);
+      setCurrentDateTime(moment.tz(new Date(), 'Asia/Kolkata'));
     }, 60000); // Update every minute
 
     return () => clearInterval(timer);
@@ -119,7 +120,7 @@ export default function HomeScreen({ navigation }) {
       fetchSessionHistory(data.pid)
       //const currentDateTime = currentDateTime;
       //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
-      const currentDateTime = moment().toDate();
+      const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
       console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
       const endDateTime = new Date(`${item.date}T${item.end_time}`);
@@ -190,7 +191,7 @@ export default function HomeScreen({ navigation }) {
 
   const updateButtonState = () => {
     if (sortData.length > 0) {
-      const currentDateTime = moment().toDate();
+      const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
       console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${sortData.date}T${sortData.start_time}`);
       const endDateTime = new Date(`${sortData.date}T${sortData.end_time}`);
@@ -234,7 +235,7 @@ export default function HomeScreen({ navigation }) {
         console.log(sortedData[0], 'first booking data');
         setSortData(sortedData);
 
-        const currentDateTime = moment().toDate();
+        const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
         const bookingDateTime = new Date(`${sortedData[0].date}T${sortedData[0].start_time}`);
         const endDateTime = new Date(`${sortedData[0].date}T${sortedData[0].end_time}`);
         const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
@@ -603,7 +604,7 @@ export default function HomeScreen({ navigation }) {
 
   const UpcomingBookingItem = memo(({ item }) => {
 
-    const currentDateTime = moment().toDate();
+    const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
     console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
     const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
     const endDateTime = new Date(`${item.date}T${item.end_time}`);

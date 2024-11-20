@@ -799,7 +799,7 @@ const ScheduleScreen = ({ navigation }) => {
         //console.log(item, 'itemmmmmmmmmmmmmmmm')
         if (!isModalVisible) {
             fetchSessionHistory(data.pid)
-            const currentDateTime = moment().toDate();
+            const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
             console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
             const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
             const endDateTime = new Date(`${item.date}T${item.end_time}`);
