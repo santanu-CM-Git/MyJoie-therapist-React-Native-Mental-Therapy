@@ -318,7 +318,7 @@ const ChatScreen = ({ navigation, route }) => {
     if (remoteUid == null) {
       return (
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>
+          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>
           Waiting for the patient to join. Please don't end the call..
           </Text>
         </View>
@@ -1091,7 +1091,7 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={styles.audioSectionTherapistName}>{route?.params?.details?.patient?.name}</Text>
                 {remoteUid == null ?
                   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#FFFFFF', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold' }}>Waiting for the patient to join. Please don't end the call..</Text>
+                    <Text style={{ color: '#FFFFFF', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
                   </View>
                   : null}
                 <View style={styles.audioButtonSection}>
