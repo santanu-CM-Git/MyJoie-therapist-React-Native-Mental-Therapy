@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import Modal from "react-native-modal";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import messaging from '@react-native-firebase/messaging';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   ClientRoleType,
   createAgoraRtcEngine,
@@ -321,8 +322,8 @@ const ChatScreen = ({ navigation, route }) => {
     if (remoteUid == null) {
       return (
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>
-          Waiting for the patient to join. Please don't end the call..
+          <Text style={{ color: '#000000', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold', textAlign: 'center' }}>
+            Waiting for the patient to join. Please don't end the call..
           </Text>
         </View>
       );
@@ -798,7 +799,7 @@ const ChatScreen = ({ navigation, route }) => {
       "flag": storedTab,
       "screen": storedTab
     };
-     console.log(option);
+    console.log(option);
     try {
       const userToken = await AsyncStorage.getItem('userToken');
       if (!userToken) {
@@ -1089,7 +1090,8 @@ const ChatScreen = ({ navigation, route }) => {
           />
           : activeTab == 'audio' ?
             <>
-              <ImageBackground source={audioBgImg} blurRadius={10} style={styles.AudioBackground} resizeMode="cover">
+              {/* <ImageBackground source={audioBgImg} blurRadius={10} style={styles.AudioBackground} resizeMode="cover"> */}
+              <LinearGradient colors={['#4c669f', '#417AA4', '#192f6a']} style={styles.AudioBackground}>
                 {route?.params?.details?.patient?.profile_pic ?
                   <Image
                     source={{ uri: route?.params?.details?.patient?.profile_pic }}
@@ -1102,7 +1104,7 @@ const ChatScreen = ({ navigation, route }) => {
                 <Text style={styles.audioSectionTherapistName}>{route?.params?.details?.patient?.name}</Text>
                 {remoteUid == null ?
                   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#FFFFFF', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold',textAlign:'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
+                    <Text style={{ color: '#FFFFFF', fontSize: responsiveFontSize(2), fontFamily: 'DMSans-Bold', textAlign: 'center' }}>Waiting for the patient to join. Please don't end the call..</Text>
                   </View>
                   : null}
                 <View style={styles.audioButtonSection}>
@@ -1133,7 +1135,8 @@ const ChatScreen = ({ navigation, route }) => {
                       />
                     </TouchableOpacity>}
                 </View>
-              </ImageBackground>
+                {/* </ImageBackground> */}
+              </LinearGradient>
             </>
 
             :
