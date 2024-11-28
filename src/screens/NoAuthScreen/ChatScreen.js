@@ -718,6 +718,8 @@ const ChatScreen = ({ navigation, route }) => {
       setActiveTab('audio');
       await AsyncStorage.setItem('activeTab', 'audio');
       setIsVideoEnabled(false);
+      setSpeakerOn(true)
+      setMicOn(true)
     } else if (name === 'video') {
       await startVideoCall();
       const agoraEngine = agoraEngineRef.current;
@@ -727,6 +729,8 @@ const ChatScreen = ({ navigation, route }) => {
       setActiveTab('video');
       await AsyncStorage.setItem('activeTab', 'video');
       setIsVideoEnabled(true);
+      setSpeakerOn(true)
+      setMicOn(true)
     } else if (name === 'chat') {
       const agoraEngine = agoraEngineRef.current;
       agoraEngine?.muteLocalAudioStream(true);
