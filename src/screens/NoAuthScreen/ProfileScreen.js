@@ -219,7 +219,7 @@ const ProfileScreen = ({ navigation, route }) => {
         return;
       }
 
-      console.log(userToken, 'usertoken');
+      //console.log(userToken, 'usertoken');
 
       const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
         headers: {
@@ -229,7 +229,7 @@ const ProfileScreen = ({ navigation, route }) => {
       });
 
       const userInfo = response.data.data;
-      console.log(userInfo, 'user data from profile api ');
+      //console.log(userInfo, 'user data from profile api ');
 
       setFirstname(userInfo?.name || '');
       setEmail(userInfo?.email || '');
@@ -335,19 +335,19 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const submitForm = () => {
     setIsLoading(true)
-    console.log(selectedItemsType, " type off therapist")
-    console.log(selectedItemsLanguage, "language")
-    console.log(selectedItems, 'qualification')
-    console.log(city, 'city')
-    console.log(state, 'state')
+    // console.log(selectedItemsType, " type off therapist")
+    // console.log(selectedItemsLanguage, "language")
+    // console.log(selectedItems, 'qualification')
+    // console.log(city, 'city')
+    // console.log(state, 'state')
     var experienceValue = ''
     if (yearvalue && monthvalue) {
       var experienceValue = yearvalue + '.' + monthvalue;
     } else {
       var experienceValue = '';
     }
-    console.log(experienceValue, 'experience')
-    console.log(profilePic, 'profile pic')
+    // console.log(experienceValue, 'experience')
+    // console.log(profilePic, 'profile pic')
 
     const formData = new FormData();
     formData.append("therapy_types", JSON.stringify(selectedItemsType));
@@ -360,7 +360,7 @@ const ProfileScreen = ({ navigation, route }) => {
     formData.append("bank_ac_no", accountno);
     formData.append("cancel_cheque", pickedCancelCheque || '');
 
-    console.log(JSON.stringify(formData), 'formdata')
+    // console.log(JSON.stringify(formData), 'formdata')
 
     AsyncStorage.getItem('userToken', (err, usertoken) => {
       axios.post(`${API_URL}/therapist/profile-update`, formData, {
@@ -371,7 +371,7 @@ const ProfileScreen = ({ navigation, route }) => {
         },
       })
         .then(res => {
-          console.log(res.data)
+          // console.log(res.data)
           if (res.data.response == true) {
             setIsLoading(false)
             Toast.show({

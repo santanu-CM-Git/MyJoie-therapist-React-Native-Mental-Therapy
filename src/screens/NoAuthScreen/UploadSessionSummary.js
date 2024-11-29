@@ -99,7 +99,7 @@ const UploadSessionSummary = ({ navigation, route }) => {
                     },
                 })
                     .then(res => {
-                        console.log(res.data)
+                        //console.log(res.data)
                         if (res.data.response == true) {
                             setIsLoading(false)
                             Toast.show({

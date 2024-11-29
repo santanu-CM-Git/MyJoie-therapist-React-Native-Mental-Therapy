@@ -73,7 +73,7 @@ export default function HomeScreen({ navigation }) {
       // IST is UTC+5:30
       const offsetIST = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
       const nowIST = new Date(nowUTC.getTime() + offsetIST);
-      console.log("IST Time:", nowIST);
+      //console.log("IST Time:", nowIST);
       //setCurrentDateTime(nowIST);
       setCurrentDateTime(moment.tz(new Date(), 'Asia/Kolkata'));
     }, 60000); // Update every minute
@@ -121,7 +121,7 @@ export default function HomeScreen({ navigation }) {
       //const currentDateTime = currentDateTime;
       //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
-      console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
       const endDateTime = new Date(`${item.date}T${item.end_time}`);
       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
@@ -192,7 +192,7 @@ export default function HomeScreen({ navigation }) {
   const updateButtonState = () => {
     if (sortData.length > 0) {
       const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
-      console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+      //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
       const bookingDateTime = new Date(`${sortData.date}T${sortData.start_time}`);
       const endDateTime = new Date(`${sortData.date}T${sortData.end_time}`);
       const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time
@@ -218,7 +218,7 @@ export default function HomeScreen({ navigation }) {
       });
 
       const { data } = response.data;
-      console.log(JSON.stringify(data), 'fetch upcoming slot');
+      //console.log(JSON.stringify(data), 'fetch upcoming slot');
 
       if (response.data.response && data.length > 0) {
         const sortedData = data.sort((a, b) => {
@@ -232,7 +232,7 @@ export default function HomeScreen({ navigation }) {
           return timeA - timeB;
         });
 
-        console.log(sortedData[0], 'first booking data');
+        //console.log(sortedData[0], 'first booking data');
         setSortData(sortedData);
 
         const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
@@ -252,12 +252,12 @@ export default function HomeScreen({ navigation }) {
           return acc;
         }, {});
 
-        console.log(groupedData, 'grouped data');
+        //console.log(groupedData, 'grouped data');
         setGroupedSlots(groupedData);
       } else {
         setSortData([])
         setGroupedSlots([])
-        console.log('No upcoming slots available or response not OK');
+        //console.log('No upcoming slots available or response not OK');
         // Alert.alert('No Slots', 'There are no upcoming slots available.', [
         //   {
         //     text: 'OK',
@@ -291,11 +291,11 @@ export default function HomeScreen({ navigation }) {
       },
       {
         text: 'OK', onPress: () => {
-          console.log(JSON.stringify(id))
+          //console.log(JSON.stringify(id))
           const option = {
             "booked_slot_id": id
           }
-          console.log(option)
+          //console.log(option)
           AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/slot-cancel`, option, {
               headers: {
@@ -363,7 +363,7 @@ export default function HomeScreen({ navigation }) {
             "patient_id": patientid,
             "reason": ''
           }
-          console.log(option)
+          //console.log(option)
           AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/report-block`, option, {
               headers: {
@@ -373,7 +373,7 @@ export default function HomeScreen({ navigation }) {
               },
             })
               .then(res => {
-                console.log(JSON.stringify(res.data.data), 'cancel response')
+                //console.log(JSON.stringify(res.data.data), 'cancel response')
                 if (res.data.response == true) {
                   setIsLoading(false);
                   Toast.show({
@@ -462,7 +462,7 @@ export default function HomeScreen({ navigation }) {
       default:
         console.error('Invalid value');
     }
-    console.log(option);
+    //console.log(option);
 
     try {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -473,7 +473,7 @@ export default function HomeScreen({ navigation }) {
         },
       });
 
-      console.log(JSON.stringify(response.data), 'response');
+      //console.log(JSON.stringify(response.data), 'response');
 
       if (response.data.response === true) {
         const res = response.data.data;
@@ -538,7 +538,7 @@ export default function HomeScreen({ navigation }) {
       });
 
       const { data } = response.data;
-      console.log(JSON.stringify(data), 'fetch session history');
+      //console.log(JSON.stringify(data), 'fetch session history');
       setTherapistSessionHistory(data)
       setIsModalLoading(false)
     } catch (error) {
@@ -605,7 +605,7 @@ export default function HomeScreen({ navigation }) {
   const UpcomingBookingItem = memo(({ item }) => {
 
     const currentDateTime = moment.tz(new Date(), 'Asia/Kolkata');
-    console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
+    //console.log(currentDateTime, 'currentDateTimecurrentDateTimecurrentDateTime')
     const bookingDateTime = new Date(`${item.date}T${item.start_time}`);
     const endDateTime = new Date(`${item.date}T${item.end_time}`);
     const twoMinutesBefore = new Date(bookingDateTime.getTime() - 2 * 60000); // Two minutes before booking start time

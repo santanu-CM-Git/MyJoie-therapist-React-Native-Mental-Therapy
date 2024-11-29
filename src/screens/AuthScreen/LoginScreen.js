@@ -50,7 +50,7 @@ const LoginScreen = ({ navigation }) => {
       // }
       const token = await messaging().getToken();
       AsyncStorage.setItem('fcmToken', token)
-      console.log(token, 'fcm token');
+      //console.log(token, 'fcm token');
     } catch (e) {
       console.log(e);
     }
@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
           },
         })
           .then(res => {
-            console.log(res.data, 'response data from therapist login')
+            //console.log(res.data, 'response data from therapist login')
             if (res.data.response == true) {
               setIsLoading(false)
               // Toast.show({

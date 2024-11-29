@@ -32,10 +32,10 @@ const CustomDrawer = props => {
     try {
       const userToken = await AsyncStorage.getItem('userToken');
       if (!userToken) {
-        console.log('No user token found');
+        //console.log('No user token found');
         return;
       }
-      console.log(userToken, 'usertoken');
+      //console.log(userToken, 'usertoken');
       const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
         headers: {
           "Authorization": `Bearer ${userToken}`,
@@ -43,7 +43,7 @@ const CustomDrawer = props => {
         }
       });
       const userInfo = response.data.data;
-      console.log(userInfo, 'user data from Drawer');
+      //console.log(userInfo, 'user data from Drawer');
       setuserInfo(userInfo);
 
     } catch (error) {

@@ -301,7 +301,7 @@ const PersonalInformation = ({ navigation, route }) => {
          //"other_qualification" : otherQualification,
         "experience": experienceValue,
       }
-      console.log(option, 'kkkkkkkkk')
+      //console.log(option, 'kkkkkkkkk')
       //navigation.navigate('Thankyou')
 
       axios.post(`${API_URL}/therapist/registration`, option, {
@@ -311,7 +311,7 @@ const PersonalInformation = ({ navigation, route }) => {
         },
       })
         .then(res => {
-          console.log(res.data)
+          //console.log(res.data)
           if (res.data.response == true) {
             setIsLoading(false)
             // Toast.show({

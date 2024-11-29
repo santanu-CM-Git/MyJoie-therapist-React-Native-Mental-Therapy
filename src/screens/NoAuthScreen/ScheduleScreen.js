@@ -135,7 +135,7 @@ const ScheduleScreen = ({ navigation }) => {
         const timeOnly = moment(date).tz('Asia/Kolkata').format('HH:mm:ss');
 
         setTimeRanges(currentRanges => {
-            console.log(currentRanges, 'gggggggg');
+            // console.log(currentRanges, 'gggggggg');
 
             const newRanges = [...currentRanges];
             if (isStartTime) {
@@ -173,9 +173,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRange = () => {
-        console.log(timeRanges)
+        //console.log(timeRanges)
         let filteredEvents = timeRanges.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents, 'Monday time')
+        //console.log(filteredEvents, 'Monday time')
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -190,7 +190,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("monday", extractedTimes, "1")
     }
 
@@ -252,9 +252,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeTuesday = () => {
-        console.log(timeRangesTuesday)
+        //console.log(timeRangesTuesday)
         let filteredEvents = timeRangesTuesday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents, 'Tuesday time')
+        //console.log(filteredEvents, 'Tuesday time')
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -269,7 +269,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes, 'tuesday time');
+        //console.log(extractedTimes, 'tuesday time');
         beforetimeEntryRespectOfDay("tuesday", extractedTimes, "1")
     }
 
@@ -330,9 +330,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeWednesday = () => {
-        console.log(timeRangesWednesday)
+        //console.log(timeRangesWednesday)
         let filteredEvents = timeRangesWednesday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        //console.log(filteredEvents)
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -347,7 +347,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("wednessday", extractedTimes, "1")
     }
 
@@ -408,9 +408,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeThursday = () => {
-        console.log(timeRangesThursday)
+        //console.log(timeRangesThursday)
         let filteredEvents = timeRangesThursday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        //console.log(filteredEvents)
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -425,7 +425,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("thursday", extractedTimes, "1")
     }
     // Friday
@@ -486,9 +486,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeFriday = () => {
-        console.log(timeRangesFriday)
+        //console.log(timeRangesFriday)
         let filteredEvents = timeRangesFriday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        //console.log(filteredEvents)
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -503,7 +503,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("friday", extractedTimes, "1")
     }
 
@@ -564,9 +564,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeSaturday = () => {
-        console.log(timeRangesSaturday)
+        //console.log(timeRangesSaturday)
         let filteredEvents = timeRangesSaturday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        //console.log(filteredEvents)
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -581,7 +581,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("saturday", extractedTimes, "1")
     }
 
@@ -642,9 +642,9 @@ const ScheduleScreen = ({ navigation }) => {
     };
 
     const saveTimeRangeSunday = () => {
-        console.log(timeRangesSunday)
+        //console.log(timeRangesSunday)
         let filteredEvents = timeRangesSunday.filter(event => event.startTime !== null && event.endTime !== null);
-        console.log(filteredEvents)
+        //console.log(filteredEvents)
         // const extractedTimes = filteredEvents.map(item => ({
         //     startTime: item.startTime.split(' ')[1],
         //     endTime: item.endTime.split(' ')[1],
@@ -659,7 +659,7 @@ const ScheduleScreen = ({ navigation }) => {
             return { startTime, endTime };
         });
         // Update state
-        console.log(extractedTimes);
+        //console.log(extractedTimes);
         beforetimeEntryRespectOfDay("sunday", extractedTimes, "1")
     }
 
@@ -702,8 +702,8 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const dateRangeSearch = () => {
-        console.log(startDay);
-        console.log(endDay);
+        //console.log(startDay);
+        //console.log(endDay);
         // If endDay is null, set it to startDay
         const finalEndDay = endDay || startDay;
         toggleCalendarModal();
@@ -730,7 +730,7 @@ const ScheduleScreen = ({ navigation }) => {
             });
 
             const { data } = response.data;
-            console.log(JSON.stringify(data), 'fetch session history');
+            //console.log(JSON.stringify(data), 'fetch session history');
             setTherapistSessionHistory(data)
             setIsModalLoading(false)
         } catch (error) {
@@ -818,7 +818,7 @@ const ScheduleScreen = ({ navigation }) => {
 
     const beforetimeEntryRespectOfDay = (day, time, status) => {
         toggleLoader(day, true);
-        console.log(day, 'llllllllll')
+        //console.log(day, 'llllllllll')
         const option = {
             "day": day,
         }
@@ -831,7 +831,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(res.data)
+                    //console.log(res.data)
                     if (res.data.response == true) {
                         toggleLoader(day, false);
 
@@ -882,15 +882,15 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const timeEntryinRespectOfDay = (day, time, status) => {
-        console.log(day, 'day')
-        console.log(time, 'time')
-        console.log(status, 'status')
+        //console.log(day, 'day')
+        //console.log(time, 'time')
+        //console.log(status, 'status')
         const option = {
             "day": day,
             "data": time,
             "status": status,
         }
-        console.log(option, '/therapist/set-availabilities')
+        //console.log(option, '/therapist/set-availabilities')
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/set-availabilities`, option, {
                 headers: {
@@ -900,7 +900,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(res.data)
+                    //console.log(res.data)
                     if (res.data.response == true) {
                         toggleLoader(day, false);
                         Toast.show({
@@ -946,7 +946,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(JSON.stringify(res.data.data), 'fetch availability')
+                    //console.log(JSON.stringify(res.data.data), 'fetch availability')
                     if (res.data.response == true) {
                         setIsLoading(false)
                         const mondayData = [];
@@ -1035,7 +1035,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const availabilityCheck = (day) => {
-        console.log(day, 'llllllllll')
+        //console.log(day, 'llllllllll')
         const option = {
             "day": day,
         }
@@ -1048,7 +1048,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(res.data)
+                    //console.log(res.data)
                     if (res.data.response == true) {
                         setIsLoading(false)
 
@@ -1097,7 +1097,7 @@ const ScheduleScreen = ({ navigation }) => {
     }
 
     const actionStatus = (day) => {
-        console.log(day, 'kkkkkkkkkkkkkkk')
+        //console.log(day, 'kkkkkkkkkkkkkkk')
         var status = ''
         if (day == 'monday') {
             if (isEnabled == true) {
@@ -1146,7 +1146,7 @@ const ScheduleScreen = ({ navigation }) => {
             "day": day,
             "status": status
         }
-        console.log(option)
+        //console.log(option)
         AsyncStorage.getItem('userToken', (err, usertoken) => {
             axios.post(`${API_URL}/therapist/action_availabilities`, option, {
                 headers: {
@@ -1156,7 +1156,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(res.data)
+                    //console.log(res.data)
                     if (res.data.response == true) {
                         setIsLoading(false)
                         Toast.show({
@@ -1207,7 +1207,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+                    //console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
                     if (res.data.response == true) {
                         const sortedData = res.data.data.sort((a, b) => {
                             const dateA = new Date(a.date);
@@ -1263,7 +1263,7 @@ const ScheduleScreen = ({ navigation }) => {
                 "sdate": sdate,
                 "edate": edate
             }
-            console.log(option, 'hhhh');
+            //console.log(option, 'hhhh');
 
             axios.post(`${API_URL}/therapist/upcomming-slots`, option, {
                 headers: {
@@ -1273,7 +1273,7 @@ const ScheduleScreen = ({ navigation }) => {
                 },
             })
                 .then(res => {
-                    console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
+                    //console.log(JSON.stringify(res.data.data), 'fetch upcoming slot')
                     if (res.data.response == true) {
                         const sortedData = res.data.data.sort((a, b) => {
                             const dateA = new Date(a.date);
@@ -1300,7 +1300,7 @@ const ScheduleScreen = ({ navigation }) => {
                         setIsLoading(false);
 
                     } else {
-                        console.log('not okk')
+                        //console.log('not okk')
                         setIsLoading(false)
                         Alert.alert('Oops..', "Something went wrong", [
                             {
@@ -1354,11 +1354,11 @@ const ScheduleScreen = ({ navigation }) => {
             },
             {
                 text: 'OK', onPress: () => {
-                    console.log(JSON.stringify(id))
+                    //console.log(JSON.stringify(id))
                     const option = {
                         "booked_slot_id": id
                     }
-                    console.log(option)
+                    //console.log(option)
                     AsyncStorage.getItem('userToken', (err, usertoken) => {
                         axios.post(`${API_URL}/therapist/slot-cancel`, option, {
                             headers: {
@@ -1368,7 +1368,7 @@ const ScheduleScreen = ({ navigation }) => {
                             },
                         })
                             .then(res => {
-                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                //console.log(JSON.stringify(res.data.data), 'cancel response')
                                 if (res.data.response == true) {
                                     setIsLoading(false);
                                     Toast.show({
@@ -1426,7 +1426,7 @@ const ScheduleScreen = ({ navigation }) => {
                         "patient_id": patientid,
                         "reason": ''
                     }
-                    console.log(option)
+                    //console.log(option)
                     AsyncStorage.getItem('userToken', (err, usertoken) => {
                         axios.post(`${API_URL}/therapist/report-block`, option, {
                             headers: {
@@ -1436,7 +1436,7 @@ const ScheduleScreen = ({ navigation }) => {
                             },
                         })
                             .then(res => {
-                                console.log(JSON.stringify(res.data.data), 'cancel response')
+                                //console.log(JSON.stringify(res.data.data), 'cancel response')
                                 if (res.data.response == true) {
                                     setIsLoading(false);
                                     Toast.show({

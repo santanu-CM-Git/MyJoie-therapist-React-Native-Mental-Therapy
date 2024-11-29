@@ -215,7 +215,7 @@ export default function HomeScreen({ navigation }) {
       });
 
       const { data } = response.data;
-      console.log(JSON.stringify(data), 'fetch upcoming slot');
+      //console.log(JSON.stringify(data), 'fetch upcoming slot');
 
       if (response.data.response && data.length > 0) {
         const sortedData = data.sort((a, b) => {

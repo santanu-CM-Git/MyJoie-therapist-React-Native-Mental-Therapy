@@ -14,8 +14,8 @@ export const AuthProvider = ({ children }) => {
 
 
     const login = (token) => {
-        console.log(token)
-        console.log(API_URL);
+        //console.log(token)
+        //console.log(API_URL);
         
         setIsLoading(true);
         axios.post(`${API_URL}/therapist/profile`,{}, {
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
             .then(res => {
                 //console.log(res.data,'user details')
                 let userInfo = res.data.data;
-                console.log(userInfo,'userInfo from loginnnnn')
+                //console.log(userInfo,'userInfo from loginnnnn')
                 AsyncStorage.setItem('userToken', token)
                 AsyncStorage.setItem('userInfo', JSON.stringify(userInfo))
                 setUserInfo(userInfo)

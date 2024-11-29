@@ -157,8 +157,8 @@ const ForgotPassword = ({ navigation }) => {
             },
           })
             .then(res => {
-              console.log(res.data)
-              console.log(res.data.user?.id)
+              //console.log(res.data)
+              //console.log(res.data.user?.id)
               if (res.data.response == true) {
                 setIsLoading(false)
                 Toast.show({

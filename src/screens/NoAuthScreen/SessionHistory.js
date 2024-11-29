@@ -30,7 +30,7 @@ const SessionHistory = ({ navigation }) => {
     const [hasMore, setHasMore] = useState(true);
 
     const toggleModal = (session) => {
-        console.log(session, 'hhhhhhhhhh')
+        //console.log(session, 'hhhhhhhhhh')
         setSelectedSession(session);
         setSummaryData(session?.prescription_content)
         setModalVisible(!isModalVisible);
@@ -56,7 +56,7 @@ const SessionHistory = ({ navigation }) => {
             });
 
             const responseData = response.data.data.data;
-            console.log(responseData, 'session historyy')
+            //console.log(responseData, 'session historyy')
             setTherapistSessionHistory(prevData => page === 1 ? responseData : [...prevData, ...responseData]);
             if (responseData.length === 0) {
                 setHasMore(false); // No more data to load
@@ -190,7 +190,7 @@ const SessionHistory = ({ navigation }) => {
                     },
                 })
                     .then(res => {
-                        console.log(res.data)
+                        //console.log(res.data)
                         if (res.data.response == true) {
                             setIsLoading(false)
                             Toast.show({

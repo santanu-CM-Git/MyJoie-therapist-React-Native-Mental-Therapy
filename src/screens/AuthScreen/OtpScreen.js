@@ -124,7 +124,7 @@ const OtpScreen = ({ navigation, route }) => {
             "mobile": route?.params?.phone,
             "firebase_token": route?.params?.fcmToken,
         }
-        console.log(option);
+        //console.log(option);
         
         axios.post(`${API_URL}/therapist/login`, option, {
             headers: {
@@ -133,7 +133,7 @@ const OtpScreen = ({ navigation, route }) => {
             },
         })
             .then(res => {
-                console.log(res.data)
+                //console.log(res.data)
                 if (res.data.response == true) {
                     setIsLoading(false)
                     Toast.show({
@@ -148,7 +148,7 @@ const OtpScreen = ({ navigation, route }) => {
                     setIsResendDisabled(true);
                     setOtp('')
                 } else {
-                    console.log('not okk')
+                    //console.log('not okk')
                     setIsLoading(false)
                     Alert.alert('Oops..', "Something went wrong.", [
                         {

@@ -228,7 +228,7 @@ const TabNavigator = () => {
 
 const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
-  console.log(routeName)
+  //console.log(routeName)
   if (routeName === 'ChatScreen' || routeName === 'UploadSessionSummary' || routeName === 'ScheduleScreen') {
     return 'none';
   } else {

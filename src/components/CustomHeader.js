@@ -50,8 +50,8 @@ export default function CustomHeader({
                 return;
             }
             const option = { status };
-            console.log(userToken, 'usertoken');
-            console.log(option);
+            //console.log(userToken, 'usertoken');
+            //console.log(option);
             const response = await axios.post(`${API_URL}/therapist/instant-connect`, option, {
                 headers: {
                     "Authorization": `Bearer ${userToken}`,
@@ -77,7 +77,7 @@ export default function CustomHeader({
                 console.log('No user token found');
                 return;
             }
-            console.log(userToken, 'usertoken');
+            //console.log(userToken, 'usertoken');
             const response = await axios.post(`${API_URL}/therapist/profile`, {}, {
                 headers: {
                     "Authorization": `Bearer ${userToken}`,
