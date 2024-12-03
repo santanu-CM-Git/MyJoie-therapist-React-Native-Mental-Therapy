@@ -8,15 +8,16 @@ export default function CustomButton({ label, onPress, buttonIcon, buttonColor, 
       onPress={onPress}
       style={buttonColor === 'red' ? styles.buttonViewRed
         : buttonColor === 'gray' ? styles.buttonViewGray
-          : buttonColor === 'small' ? styles.buttonViewSmall
-            : styles.buttonView}
+          : buttonColor === 'delete' ? styles.buttonViewDelete
+            : buttonColor === 'small' ? styles.buttonViewSmall
+              : styles.buttonView}
       disabled={isButtonLoader} // Disable the button while loading
     >
       {isButtonLoader ? (
         <ActivityIndicator size="small" color="#417AA4" />
       ) : (
         <>
-          <Text style={buttonColor === 'red' ? styles.buttonTextRed : styles.buttonText}>
+          <Text style={buttonColor === 'red' ? styles.buttonTextRed : buttonColor === 'delete' ? styles.buttonTextDelete : styles.buttonText}>
             {label}
           </Text>
           {buttonIcon && !isButtonLoader ? (
@@ -59,6 +60,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center'
   },
+  buttonViewDelete: {
+    backgroundColor: '#FFF',
+    borderColor: '#E1293B',
+    borderWidth: 1,
+    padding: 17,
+    borderRadius: 8,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
   buttonViewGray: {
     backgroundColor: '#B6B6B6',
     padding: 17,
@@ -80,6 +91,13 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 16,
     color: '#2D2D2D',
+  },
+  buttonTextDelete:{
+    fontFamily: 'DMSans-Bold',
+    textAlign: 'center',
+    fontWeight: '400',
+    fontSize: 16,
+    color: '#E1293B',
   },
   iconImage: {
     width: 23,

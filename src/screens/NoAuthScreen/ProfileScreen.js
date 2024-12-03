@@ -411,6 +411,59 @@ const ProfileScreen = ({ navigation, route }) => {
 
   }
 
+  const deleteAccount = () => {
+    Alert.alert("Confirm Account Deletion", "Are you sure you want to delete your account? This action is irreversible, and all your data will be permanently removed. If you proceed, you will no longer have access to your account.", [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Delete My Account', onPress: () => {
+          AsyncStorage.getItem('userToken', (err, usertoken) => {
+            axios.post(`${API_URL}/therapist/delete-account`, {}, {
+              headers: {
+                Accept: 'application/json',
+                "Authorization": 'Bearer ' + usertoken,
+              },
+            })
+              .then(res => {
+                if (res.data.response == true) {
+                  setIsLoading(false)
+                  Toast.show({
+                    type: 'success',
+                    text1: '',
+                    text2: "Your account has been successfully deleted.",
+                    position: 'top',
+                    topOffset: Platform.OS == 'ios' ? 55 : 20
+                  });
+                  logout()
+                } else {
+                  setIsLoading(false)
+                  Alert.alert('Oops..', res.data.message, [
+                    {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                  ]);
+                }
+              })
+              .catch(e => {
+                setIsLoading(false)
+                console.log(`account delete error ${e}`)
+                console.log(e.response.data?.response.records)
+                Alert.alert('Oops..', e.response?.data?.message, [
+                  { text: 'OK', onPress: () => e.response?.data?.message == 'Unauthorized' ? logout() : console.log('OK Pressed') },
+                ]);
+              });
+          });
+        }
+      },
+    ]);
+  }
+
 
 
   if (isLoading) {
@@ -842,10 +895,17 @@ const ProfileScreen = ({ navigation, route }) => {
             />
           </View>
         )} */}
+       
         <View style={styles.buttonwrapper}>
           <Text style={{ fontFamily: 'DMSans-SemiBold', fontSize: responsiveFontSize(2), color: '#808080', }}>
             *If you want any update/change in profile then please write a mail to the support team
           </Text>
+        </View>
+        <View style={styles.buttonwrapper2}>
+          <CustomButton label={"Delete My Account"}
+            buttonColor={'delete'}
+            onPress={() => { deleteAccount() }}
+          />
         </View>
       </KeyboardAwareScrollView>
       <Modal
@@ -967,8 +1027,14 @@ const styles = StyleSheet.create({
   },
   buttonwrapper: {
     paddingHorizontal: 20,
+    //position: 'absolute',
+    bottom: 80,
+    width: responsiveWidth(100),
+  },
+  buttonwrapper2: {
+    paddingHorizontal: 20,
     position: 'absolute',
-    bottom: 0,
+    bottom: -10,
     width: responsiveWidth(100),
   },
   searchInput: {
