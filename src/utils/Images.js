@@ -56,3 +56,4 @@ export const scheduleNotFillImg = require("../assets/images/schedule-notfill.png
 export const scheduleFillImg = require("../assets/images/schedule-fill.png")
 export const profileNotFillImg = require("../assets/images/profile-notfill.png")
 export const profileFillImg = require("../assets/images/profile-fill.png")
+export const therapistLoginImg = require("../assets/images/therapist-login-img.jpg")
