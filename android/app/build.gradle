@@ -75,9 +75,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.therapistapp"
+    namespace "com.myjoie.therapistapp"
     defaultConfig {
-        applicationId "com.therapistapp"
+        applicationId "com.myjoie.therapistapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 9

@@ -1,4 +1,4 @@
-package com.therapistapp;
+package com.myjoie.therapistapp;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

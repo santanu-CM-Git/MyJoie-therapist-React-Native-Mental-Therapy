@@ -1,4 +1,4 @@
-package com.therapistapp;
+package com.myjoie.therapistapp;
 import android.app.NotificationChannel; // notification sound
 import android.app.NotificationManager; // notification sound
 import android.content.ContentResolver; // notification sound
