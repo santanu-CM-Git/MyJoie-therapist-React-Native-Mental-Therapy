@@ -9,7 +9,8 @@ import {
   Alert,
   Dimensions,
   Image,
-  StatusBar
+  StatusBar,
+  Platform
 } from 'react-native';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -174,28 +175,30 @@ const LoginScreen = ({ navigation }) => {
               <TouchableOpacity onPress={() => setShow(true)} style={styles.countryInputView}>
                 <Text style={{ color: '#808080', fontSize: responsiveFontSize(2) }}>{countryCode}</Text>
               </TouchableOpacity>
-              <CountryPicker
-                show={show}
-                initialState={''}
-                pickerButtonOnPress={(item) => {
-                  setCountryCode(item.dial_code);
-                  setShow(false);
-                }}
-                style={{
-                  modal: {
-                    height: responsiveHeight(60),
-                  },
-                  textInput: {
-                    color: '#808080'
-                  },
-                  dialCode: {
-                    color: '#808080'
-                  },
-                  countryName: {
-                    color: '#808080'
-                  }
-                }}
-              />
+              {Platform.OS === 'android' && (
+                <CountryPicker
+                  show={show}
+                  initialState={''}
+                  pickerButtonOnPress={(item) => {
+                    setCountryCode(item.dial_code);
+                    setShow(false);
+                  }}
+                  style={{
+                    modal: {
+                      height: responsiveHeight(60),
+                    },
+                    textInput: {
+                      color: '#808080'
+                    },
+                    dialCode: {
+                      color: '#808080'
+                    },
+                    countryName: {
+                      color: '#808080'
+                    }
+                  }}
+                />
+              )}
             </View>
             <InputField
               label={'Mobile Number'}
