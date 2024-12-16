@@ -677,7 +677,7 @@
 				CODE_SIGN_ENTITLEMENTS = TherapistApp/TherapistApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 634N3G2484;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
@@ -714,7 +714,7 @@
 				CODE_SIGN_ENTITLEMENTS = TherapistApp/TherapistApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = 634N3G2484;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_NO_COMMON_BLOCKS = NO;
