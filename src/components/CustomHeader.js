@@ -126,15 +126,15 @@ export default function CustomHeader({
                                 />
                                 {/* } */}
                             </TouchableOpacity>
-                            {/* <Image
+                            <Image
                                 source={require('../assets/images/icon.png')}
                                 style={{ height: responsiveHeight(3.5), width: responsiveWidth(25), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
-                            /> */}
-                            <Logo
+                            />
+                            {/* <Logo
                                 width={responsiveWidth(30)}
                                 height={responsiveHeight(3.5)}
                             //style={{transform: [{rotate: '-15deg'}]}}
-                            />
+                            /> */}
                         </View>
                         {/* <View style={{ height: responsiveHeight(6), width: responsiveWidth(30), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2, }}>
                             <Text style={{ fontSize: responsiveFontSize(1.5), fontFamily: 'DMSans-SemiBold', marginRight: responsiveWidth(3) }}>Current Availability</Text>
