@@ -128,7 +128,7 @@ export default function CustomHeader({
                             </TouchableOpacity>
                             <Image
                                 source={require('../assets/images/icon.png')}
-                                style={{ height: responsiveHeight(3.5), width: responsiveWidth(25), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
+                                style={{ height: responsiveHeight(3.5), width: responsiveWidth(25), resizeMode: 'contain', marginLeft: responsiveWidth(0) }}
                             />
                             {/* <Logo
                                 width={responsiveWidth(30)}
