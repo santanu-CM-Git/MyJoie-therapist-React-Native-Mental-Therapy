@@ -131,7 +131,7 @@ export default function CustomHeader({
                                 style={{ height: responsiveHeight(3.5), width: responsiveWidth(25), resizeMode: 'contain', marginLeft: responsiveWidth(2) }}
                             /> */}
                             <Logo
-                                width={responsiveWidth(25)}
+                                width={responsiveWidth(30)}
                                 height={responsiveHeight(3.5)}
                             //style={{transform: [{rotate: '-15deg'}]}}
                             />
