@@ -1,6 +1,6 @@
 {
   "name": "TherapistApp",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -16,6 +16,7 @@
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/datetimepicker": "^7.6.2",
     "@react-native-community/netinfo": "^11.1.0",
+    "@react-native-firebase/analytics": "^20.1.0",
     "@react-native-firebase/app": "^20.1.0",
     "@react-native-firebase/database": "^20.1.0",
     "@react-native-firebase/firestore": "^20.1.0",
