@@ -12,7 +12,7 @@ export default function CancellationPolicy({ navigation }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const { width } = useWindowDimensions();
-    const privacyPolicyUrl = "https://www.myjoie.app/cancellation-policy";
+    const privacyPolicyUrl = "https://www.myjoie.app/cancellation-policy"; 
 
     return (
         <SafeAreaView style={styles.Container}>
