@@ -1,79 +1,228 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# TherapistApp
 
-# Getting Started Subh Test
+A comprehensive React Native mobile application designed for therapists to manage their practice, connect with clients, and handle scheduling and sessions.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Overview
 
-## Step 1: Start the Metro Server
+TherapistApp is a full-featured mobile application that enables therapists to manage their professional activities including client communication, session scheduling, earnings tracking, and more. The app supports both iOS and Android platforms.
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Features
 
-To start Metro, run the following command from the _root_ of your React Native project:
+### Authentication
+- User login and registration
+- OTP verification
+- Password recovery
+- Personal information management
+
+### Communication
+- Real-time chat with clients
+- Video and audio calling using Agora SDK
+- File sharing and document transfer
+- In-chat file viewing capabilities
+
+### Scheduling
+- Session scheduling and management
+- Calendar integration
+- Upcoming sessions tracking
+- Session history
+
+### Professional Management
+- Earnings tracking and reporting
+- Session summary upload
+- Profile management
+- Client support
+
+### Additional Features
+- Push notifications
+- Offline mode support
+- Privacy policy and terms of use
+- Cancellation policy
+- Notification management
+
+## Technology Stack
+
+### Core
+- React Native 0.72.4
+- React 18.2.0
+- Redux Toolkit for state management
+
+### Navigation
+- React Navigation (Stack, Drawer, Bottom Tabs)
+
+### Backend Services
+- Firebase (Authentication, Firestore, Realtime Database, Storage, Analytics, Messaging)
+- Agora SDK for real-time communication
+
+### Key Libraries
+- React Native Gifted Chat for chat interface
+- React Native Vector Icons
+- React Native Calendars
+- React Native Document Picker
+- React Native PDF viewer
+- Axios for HTTP requests
+- Moment.js for date/time handling
+
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- Node.js (version 16 or higher)
+- npm or yarn package manager
+- React Native development environment set up
+- For iOS: Xcode and CocoaPods
+- For Android: Android Studio and Android SDK
+- Firebase project configuration
+- Agora account and credentials
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd TherapistApp
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. For iOS, install CocoaPods dependencies:
+```bash
+cd ios
+pod install
+cd ..
+```
+
+4. Configure Firebase:
+   - Add your `google-services.json` file to `android/app/`
+   - Add your `GoogleService-Info.plist` file to `ios/`
+
+5. Configure environment variables:
+   - Create a `.env` file in the root directory
+   - Add necessary API keys and configuration values
+
+## Running the Application
+
+### Start Metro Bundler
 
 ```bash
-# using npm
 npm start
-
-# OR using Yarn
+# or
 yarn start
 ```
 
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
+### Run on Android
 
 ```bash
-# using npm
 npm run android
-
-# OR using Yarn
+# or
 yarn android
 ```
 
-### For iOS
+### Run on iOS
 
 ```bash
-# using npm
 npm run ios
-
-# OR using Yarn
+# or
 yarn ios
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## Project Structure
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+```
+TherapistApp/
+├── android/                 # Android native code
+├── ios/                     # iOS native code
+├── src/
+│   ├── assets/             # Images, fonts, and other assets
+│   ├── components/         # Reusable React components
+│   ├── context/            # React Context providers
+│   ├── model/              # Data models
+│   ├── navigation/         # Navigation configuration
+│   ├── screens/            # Screen components
+│   │   ├── AuthScreen/    # Authentication screens
+│   │   └── NoAuthScreen/  # Main app screens
+│   ├── store/              # Redux store configuration
+│   └── utils/              # Utility functions and services
+├── App.js                  # Main application entry point
+├── package.json            # Project dependencies
+└── README.md              # This file
+```
 
-## Step 3: Modifying your App
+## Available Scripts
 
-Now that you have successfully run the app, let's modify it.
+- `npm start` - Start Metro bundler
+- `npm run android` - Run on Android device/emulator
+- `npm run ios` - Run on iOS device/simulator
+- `npm test` - Run tests
+- `npm run lint` - Run ESLint
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+## Configuration
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+### Firebase Setup
+Ensure you have properly configured Firebase services:
+- Authentication
+- Firestore Database
+- Realtime Database
+- Cloud Storage
+- Cloud Messaging
+- Analytics
 
-## Congratulations! :tada:
+### Agora Setup
+Configure Agora SDK with your App ID and other credentials for video/audio communication features.
 
-You've successfully run and modified your React Native App. :partying_face:
+### Permissions
+The app requires the following permissions:
+- Camera (for video calls)
+- Microphone (for audio calls)
+- Storage (for file uploads)
+- Notifications (for push notifications)
+- Network access
 
-### Now what?
+## Troubleshooting
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+### Common Issues
 
-# Troubleshooting
+1. **Metro bundler issues**: Clear cache with `npm start -- --reset-cache`
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+2. **iOS build issues**: 
+   - Run `cd ios && pod install && cd ..`
+   - Clean build folder in Xcode
 
-# Learn More
+3. **Android build issues**:
+   - Clean gradle: `cd android && ./gradlew clean && cd ..`
+   - Invalidate caches in Android Studio
 
-To learn more about React Native, take a look at the following resources:
+4. **Firebase configuration errors**: Ensure `google-services.json` and `GoogleService-Info.plist` are correctly placed and configured
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+5. **Permission errors**: Check that all required permissions are declared in AndroidManifest.xml and Info.plist
+
+## Development
+
+### Code Style
+The project uses ESLint for code linting. Run `npm run lint` to check for code style issues.
+
+### Testing
+Run tests using:
+```bash
+npm test
+```
+
+## Version
+
+Current version: 2.1.8
+
+## License
+
+This project is private and proprietary.
+
+## Support
+
+For support and questions, please contact the development team or refer to the project documentation.
+
+## Contributing
+
+This is a private project. Contributions are managed internally by the development team.
